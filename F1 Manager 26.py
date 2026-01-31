@@ -10919,11 +10919,8 @@ class Game:
             if GAME.screen==(team+" Display") or GAME.screen=="Generic Display":
                 canvas.create_text(950-(650-(650*x)), 340, text=driver, fill="black", font=("Arial", 20), anchor="nw")
     def DisplayDriver(self,driver,x,y):
-        GAME.database="F1 Manager 26 Save Data 1.db"
         with sqlite3.connect(GAME.database) as c:
-            if True:
-                team="Cadillac"
-            elif GAME.screen=="Contract":
+            if GAME.screen=="Contract":
                 team=GAME.team
             elif GAME.replay>0:
                 team=GAME.teams[GAME.drivers.index(driver)]
