@@ -7562,7 +7562,7 @@ class Game:
                         elif team==GAME.team and position==2:
                             statChange=random.randint(-20,10)
                         else:
-                            statChange=(position*3)+random.randint(-15,10)
+                            statChange=(position*2)+random.randint(-15,10)
                         if y==0:
                             stat=int(GAME.Sanitise(c.execute("SELECT DragReduction FROM Cars WHERE Team=?",(team,)).fetchall()[0]))
                         elif y==1:
