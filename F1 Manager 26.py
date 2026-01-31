@@ -11700,8 +11700,8 @@ for x in range(len(driverHeads)):
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","BMW","Amazon","Ford","Tesla","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
        "Alfa Romeo"]
-xDif=[90,90,88,95,110,100,92,100,95,98,105,102,100,85,95,97,95,98,100]
-yDif=[-115,-105,-100,-115,-108,-108,-90,-70,-122,-100,-103,-52,-145,-105,-80,-100,-85,-50,-10]
+xDif=[90,90,88,95,110,100,92,100,95,98,105,102,100,85,95,97,95,98,110]
+yDif=[-115,-105,-100,-115,-108,-108,-90,-70,-122,-100,-103,-52,-145,-105,-80,-100,-85,-50,-5]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 GAME.suits=[tk.PhotoImage(file=path)]
 logos=[]
