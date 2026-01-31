@@ -10632,7 +10632,6 @@ class Game:
         while True:
             try: 
                 F1=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
-                print(GAME.database)
                 if int(GAME.Sanitise(F1.execute("SELECT Race FROM Player").fetchall()[0]))<0:
                     break
                 else:
@@ -11634,8 +11633,9 @@ if os.path.isfile("F1 Manager 26 Save Data 1.db"):
     F1=sqlite3.connect("F1 Manager 26 Save Data 1.db")
     c=F1.cursor()
     try:
-        c.execute('''SELECT Race FROM Player''')
-        GAME.race=int(GAME.Sanitise(c.fetchall()[0]))
+        GAME.race=int(GAME.Sanitise(c.execute('''SELECT Race FROM Player''').fetchall()[0]))
+        F1.commit()
+        F1.close()
         if GAME.race==-1:
             GAME.newGame=1
             os.remove("F1 Manager 26 Save Data 1.db")
@@ -11648,8 +11648,6 @@ if os.path.isfile("F1 Manager 26 Save Data 1.db"):
             GAME.newGame=1
         except:
             GAME.newGame=1
-    F1.commit()
-    F1.close()
 else:
     GAME.newGame=1
 
