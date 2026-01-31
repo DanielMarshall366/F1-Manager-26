@@ -1087,7 +1087,7 @@ class Game:
             message=[]
             retirement=0
             if objective=="Upgrade":
-                team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(random.randint(2,3),).fetchall()[0]))
+                team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(random.randint(2,3),)).fetchall()[0])
             else:
                 if GAME.race>GAME.races-3:
                     f=c.execute("SELECT Team FROM Drivers WHERE Age>35 AND NewTeam='0' AND ContractEnd=? AND Team!=? AND Legend=0",(GAME.season,GAME.team,)).fetchall()
@@ -2515,7 +2515,7 @@ class Game:
                     position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                     pressConferences=len(c.execute('''SELECT Name FROM Teams''').fetchall())*2
                 if position==1 and GAME.race==round(GAME.races/2)+2:
-                    GAME.pressConference("Upgrade")
+                    GAME.PressConference("Upgrade")
                 elif pressConferences>GAME.races:
                     pressConferences=GAME.races
                 if GAME.race>round((GAME.races-pressConferences)/2) and GAME.race<GAME.races-round((23-pressConferences)/2):
