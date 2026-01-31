@@ -744,6 +744,8 @@ class Game:
                 if reduced==1:
                     extra=round(extra/1.5)
                 maximum+=extra
+        if maximum>(round(money/3))//500000:
+            maximum=(round(money/3))//500000
         if money>25000000 or maximum<7:
             actionPoints=maximum
         else:
@@ -8714,6 +8716,8 @@ class Game:
                         if reduced==1:
                             extra=round(extra/1.5)
                         GAME.maximumUpgradePoints+=extra
+                if GAME.maximumUpgradePoints>(round(GAME.money/3))//500000:
+                    GAME.maximumUpgradePoints=(round(money/3))//500000
                 GAME.remainingUpgradePoints=GAME.maximumUpgradePoints
                 GAME.upgradePoints=[]
                 for x in range(7):
