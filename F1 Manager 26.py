@@ -197,7 +197,7 @@ class Game:
         self.pit=0
         self.events=0
         self.driver=1
-        self.database="F1 Manager 26 Save Data 1.db"
+        self.database=1
         self.loaded=0
 
     def FillDatabase(self):
@@ -8237,11 +8237,6 @@ class Game:
                 root.after(400, lambda: GAME.ReplayScreen())
             elif event.x>=1295 and event.x<=1345 and event.y>=710 and event.y<=760:
                 GAME.Settings()
-            else:
-                GAME.ChangeScreen("Select Save File")
-                canvas.create_text(400, 300, text="2026", fill="white", font=("Arial", 50), anchor="nw")
-                canvas.create_text(400, 370, text="Daniel Marshall", fill="white", font=("Arial", 50), anchor="nw")
-                canvas.create_text(400, 440, text="Ferrari", fill="white", font=("Arial", 50), anchor="nw")
         elif GAME.screen=="Welcome screen":
             if event.x>=54 and event.x<=250 and event.y>=718 and event.y<=765:
                 GAME.ChangeScreen("Get Name")
@@ -10633,22 +10628,19 @@ class Game:
             root.configure(background='black')
     def StartNewGame(self):
         GAME.drivers=[]
-        F1=sqlite3.connect(GAME.database)
+        GAME.database=1
+        while True:
+            try: 
+                F1=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
+                print(GAME.database)
+                if int(GAME.Sanitise(F1.execute("SELECT Race FROM Player").fetchall()[0]))<0:
+                    break
+                else:
+                    GAME.database+=1
+            except:
+                break
+        GAME.database=f"F1 Manager 26 Save Data {GAME.database}.db"
         c=F1.cursor()
-        if GAME.newGame==0:
-            c.execute('''DROP TABLE Teams''')
-            c.execute('''DROP TABLE Drivers''')
-            c.execute('''DROP TABLE Staff''')
-            c.execute('''DROP TABLE Regulations''')
-            c.execute('''DROP TABLE Engines''')
-            c.execute('''DROP TABLE Cars''')
-            c.execute('''DROP TABLE Sponsors''')
-            c.execute('''DROP TABLE Calendar''')
-            c.execute('''DROP TABLE Tracks''')
-            c.execute('''DROP TABLE Player''')
-            c.execute('''DROP TABLE History''')
-            c.execute('''DROP TABLE Buyers''')
-            c.execute('''DROP TABLE TeamPrincipals''')
         c.execute('''CREATE TABLE Teams(Name str, Appearance str,OriginalName st, Position int, Points int, Money int, Income int, TeamPrincipal str, Country str, Reputation int, Sponsor str, PreviousPosition int, PressConferences int)''')
         c.execute('''CREATE TABLE Drivers(Name str, Appearance str, Team str, Role str, Country str, Position int, Points int, Salary int, Condition str, Rating int, Overtaking int, Defending int, Pace int, Experience int, Control int, Reaction int, Calmness int, Age int, Marketability int, DevelopmentRate int, ContractEnd int, NewTeam str, NewSalary int, NewRole str, Championships int, Wins int, Legend int)''')
         c.execute('''CREATE TABLE Staff(Name str, Team str, Role str, Rating int, Salary int, Morale int, Country str, NewTeam str, NewSalary int, NewRole str)''')
@@ -10669,7 +10661,7 @@ class Game:
         GAME.ChangeScreen("Get Team Name")
         GAME.team=GAME.Sanitise(simpledialog.askstring(" ", "Limit: 20 characters"))
         teams=["mclaren","ferrari","red bull","mercedes","aston martin","alpine","haas","racing bulls","williams","audi","honda","cadillac","renault","gazoo racing","ford","create new team",
-               "legend","hp","oracle","petronas","aramco","bwt","visa & cash app","atlassian","stake","revolut","Gazoo Racing","placeholder","team principal","dead"]
+               "legend","hp","oracle","petronas","aramco","bwt","visa & cash app","atlassian","revolut","Gazoo Racing","placeholder","team principal","dead"]
         valid=GAME.Validate(GAME.team)
         if valid==1:
             with sqlite3.connect(GAME.database) as c:
@@ -10864,23 +10856,21 @@ class Game:
             canvas.create_text(800, 300, text=role, fill="black", font=("Arial", 25), anchor="nw")
             GAME.DisplayDriver(name,450,250)
     def SelectSave(self):
-        if os.path.isfile("F1 Manager 26 Save Data 2.db"):
-            GAME.database=1
-            GAME.ViewSave()
-        else:
-            GAME.LoadGame()
+        GAME.database=1
+        GAME.ViewSave()
     def ViewSave(self):
         GAME.loaded=0
         GAME.ChangeScreen("Select Save File")
         valid=1
-        try:
+        if os.path.isfile(f"F1 Manager 26 Save Data {GAME.database}.db"):
             with sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db") as c:
                 if int(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]))<0:
                     valid=0
                 canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
                 canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
-                canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
-        except:
+                canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Country FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
+                canvas.create_text(400, 510, text=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
+        else:
             valid=0
         if valid==0:
             GAME.database=1
@@ -11648,37 +11638,13 @@ if os.path.isfile("F1 Manager 26 Save Data 1.db"):
         GAME.race=int(GAME.Sanitise(c.fetchall()[0]))
         if GAME.race==-1:
             GAME.newGame=1
-            c.execute('''DROP TABLE Teams''')
-            c.execute('''DROP TABLE Drivers''')
-            c.execute('''DROP TABLE Staff''')
-            c.execute('''DROP TABLE Regulations''')
-            c.execute('''DROP TABLE Engines''')
-            c.execute('''DROP TABLE Cars''')
-            c.execute('''DROP TABLE Sponsors''')
-            c.execute('''DROP TABLE Calendar''')
-            c.execute('''DROP TABLE Tracks''')
-            c.execute('''DROP TABLE Player''')
-            c.execute('''DROP TABLE History''')
-            c.execute('''DROP TABLE Buyers''')
-            c.execute('''DROP TABLE TeamPrincipals''')
+            os.remove("F1 Manager 26 Save Data 1.db")
         else:
             GAME.newGame=0
     except:
         GAME.race=-1
         try:
-            c.execute('''DROP TABLE Teams''')
-            c.execute('''DROP TABLE Drivers''')
-            c.execute('''DROP TABLE Staff''')
-            c.execute('''DROP TABLE Regulations''')
-            c.execute('''DROP TABLE Engines''')
-            c.execute('''DROP TABLE Cars''')
-            c.execute('''DROP TABLE Sponsors''')
-            c.execute('''DROP TABLE Calendar''')
-            c.execute('''DROP TABLE Tracks''')
-            c.execute('''DROP TABLE Player''')
-            c.execute('''DROP TABLE History''')
-            c.execute('''DROP TABLE Buyers''')
-            c.execute('''DROP TABLE TeamPrincipals''')
+            os.remove("F1 Manager 26 Save Data 1.db")
             GAME.newGame=1
         except:
             GAME.newGame=1
