@@ -7562,7 +7562,7 @@ class Game:
                         elif team==GAME.team and position==2:
                             statChange=random.randint(-20,10)
                         else:
-                            statChange=random.randint(position-15,position+10)
+                            statChange=(position*3)+random.randint(-15,10)
                         if y==0:
                             stat=int(GAME.Sanitise(c.execute("SELECT DragReduction FROM Cars WHERE Team=?",(team,)).fetchall()[0]))
                         elif y==1:
@@ -10919,8 +10919,11 @@ class Game:
             if GAME.screen==(team+" Display") or GAME.screen=="Generic Display":
                 canvas.create_text(950-(650-(650*x)), 340, text=driver, fill="black", font=("Arial", 20), anchor="nw")
     def DisplayDriver(self,driver,x,y):
+        GAME.database="F1 Manager 26 Save Data 1.db"
         with sqlite3.connect(GAME.database) as c:
-            if GAME.screen=="Contract":
+            if True:
+                team="Cadillac"
+            elif GAME.screen=="Contract":
                 team=GAME.team
             elif GAME.replay>0:
                 team=GAME.teams[GAME.drivers.index(driver)]
@@ -11700,8 +11703,8 @@ for x in range(len(driverHeads)):
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","BMW","Amazon","Ford","Tesla","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
        "Alfa Romeo"]
-xDif=[90,90,88,95,110,100,92,100,95,98,105,102,100,85,95,97,95,98]
-yDif=[-115,-105,-100,-115,-108,-108,-90,-70,-122,-100,-103,-52,-145,-105,-80,-100,-85,-50]
+xDif=[90,90,88,95,110,100,92,100,95,98,105,102,100,85,95,97,95,98,100]
+yDif=[-115,-105,-100,-115,-108,-108,-90,-70,-122,-100,-103,-52,-145,-105,-80,-100,-85,-50,-10]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 GAME.suits=[tk.PhotoImage(file=path)]
 logos=[]
