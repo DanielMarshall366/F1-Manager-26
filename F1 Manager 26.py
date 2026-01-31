@@ -496,7 +496,7 @@ class Game:
         #Team Principals
         c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Andrea Stella", "McLaren")''')
         c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Fred Vasseur", "Ferrari")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Laurent Mekie", "Red Bull")''')
+        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Laurent Mekies", "Red Bull")''')
         c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Toto Wolff", "Mercedes")''')
         c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Adrian Newey", "Aston Martin")''')
         c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Flavio Briatore", "Alpine")''')
