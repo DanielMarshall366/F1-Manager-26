@@ -1310,7 +1310,6 @@ class Game:
                                     message.append(f"{team} is having a terrible season, they are currently in P{pos} in the Championship,")
                                     message.append("")
                                     message.append(f"And {driver} is currently P{driverPos} in the Drivers' Championship.")
-                            root.after(15000, lambda: GAME.Menu())
                         elif topic=="Controversy":
                             message.append(f"{GAME.GenerateName()}: What do you have to say about the allegations against you, {teamPrincipal}?")
                             message.append("")
@@ -1364,7 +1363,6 @@ class Game:
                             elif reputation<1:
                                 reputation=1
                             c.execute('''UPDATE Teams SET Reputation=? WHERE Name=?''',(reputation,team,))
-                            root.after(12000, lambda: GAME.Menu())
                         elif topic=="Upgrade":
                             message.append(f"{GAME.GenerateName()}: What can we expect from {team} after the summer break?")
                             message.append("")
@@ -1411,6 +1409,7 @@ class Game:
                                             c.execute("UPDATE Engines SET Power=? WHERE Name=?",(stat,engine,))
                                         else:
                                             c.execute("UPDATE Engines SET Reliability=? WHERE Name=?",(stat,engine,))
+                        root.after(10000, lambda: GAME.Menu())
                     if team in steam:
                         appearance=team
                     else:
@@ -1426,7 +1425,8 @@ class Game:
                         if logo!=0:
                             canvas.image=logo
                             canvas.create_image(1250, 685, anchor=tk.NW, image=logo)
-                    c.execute('''UPDATE Teams SET PressConferences=? WHERE Name=?''',(pressConferenceNumber,team,))
+                    if topic!="Upgrade":
+                        c.execute('''UPDATE Teams SET PressConferences=? WHERE Name=?''',(pressConferenceNumber,team,))
                     F1.commit()
                     F1.close()
             else:
@@ -2518,7 +2518,7 @@ class Game:
                     GAME.PressConference("Upgrade")
                 elif pressConferences>GAME.races:
                     pressConferences=GAME.races
-                if GAME.race>round((GAME.races-pressConferences)/2) and GAME.race<GAME.races-round((23-pressConferences)/2):
+                elif GAME.race>round((GAME.races-pressConferences)/2) and GAME.race<GAME.races-round((23-pressConferences)/2):
                     GAME.PressConference(0)
                 else:
                     GAME.Menu()
