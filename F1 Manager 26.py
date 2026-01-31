@@ -10271,6 +10271,8 @@ class Game:
             elif event.x>=1210 and event.x<=1325 and event.y>=330 and event.y<=480:
                 GAME.database+=1
                 GAME.ViewSave()
+            elif event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
+                GAME.ChangeScreen("Title Screen")
     def CarData(self):
         GAME.CarRanking()
         GAME.ChangeScreen("Car Data")
@@ -10874,6 +10876,7 @@ class Game:
         if valid==0:
             GAME.database=1
             GAME.ViewSave()
+        GAME.Button("Back",5,730)
         root.after(300, lambda: GAME.SaveReady())
     def SaveReady(self):
         GAME.loaded=1
