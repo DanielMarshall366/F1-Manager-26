@@ -4266,22 +4266,26 @@ class Game:
             GAME.pause=0
     def Box(self,driverNumber):
         GAME.pittingDriver=driverNumber
-        GAME.ChangeScreen("Box")
+        if GAME.replay==5:
+            GAME.ChangeScreen("2000 Box")
+            for x in range(3):
+                if x==2:
+                    text=f"{GAME.expectedTyreLife[3]} Laps"
+                else:
+                    text=f"{GAME.expectedTyreLife[x*2]} Laps"
+                canvas.create_text(210+(x*440), 610, text=text, fill="white", font=("Arial", 30), anchor="nw")
+        else:
+            GAME.ChangeScreen("Box")
+            for x in range(5):
+                if Tyres[x]=="Wet":
+                    text=f"{GAME.expectedTyreLife[3]} Laps"
+                else:
+                    text=f"{GAME.expectedTyreLife[x]} Laps"
+                canvas.create_text(100+(x*280), 560, text=text, fill="white", font=("Arial", 30), anchor="nw")
         if driverNumber==1:
             index=GAME.car1ID
         else:
             index=GAME.car2ID
-        driver=GAME.drivers[index]
-        GAME.DisplayDriver(driver,950,500)
-        canvas.create_text(120, 15, text=f"What tyres would you like {driver} to pit to?", fill="black", font=("Arial", 40), anchor="nw")
-        for x in range(len(Tyres)):
-            if not (GAME.replay==5 and (x==1 or x==3)):
-                canvas.create_image(150, 120+(120*x), anchor=tk.NW, image=tyres[x])
-                if Tyres[x]=="Wet":
-                    text=f"Estimated {GAME.expectedTyreLife[3]} Laps"
-                else:
-                    text=f"Estimated {GAME.expectedTyreLife[x]} Laps"
-                canvas.create_text(280, 155+(120*x), text=text, fill="black", font=("Arial", 15), anchor="nw")
         GAME.Button("Back",5,730)
     def TyreData(self):
         GAME.ChangeScreen("Tyre Data")
@@ -8175,7 +8179,7 @@ class Game:
         if screen=="Title Screen":
             GAME.team=0
             GAME.BackgroundColour()
-        elif screen=="Box" or screen=="Tyre Data" or screen=="Replacing" or screen=="Replacement" or screen=="Sponsor Negotiation" or screen=="Replay Grid":
+        elif screen=="Tyre Data" or screen=="Replacing" or screen=="Replacement" or screen=="Sponsor Negotiation" or screen=="Replay Grid":
             screen="Grey Screen"
         elif screen=="Data" or screen=="Scouting":
             screen="Board Room"
@@ -8628,17 +8632,17 @@ class Game:
                 #Tyre Data
                 GAME.TyreData()
         elif GAME.screen=="Box":
-            if event.x>=150 and event.x<=250:
+            if event.y>=200 and event.y<=630:
                 tyre=0
-                if event.y>=120 and event.y<=220:
+                if event.x>=20 and event.x<=300:
                     tyre="Soft"
-                elif event.y>=240 and event.y<=340 and GAME.replay!=5:
+                elif event.x>=320 and event.x<=580:
                     tyre="Medium"
-                elif event.y>=360 and event.y<=460:
+                elif event.x>=600 and event.x<=860:
                     tyre="Hard"
-                elif event.y>=480 and event.y<=580 and GAME.replay!=5:
+                elif event.x>=880 and event.x<=1140:
                     tyre="Intermediate"
-                elif event.y>=600 and event.y<=700:
+                elif event.x>=1160 and event.x<=1400:
                     tyre="Wet"
                 if tyre!=0:
                     if GAME.pittingDriver==1:
@@ -10234,6 +10238,30 @@ class Game:
                     sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
                     winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
                 GAME.Settings()
+        elif GAME.screen=="2000 Box":
+            if event.y>=205 and event.y<=655:
+                tyre=0
+                if event.x>=80 and event.x<=480:
+                    tyre="Soft"
+                elif event.x>=510 and event.x<=920:
+                    tyre="Hard"
+                elif event.x>=950 and event.x<=1360:
+                    tyre="Wet"
+                if tyre!=0:
+                    if GAME.pittingDriver==1:
+                        index=GAME.car1ID
+                    else:
+                        index=GAME.car2ID
+                    GAME.pitLap.pop(index)
+                    GAME.pitLap.insert(index,GAME.lap[index])
+                    GAME.pitTyre.pop(index)
+                    GAME.pitTyre.insert(index,tyre)
+                    GAME.pause=1
+                    GAME.RefreshScreen()
+                    GAME.NextMove()
+            elif event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
+                #Back
+                GAME.Instructions()
     def CarData(self):
         GAME.CarRanking()
         GAME.ChangeScreen("Car Data")
@@ -11639,7 +11667,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Mazda Display","Lamborghini Display","Volkswagen Display","Volvo Display","JLR Display","Gazoo Racing Display","Lotus Display","Replay Screen","F1 Movie 1","F1 Movie 2",
         "F1 Movie 3","F1 Movie 4","F1 Movie 5","F1 Movie 6","F1 Movie 7","F1 Movie 8","F1 Movie 9","F1 Movie 10","Safety Car Menu","Red Flag Menu","Choose a Team 2021","Latifi Crash",
         "Hamilton Wins","Verstappen Wins","Canada 2011 Victory","Canada 2011 Defeat","Choose a Team 2000","Schumacher Victory","Hakkinen Victory","Senna Celebration",
-        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen"]
+        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","2000 Box"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
