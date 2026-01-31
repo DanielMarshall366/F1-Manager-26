@@ -197,9 +197,11 @@ class Game:
         self.pit=0
         self.events=0
         self.driver=1
+        self.database="F1 Manager 26 Save Data 1.db"
+        self.loaded=0
 
     def FillDatabase(self):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         #Teams
         c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("McLaren", "McLaren", "McLaren", 1, 0, 50000000, 1500000, "Andrea Stella", "United Kingdom", 80, "Mastercard", 1, 0)''')
@@ -511,7 +513,7 @@ class Game:
     def StopMusic(self):
         winsound.PlaySound(None, winsound.SND_PURGE)
     def GenerateName(self):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         forename=random.choice(GAME.forenames)
         name=forename+" "+random.choice(GAME.surnames)
@@ -536,7 +538,7 @@ class Game:
         return(name)
     def GeneratePeople(self,role):
         Name=GAME.GenerateName()
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             if role=="Driver":
                 if GAME.gender=="Male":
                     appearance="Man "+str(random.randint(1,3))
@@ -579,7 +581,7 @@ class Game:
     def RedBullDrivers(self):
         if GAME.team!="Red Bull" and GAME.legends==0:
             #2026 Red Bull Drivers
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 if GAME.driver2!="Isack Hadjar":
                     driver="Isack Hadjar"
                 else:
@@ -593,7 +595,7 @@ class Game:
                     c.execute("UPDATE Drivers SET ContractEnd=2026, NewTeam='Racing Bulls', NewRole='1' WHERE Name=?",(driver,))
                     c.execute("UPDATE Drivers SET NewTeam='Racing Bulls', NewRole='2' WHERE Name='Arvid Lindblad'")
     def CalculateIncome(self, team):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         c.execute('''SELECT Income FROM Teams WHERE Name=?''',(team,))
         baseIncome=int(GAME.Sanitise(c.fetchall()[0]))
@@ -662,7 +664,7 @@ class Game:
         F1.close()
         return totalIncome
     def TeamAcquired(self, oldTeam, newTeam):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         money=int(GAME.Sanitise(c.execute("SELECT Money FROM Teams WHERE Name=?",(oldTeam,)).fetchall()[0]))
         if GAME.team!=oldTeam:
@@ -693,7 +695,7 @@ class Game:
         F1.commit()
         F1.close()
     def Income(self):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         c.execute('''SELECT Name FROM Teams''')
         f=c.fetchall()
@@ -712,7 +714,7 @@ class Game:
         F1.commit()
         F1.close()
     def Upgrade(self, team):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         rating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Team=? AND Role="Technical Director"''',(team,)).fetchall()[0]))
         money=int(GAME.Sanitise(c.execute('''SELECT Money FROM Teams WHERE Name=?''',(team,)).fetchall()[0]))
@@ -804,14 +806,14 @@ class Game:
         if driveability>20:
             driveability=20
         money-=actionPoints*500000
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         c.execute('''UPDATE Cars SET DragReduction=?, LowSpeed=?, MediumSpeed=?, HighSpeed=?, Cooling=?, TyrePreservation=?, Driveability=? WHERE Team=?''',(dragReduction, lowSpeed, mediumSpeed, highSpeed, cooling, tyrePreservation, driveability, team,))
         c.execute('''UPDATE Teams SET Money=? WHERE Name=?''',(money, team,))
         F1.commit()
         F1.close()
     def Research(self, team):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         c.execute('''SELECT Money FROM Teams WHERE Name=?''',(team,))
         money=int(GAME.Sanitise(c.fetchall()[0]))
@@ -836,7 +838,7 @@ class Game:
         F1.commit()
         F1.close()
     def EngineResearch(self, engine, team):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         money=int(GAME.Sanitise(c.execute('''SELECT Money FROM Teams WHERE Name=?''',(team,)).fetchall()[0]))
         target=round(50000000/GAME.races)
@@ -858,7 +860,7 @@ class Game:
         F1.commit()
         F1.close()
     def DriverSuitability(self, Team):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         c.execute('''SELECT Name FROM Drivers WHERE Condition="Well" AND Team!=? AND NewTeam="0"''',(Team,))
         f=c.fetchall()
@@ -900,7 +902,7 @@ class Game:
         F1.close()
         return drivers
     def StaffSuitability(self, Team, role):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         if role=="Race Engineer":
             c.execute('''SELECT Name FROM Staff WHERE Role="Race Engineer" OR Role="Race Engineer 1" OR Role="Race Engineer 2"''')
@@ -935,7 +937,7 @@ class Game:
         return staff
     def Resign(self, driver):
         resigned=0
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(driver,))
         role=GAME.Sanitise(c.fetchall()[0])
@@ -1021,7 +1023,7 @@ class Game:
         F1.close()
         return resigned
     def Replace(self, name):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         c.execute('''SELECT Team FROM Drivers WHERE Name=?''',(name,))
         f=c.fetchall()
@@ -1078,7 +1080,7 @@ class Game:
         F1.close()
     def PressConference(self,objective):
             GAME.ChangeScreen("Press Conference")
-            F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+            F1=sqlite3.connect(GAME.database)
             c=F1.cursor()
             message=[]
             retirement=0
@@ -1241,7 +1243,7 @@ class Game:
                         F1.close()
                         GAME.DisplayDriver(redBullDriver,120,500)
                         GAME.DisplayDriver(racingBullsDriver,850,500)
-                        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+                        F1=sqlite3.connect(GAME.database)
                         c=F1.cursor()
                         if GAME.team=="Racing Bulls":
                             if racingBullsSeat==1:
@@ -1541,7 +1543,7 @@ class Game:
             fired=-1
         else:
             fired=0
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             sponsorPay=int(GAME.Sanitise(c.execute("SELECT Pay FROM Sponsors WHERE Team=?",(GAME.team,)).fetchall()[0]))
             if sponsorPay>=70000:
                 tier=3
@@ -1644,7 +1646,7 @@ class Game:
         GAME.ChangeScreen("Board Room")
         GAME.Button("Standings",225,170)
         GAME.Button("Data",1100,640)
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             if int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))==GAME.season+1:
                 nextEngine=GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])
                 manufacturedEngine=c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(GAME.team,)).fetchall()
@@ -1693,7 +1695,7 @@ class Game:
         money="{:,}".format(GAME.money)
         canvas.create_text(1100, 700, text=f"${money}", fill="white", font=("Arial", 30), anchor="nw")
     def Hire(self,team):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         gap=0
         redBull=0
@@ -1948,7 +1950,7 @@ class Game:
             F1.commit()
             F1.close()
             GAME.Upgrade(team)
-            F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+            F1=sqlite3.connect(GAME.database)
             c=F1.cursor()
         elif len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole=?",(team,gap,)).fetchall())==0 and len(c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND NewRole=?",(team,gap,)).fetchall())==0:
             if gap=="1" or gap=="2":
@@ -2106,7 +2108,7 @@ class Game:
                             F1.close()
                             for x in range(10):
                                 GAME.GeneratePeople("Driver")
-                            F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+                            F1=sqlite3.connect(GAME.database)
                             c=F1.cursor()
                             c.execute('''SELECT Name FROM Drivers WHERE NewTeam="0" AND Team="Free Agent" AND Age<21 AND Condition="Well"''')
                             driverPool.append(GAME.Sanitise(c.fetchall()[0]))
@@ -2118,7 +2120,7 @@ class Game:
                         F1.commit()
                         F1.close()
                         GAME.Upgrade(team)
-                        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+                        F1=sqlite3.connect(GAME.database)
                         c=F1.cursor()
                 if gap!=0 and hiredDriver!="Arvid Lindblad":
                     minimumSalary=rating*3500
@@ -2184,7 +2186,7 @@ class Game:
         F1.commit()
         F1.close()
     def Poach(self,team):
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             options=[]
             rating1=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Team=? AND Role='1'",(team,)).fetchall()[0]))
             rating2=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Team=? AND Role='2'",(team,)).fetchall()[0]))
@@ -2197,7 +2199,7 @@ class Game:
             else:
                 driver2=1
         if driver1!=0 or driver2!=0:
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 if driver1==0:
                     rating=rating2
                     role="2"
@@ -2272,7 +2274,7 @@ class Game:
             elif GAME.races==17 or GAME.races==18:
                 if GAME.race%2==1 or GAME.race%4==0:
                     GAME.Income()
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 if len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())>0:
                     c.execute("UPDATE Drivers SET NewTeam='Red Bull' WHERE NewTeam='Racing Bulls' AND (NewRole='Junior' OR NewRole='Reserve')")
                     c.execute("UPDATE Drivers SET Team='Red Bull' WHERE Team='Racing Bulls' AND (Role='Junior' OR Role='Reserve')")
@@ -2326,7 +2328,7 @@ class Game:
                         if num<len(legends):
                             legend=GAME.Sanitise(legends[num])
                             position=random.randint(1,6-tier)
-                            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                            with sqlite3.connect(GAME.database) as c:
                                 team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(position,)).fetchall()[0])
                                 if team!=GAME.team:
                                     seats=[]
@@ -2355,7 +2357,7 @@ class Game:
                                             GAME.news.append("BREAKING NEWS! "+team+" has hired "+legend)
                                             GAME.news.append("to replace "+replacing+" for the "+str(GAME.season+1)+" season.")
                         else:
-                            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                            with sqlite3.connect(GAME.database) as c:
                                 legend=GAME.Sanitise(primes[num-len(legends)])
                                 if legend=="Lewis Hamilton":
                                     rating=round((554+int(GAME.Sanitise(c.execute("SELECT Experience FROM Drivers WHERE Name='Lewis Hamilton'").fetchall()[0])))/6)
@@ -2404,7 +2406,7 @@ class Game:
                             
             #Contract Clauses
             if GAME.race==13:
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     if GAME.season==2026:
                         c.execute("UPDATE Drivers SET ContractEnd=2026 WHERE Name='Max Verstappen' AND Position>3 AND NewTeam='0'")
                         ferrariPos=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name='Ferrari'").fetchall()[0]))
@@ -2431,7 +2433,7 @@ class Game:
                 research=0
                 if team!=GAME.team:
                     actions=[]
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         money=int(GAME.Sanitise(c.execute('''SELECT Money FROM Teams WHERE Name=?''',(team,)).fetchall()[0]))
                         if money<0:
                             money=0
@@ -2491,7 +2493,7 @@ class Game:
                                 elif action=="Hire":
                                     GAME.Hire(team)
             GAME.actions=2
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 c.execute("UPDATE Player SET Actions=2")
         if len(GAME.news)>0:
             GAME.ChangeScreen("Breaking News")
@@ -2507,7 +2509,7 @@ class Game:
             if GAME.race==round((GAME.races/2)+0.55) and GAME.sponsor!="0":
                 GAME.SponsorReview()
             else:
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                     pressConferences=len(c.execute('''SELECT Name FROM Teams''').fetchall())*2
                 if position==1 and GAME.race==round(GAME.races/2)+2:
@@ -3389,7 +3391,7 @@ class Game:
                     pos=GAME.positions.index(driverIndex)
                     team=GAME.teams[driverIndex]
                     if GAME.replay==0:
-                        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                        with sqlite3.connect(GAME.database) as c:
                             pitStopRating = int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Role="Sporting Director" AND Team=?''', (team,)).fetchone()[0]))
                             role = "Race Engineer 1" if GAME.cars[driverIndex] == 1 else "Race Engineer 2"
                             result = c.execute('''SELECT Rating FROM Staff WHERE Role=? AND Team=?''', (role, team)).fetchone()
@@ -4669,7 +4671,7 @@ class Game:
                         pos=GAME.positions.index(driverIndex)
                         team=GAME.teams[driverIndex]
                         if GAME.replay==0:
-                            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                            with sqlite3.connect(GAME.database) as c:
                                 pitStopRating = int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Role="Sporting Director" AND Team=?''', (team,)).fetchone()[0]))
                                 role = "Race Engineer 1" if GAME.cars[driverIndex] == 1 else "Race Engineer 2"
                                 result = c.execute('''SELECT Rating FROM Staff WHERE Role=? AND Team=?''', (role, team)).fetchone()
@@ -4897,7 +4899,7 @@ class Game:
         canvas.image=image
         canvas.create_image(670, 735, anchor=tk.NW, image=image)
     def Start(self):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         driversUsed=[]
         if GAME.wet==1:
@@ -5281,7 +5283,7 @@ class Game:
             root.after(100, lambda: GAME.NextMove())
     def YourDriverDied(self,name):
         replacement=0
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             f=c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(GAME.team,)).fetchall()
             if len(f)==0:
                 f=c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Junior' AND Age>17",(GAME.team,)).fetchall()
@@ -5348,7 +5350,7 @@ class Game:
                     else:
                         country=0
                         team=GAME.teams[GAME.positions[0]]
-                        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                        with sqlite3.connect(GAME.database) as c:
                             if len(c.execute("SELECT Country FROM Drivers WHERE Country=? AND Name=?",(GAME.raceCountry,driver,)).fetchall())>0:
                                 country=1
                             else:
@@ -5378,7 +5380,7 @@ class Game:
         for x in range(len(GAME.drivers)):
             GAME.pointsScored.append(0)
         canvas.create_text(50, 5, text=GAME.track, fill="white", font=("Arial", 50), anchor="nw")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+        with sqlite3.connect(GAME.database) as conn:
             cursor = conn.cursor()
             pointsSystem=int(GAME.Sanitise(cursor.execute("SELECT True FROM Regulations WHERE Regulation='Old Points System'").fetchall()))
             double=0
@@ -5419,12 +5421,12 @@ class Game:
         #Injuries
         if len(GAME.injured)>0:
             for x in range(len(GAME.injured)):
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+                with sqlite3.connect(GAME.database) as conn:
                     cursor = conn.cursor()
                     cursor.execute('''UPDATE Drivers SET Condition="Injured" WHERE Name=?''',(GAME.injured[x],))
         teams=[]
         teamPoints=[]
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+        with sqlite3.connect(GAME.database) as conn:
             cursor = conn.cursor()
             f=cursor.execute('''SELECT Name FROM Teams''').fetchall()
             cursor.execute("UPDATE Player SET Actions=3")
@@ -5433,13 +5435,13 @@ class Game:
         for x in range(len(f)):
             team=GAME.Sanitise(f[x])
             teams.append(team)
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+            with sqlite3.connect(GAME.database) as conn:
                 cursor = conn.cursor()
                 teamPoints.append(int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Name=?''',(team,)).fetchall()[0])))
         for x in range(len(GAME.drivers)):
             if x<len(GAME.positions):
                 index=GAME.positions[x]
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+                with sqlite3.connect(GAME.database) as conn:
                     cursor = conn.cursor()
                     if GAME.pointsScored[index]!=0:
                         points=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))
@@ -5462,14 +5464,14 @@ class Game:
                 for y in range(len(GAME.drivers)):
                     if y not in GAME.positions and y not in d:
                         d.append(y)
-                        with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+                        with sqlite3.connect(GAME.database) as conn:
                             cursor = conn.cursor()
                             if int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))==0:
                                 position=len(cursor.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall())+1
                                 cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position, GAME.drivers[y],))
         #Deaths
         if len(GAME.dead)>0:
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 for driver in GAME.dead:
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                     c.execute("UPDATE Drivers SET Team='Dead', Role='Dead', Condition='Dead' WHERE Name=?",(driver,))
@@ -5477,21 +5479,21 @@ class Game:
                         GAME.YourDriverDied(driver)
                     else:
                         GAME.Replace(driver)
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+        with sqlite3.connect(GAME.database) as conn:
             cursor = conn.cursor()
             f=cursor.execute("SELECT Name FROM Drivers WHERE (Role='1' OR Role='2') AND Position=0").fetchall()
             for x in range(len(f)):
                 position=len(cursor.execute("SELECT Name FROM Drivers WHERE Position!=0").fetchall())+1
                 cursor.execute("UPDATE Drivers SET Position=? WHERE Name=?",(position,GAME.Sanitise(f[x]),))
         for x in range(len(teams)):
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+            with sqlite3.connect(GAME.database) as conn:
                 cursor = conn.cursor()
                 cursor.execute('''UPDATE Teams SET Points=? WHERE Name=?''',(teamPoints[x],teams[x]))
         for i in range(20):
             for x in range(10):
                 if len(GAME.positions)>x:
                     #Drivers Standings
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+                    with sqlite3.connect(GAME.database) as conn:
                         cursor = conn.cursor()
                         position=int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Drivers WHERE Name=?''',(GAME.drivers[GAME.positions[x]],)).fetchall()[0]))
                         if position!=1:
@@ -5505,7 +5507,7 @@ class Game:
                                     cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position+1, ahead,))
                                     if position!=1:
                                         aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Position=?''',(position-1,)).fetchall()[0]))
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+                    with sqlite3.connect(GAME.database) as conn:
                         cursor = conn.cursor()
                         #Constructors Standings
                         position=int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Teams WHERE Name=?''',(GAME.teams[GAME.positions[x]],)).fetchall()[0]))
@@ -5521,12 +5523,12 @@ class Game:
                                     if position!=1:
                                         aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Position=?''',(position-1,)).fetchall()[0]))
         #Development
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+        with sqlite3.connect(GAME.database) as conn:
             cursor = conn.cursor()
             f=cursor.execute('''SELECT Name FROM Drivers WHERE Condition!="Retired" AND Legend=0''').fetchall()
         for x in range(len(f)):
             name=GAME.Sanitise(f[x])
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+            with sqlite3.connect(GAME.database) as conn:
                 cursor = conn.cursor()
                 team=GAME.Sanitise(cursor.execute("SELECT Team FROM Drivers WHERE Name=?",(name,)))
                 rate=int(GAME.Sanitise(cursor.execute('''SELECT DevelopmentRate FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
@@ -5599,7 +5601,7 @@ class Game:
                     durability=0
                 if durability<0:
                     durability=0
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+                with sqlite3.connect(GAME.database) as conn:
                     cursor = conn.cursor()
                     if (team!=GAME.team and durability<35) or durability==0:
                         #Swap engine
@@ -5623,14 +5625,14 @@ class Game:
         for x in range(len(GAME.repairBill)):
             if GAME.repairBill[x]>0:
                 team=GAME.teams[x]
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     money=int(GAME.Sanitise(c.execute("SELECT Money FROM Teams WHERE Name=?",(team,)).fetchall()[0]))-GAME.repairBill[x]
                     c.execute("UPDATE Teams SET Money=? WHERE Name=?",(money,team,))
                 if team==GAME.team:
                     GAME.money=money
                     
         GAME.race+=1
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+        with sqlite3.connect(GAME.database) as conn:
             cursor = conn.cursor()
             cursor.execute('''UPDATE Player SET Race=?''',(GAME.race,))
             wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Drivers WHERE Name=?",(GAME.drivers[GAME.positions[0]],)).fetchall()))+1
@@ -5717,7 +5719,7 @@ class Game:
                 cursor.execute('''UPDATE Teams SET Reputation=? WHERE Name=?''',(reputation,GAME.expected[0],))
                 GAME.expectations=[]
                 GAME.expected=[]
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
             if position==1:
                 f=c.execute("SELECT Name FROM Teams WHERE Name!=?",(GAME.team,)).fetchall()
@@ -5731,7 +5733,7 @@ class Game:
         GAME.ChangeScreen("Save Screen")
     def DisplayLayout(self,track):
         if track!="Imola" and track!="Miami" and track!="Las Vegas" and track!="Madrid":
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 track=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(track,)).fetchall())
         try:
             layout=layouts[tracks.index(track)]
@@ -6499,7 +6501,7 @@ class Game:
 
         GAME.DisplayReplayGrid()
     def Reserves(self):
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             #Board Finances
             if GAME.money<2000000:
                 financial=int(GAME.Sanitise(c.execute("SELECT Financial FROM Player").fetchall()[0]))
@@ -6589,7 +6591,7 @@ class Game:
         GAME.gridPenalties=[]
         GAME.penaltyPlaces=[]
         GAME.pause=0
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             race=GAME.Sanitise(c.execute('''SELECT Track FROM Calendar WHERE ID=?''',(GAME.race,)).fetchall()[0])
             country=GAME.Sanitise(c.execute('''SELECT Country FROM Tracks WHERE Name=?''',(race,)).fetchall()[0])
             #Practice
@@ -6760,7 +6762,7 @@ class Game:
             canvas.create_text(950, 340, text=("Confidence: "+str(car2Confidence)), fill="white", font=("Arial", 20), anchor="nw")
         GAME.Button("Qualifying",1200,695)
     def Qualifying(self):
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             GAME.rainChance=int(GAME.Sanitise(c.execute('''SELECT RainChance FROM Tracks WHERE Name=?''',(GAME.track,)).fetchall()[0]))
             if random.randint(1,100)<=GAME.rainChance:
                 #Wet Qualifying
@@ -6841,7 +6843,7 @@ class Game:
             position=drivers-x
             driver=GAME.drivers[GAME.positions[position-1]]
             if GAME.replay==0:
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall())
             else:
                 team=GAME.teams[GAME.drivers.index(driver)]
@@ -6903,7 +6905,7 @@ class Game:
         #Hard
         GAME.tyrePace.append(random.randint(2,GAME.tyrePace[1]-6))
         qualifyingPositions=GAME.positions
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             GAME.drs=0
             GAME.ers=int(GAME.Sanitise(c.execute('''SELECT True FROM Regulations WHERE Regulation=="ERS"''').fetchall()[0]))
             GAME.teamOrders=int(GAME.Sanitise(c.execute('''SELECT True FROM Regulations WHERE Regulation=="Team Orders"''').fetchall()[0]))
@@ -7300,7 +7302,7 @@ class Game:
         else:
             GAME.Button("Start Race",510,730)
     def CarRanking(self):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         c.execute('''SELECT Name FROM Teams''')
         f=c.fetchall()
@@ -7338,7 +7340,7 @@ class Game:
     def Standings(self):
         GAME.ChangeScreen("Standings")
         GAME.DisplayLogo()
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             f=c.execute('''SELECT Name FROM Teams''').fetchall()
             canvas.create_text(10, 5, text="Constructors' Standings", fill="white", font=("Arial", 30), anchor="nw")
             canvas.create_text(600, 5, text="Drivers' Standings", fill="white", font=("Arial", 30), anchor="nw")
@@ -7388,13 +7390,13 @@ class Game:
                 canvas.create_text(1130, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
         GAME.Button("Back",5,730)
     def WinterHiring(self):
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             teams=c.execute("SELECT Name FROM Teams").fetchall()
         GAME.DriverHiring(teams)
         GAME.StaffHiring(teams)
     def DriverHiring(self,teams):
         for x in range(len(teams)):
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(x+1,)).fetchall()[0])
                 for y in range(2):
                     if len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role=?",(team,str(y+1),)).fetchall())==0:
@@ -7429,7 +7431,7 @@ class Game:
         for x in range(4):
             for y in range(12):
                 GAME.GeneratePeople(roles[x])
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as conn:
+        with sqlite3.connect(GAME.database) as conn:
             c = conn.cursor()
             for x in range(len(teams)):
                 team = GAME.Sanitise(
@@ -7461,7 +7463,7 @@ class Game:
                         c.execute("UPDATE Staff SET Team=?, Role=?, Salary=? WHERE Name=?", (team, role, salary, name))
             conn.commit()
     def NewCars(self):
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             GAME.season+=1
             GAME.race=0
             c.execute('''UPDATE Player SET Race=0, Season=?''',(GAME.season,))
@@ -7594,7 +7596,7 @@ class Game:
                     c.execute("UPDATE Cars SET Driveability=? WHERE Team=?",(driveability,team,))
     def Update(self):
         drivers=[]
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             #Drivers
             f=c.execute("SELECT Name FROM Drivers WHERE Pace<0 AND Condition!='Dead' AND Legend=0 AND Team!=? AND NewTeam!=?",(GAME.team,GAME.team,)).fetchall()
             if len(f)>0:
@@ -7606,7 +7608,7 @@ class Game:
                 drivers=c.execute("SELECT Name FROM Drivers WHERE Condition='Well'").fetchall()
         if len(drivers)>0:
             for x in range(len(drivers)):
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     name=GAME.Sanitise(drivers[x])
                     if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND NewTeam!='0'",(name,)).fetchall())>0:
                         team=GAME.Sanitise(c.execute("SELECT NewTeam FROM Drivers WHERE Name=?",(name,)).fetchall()[0])
@@ -7625,7 +7627,7 @@ class Game:
                                 c.execute("UPDATE Drivers SET Team='Free Agent', Role='Free Agent', ContractEnd=0 WHERE Name=?",(name,))
                 if int(GAME.Sanitise(c.execute("SELECT Legend FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))==0:
                     GAME.Age(name)
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 c.execute("UPDATE Drivers SET NewTeam='0', NewRole='0', NewSalary=0")
                 c.execute("UPDATE Drivers SET Team='Retired', Role='Retired', Condition='Retired' WHERE Team='Free Agent' AND Age>39 AND Condition!='Dead' AND Legend=0")
 
@@ -7649,7 +7651,7 @@ class Game:
                 c.execute("UPDATE Staff SET NewTeam='0', NewRole='0', NewSalary=0")
 
             #Teams
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 if len(c.execute("SELECT Regulation FROM Regulations WHERE Regulation='Reduced Winner Windtunnel Time' AND True=1").fetchall())>0:
                     team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE PreviousPosition=1").fetchall()[0])
                     research=int(GAME.Sanitise(c.execute("SELECT Research FROM Cars WHERE Team=?",(team,)).fetchall()[0]))
@@ -7699,11 +7701,11 @@ class Game:
                 #Tyres
                 c.execute("UPDATE Player SET TyreWear=?",(random.randint(-1,1),))
         GAME.WinterHiring()
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             GAME.race+=1
             c.execute("UPDATE Player SET Race=?",(GAME.race,))
     def Age(self,name):
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             age=int(GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))+1
             c.execute("UPDATE Drivers SET Age=? WHERE Name=?",(age,name,))
             developmentRate=int(GAME.Sanitise(c.execute("SELECT DevelopmentRate FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))
@@ -7716,7 +7718,7 @@ class Game:
                 developmentRate-=random.randint(1,6)
             c.execute("UPDATE Drivers SET DevelopmentRate=? WHERE Name=?",(developmentRate,name,))
     def RuleVote(self):
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             regulationChange=int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))
             regulations=c.execute('''SELECT Regulation FROM Regulations''').fetchall()
             regulation=GAME.Sanitise(random.choice(regulations))
@@ -7768,7 +7770,7 @@ class Game:
         GAME.Button("Start Season",1200,600)
         canvas.create_text(10, 200, text="The FIA is proposing", fill="black", font=("Arial", 20), anchor="nw")
         canvas.create_text(10, 230, text=GAME.displayed, fill="black", font=("Arial", 20), anchor="nw")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             teams=c.execute('''SELECT Name FROM Teams''').fetchall()
         votes=[]
         votesFor=0
@@ -7795,13 +7797,13 @@ class Game:
         else:
             vote="against"
         canvas.create_text(10, 700, text=f"The majority voted {vote} the rule change.", fill="black", font=("Arial", 50), anchor="nw")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             if vote=="for":
                 c.execute("UPDATE Regulations SET True=? WHERE Regulation=?",(GAME.proposed,GAME.regulation,))
             GAME.race+=1
             c.execute("UPDATE Player SET Race=?",(GAME.race,))
     def ChangeTeam(self):
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             moving=GAME.Sanitise(c.execute("SELECT MovingTo FROM Player").fetchall()[0])
         if moving=="0":
             GAME.done=0
@@ -7809,7 +7811,7 @@ class Game:
             GAME.fired=0
             u=0
             d=0
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 warnings=int(GAME.Sanitise(c.execute("SELECT Warnings FROM Player").fetchall()[0]))
                 position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                 previousPosition=int(GAME.Sanitise(c.execute("SELECT PreviousPosition FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
@@ -7859,10 +7861,10 @@ class Game:
                 if warnings>3:
                     GAME.fired=1
                 else:
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         c.execute("UPDATE Player SET Warnings=?",(warnings,))
             if GAME.fired==0:
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     champion=0
                     financial=int(GAME.Sanitise(c.execute("SELECT Financial FROM Player").fetchall()[0]))
                     management=int(GAME.Sanitise(c.execute("SELECT Management FROM Player").fetchall()[0]))
@@ -7890,7 +7892,7 @@ class Game:
         else:
             #Move Offer Accepted
             GAME.done=1
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 c.execute("UPDATE Teams SET TeamPrincipal='None' WHERE Name=?",(GAME.team,))
                 GAME.oldTeam=GAME.team
                 GAME.team=moving
@@ -7908,19 +7910,19 @@ class Game:
                 c.execute("UPDATE Player SET MovingTo=0")
             GAME.BackgroundColour()
         if GAME.done==0:
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                 teams=c.execute("SELECT Name FROM Teams").fetchall()
             if position==12 and GAME.fired==0:
                 GAME.race+=1
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     c.execute("UPDATE Player SET Race=?",(GAME.race,))
                 GAME.RaceTime()
             else:
                 GAME.screen="Change Team"
                 canvas.delete('all')
                 root.configure(background='#F2F2F2')
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     f=c.execute('''SELECT Name FROM Teams''').fetchall()
                     canvas.create_text(10, 5, text="Constructors' Standings", fill="black", font=("Arial", 30), anchor="nw")
                     canvas.create_text(10, 500, text=f"Choose Your Team for {GAME.season+1}", fill="black", font=("Arial", 30), anchor="nw")
@@ -7982,7 +7984,7 @@ class Game:
                         if pos>len(teams):
                             team="Create New Team"
                         else:
-                            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                            with sqlite3.connect(GAME.database) as c:
                                 team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(pos,)).fetchall()[0])
                     GAME.options.append(team)
                     if x<6:
@@ -7996,7 +7998,7 @@ class Game:
                     elif team in steam:
                         appearance=team
                     else:
-                        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                        with sqlite3.connect(GAME.database) as c:
                             appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
                     if appearance!="0":
                         try:
@@ -8023,7 +8025,7 @@ class Game:
                     GAME.Button(button,X+150,Y+30)
         else:
             GAME.race+=1
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 c.execute("UPDATE Player SET Race=?",(GAME.race,))
             GAME.RaceTime()
     def RaceTime(self):
@@ -8054,7 +8056,7 @@ class Game:
     def Championships(self):
         GAME.done=0
         GAME.ChangeScreen("Championships")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             driver=GAME.Sanitise(c.execute("SELECT Name FROM Drivers WHERE Position=1").fetchall()[0])
             team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Position=1").fetchall()[0])
             constructor=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=1").fetchall()[0])
@@ -8068,7 +8070,7 @@ class Game:
             GAME.BackgroundColour()
             appearance=constructor
         else:
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(constructor,)).fetchall()[0])
         if appearance!="0":
             if appearance in steam:
@@ -8077,7 +8079,7 @@ class Game:
                 logo=sponsorLogos[sponsors.index(appearance)]
             canvas.image=logo
             canvas.create_image(980, 500, anchor=tk.NW, image=logo)
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             GAME.race+=1
             c.execute("UPDATE Player SET Race=?",(GAME.race,))
             c.execute("INSERT into History (Year, Driver, Constructor) VALUES (?, ?, ?)",(GAME.season,driver,constructor,))
@@ -8116,7 +8118,7 @@ class Game:
             else:
                 country="Netherlands"
         else:
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 country=GAME.Sanitise(c.execute("SELECT Country FROM Teams WHERE Position=1").fetchall()[0])
         path=os.path.join(os.path.dirname(__file__), "Music", f"{country} National Anthem.wav")
         if os.path.isfile(path):
@@ -8126,7 +8128,7 @@ class Game:
     def FinalStandings(self):
         GAME.ChangeScreen("Final Standings")
         GAME.DisplayLogo()
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             f=c.execute('''SELECT Name FROM Teams''').fetchall()
             canvas.create_text(10, 5, text="Constructors' Standings", fill="white", font=("Arial", 30), anchor="nw")
             canvas.create_text(600, 5, text="Drivers' Standings", fill="white", font=("Arial", 30), anchor="nw")
@@ -8221,7 +8223,7 @@ class Game:
             if event.x>=500 and event.x<=700 and event.y>=575 and event.y<=625:
                 GAME.StartNewGame()
             elif event.x>=735 and event.x<=935 and event.y>=575 and event.y<=625 and GAME.newGame==0:
-                GAME.LoadGame()
+                GAME.SelectSave()
             elif event.x>=500 and event.x<=700 and event.y>=645 and event.y<=695:
                 GAME.legends=1
                 GAME.StartNewGame()
@@ -8235,6 +8237,11 @@ class Game:
                 root.after(400, lambda: GAME.ReplayScreen())
             elif event.x>=1295 and event.x<=1345 and event.y>=710 and event.y<=760:
                 GAME.Settings()
+            else:
+                GAME.ChangeScreen("Select Save File")
+                canvas.create_text(400, 300, text="2026", fill="white", font=("Arial", 50), anchor="nw")
+                canvas.create_text(400, 370, text="Daniel Marshall", fill="white", font=("Arial", 50), anchor="nw")
+                canvas.create_text(400, 440, text="Ferrari", fill="white", font=("Arial", 50), anchor="nw")
         elif GAME.screen=="Welcome screen":
             if event.x>=54 and event.x<=250 and event.y>=718 and event.y<=765:
                 GAME.ChangeScreen("Get Name")
@@ -8323,7 +8330,7 @@ class Game:
                 GAME.BackgroundColour()
                 GAME.FillDatabase()
                 GAME.RedBullDrivers()
-                F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+                F1=sqlite3.connect(GAME.database)
                 c=F1.cursor()
                 c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
                 c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="1"''',(GAME.team,))
@@ -8343,7 +8350,7 @@ class Game:
                     GAME.engine="Audi"
             if GAME.engine!="":
                 if GAME.season==2026:
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as F1:
+                    with sqlite3.connect(GAME.database) as F1:
                         F1.execute("UPDATE Cars SET Engine=? WHERE Team=?",(GAME.engine,GAME.team,))
                     GAME.ChangeScreen("Choose Sponsor")
                 else:
@@ -8361,7 +8368,7 @@ class Game:
             if event.x>=1237 and event.x<=1436 and event.y>=721 and event.y<=769:
                 if GAME.season==2026:
                     GAME.race=0
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as F1:
+                    with sqlite3.connect(GAME.database) as F1:
                         F1.execute("UPDATE Player SET Race=0")
                 else:
                     GAME.oldTeam=0
@@ -8372,7 +8379,7 @@ class Game:
         elif GAME.screen=="Calendar":
             if event.x>=1200 and event.x<=1400 and event.y>=700 and event.y<=750:
                 GAME.race=1
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as F1:
+                with sqlite3.connect(GAME.database) as F1:
                     F1.execute("UPDATE Player SET Race=1")
                 GAME.Income()
                 GAME.ChangeScreen("Save Screen")
@@ -8694,7 +8701,7 @@ class Game:
                     elif GAME.races<23:
                         GAME.maximumPoints=11
                     reduced=0
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         if len(c.execute("SELECT Name FROM Teams WHERE Name=? AND PreviousPosition=1",(GAME.team,)).fetchall())>0:
                             if len(c.execute("SELECT Regulation FROM Regulations WHERE Regulation='Reduced Winner Windtunnel Time' AND True=1").fetchall())>0:
                                 GAME.maximumUpgradePoints-=2
@@ -8726,7 +8733,7 @@ class Game:
                     GAME.Button("Scout Technical Directors",900,40)
                     GAME.Button("Scout Sporting Directors",900,340)
                     GAME.Button("Scout Race Engineers",900,640)
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
                         if unableToRace>0 and len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(GAME.team,)).fetchall())<unableToRace:
                             GAME.Button("Hire Reserve",250,640)
@@ -8736,7 +8743,7 @@ class Game:
                     GAME.ViewContracts()
             elif event.x>=888 and event.x<=1088 and event.y>=380 and event.y<=430:
                 #Research
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     if int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))==GAME.season+1:
                         nextEngine=GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])
                         manufacturedEngine=c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(GAME.team,)).fetchall()
@@ -8766,7 +8773,7 @@ class Game:
                 GAME.SelectDriverToReplace()
             elif event.x>=400 and event.x<=600 and event.y>=525 and event.y<=575:
                 #Hire Reserve
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
                     if GAME.team=="Racing Bulls" and len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())>0:
                         team="Red Bull"
@@ -8786,7 +8793,7 @@ class Game:
                 #Team Data
                 GAME.ChangeScreen("Team Data")
                 GAME.DisplayLogo()
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     country=GAME.Sanitise(c.execute("SELECT Country FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
                     position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                     if position==1 or position==21:
@@ -8835,7 +8842,7 @@ class Game:
                 GAME.ChangeScreen("calendar")
                 canvas.create_text(350, 10, text=f"{GAME.season} Season", fill="white", font=("Arial", 100), anchor="nw")
                 GAME.Button("Back",5,730)
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Track FROM Calendar").fetchall()
                     for x in range(len(f)):
                         GAME.CalendarDisplay(x,GAME.Sanitise(f[x]))
@@ -8846,7 +8853,7 @@ class Game:
                 GAME.DisplayLogo()
                 GAME.DisplayMoney()
                 GAME.Button("Back",5,730)
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     points=int(GAME.Sanitise(c.execute("SELECT Points FROM Player").fetchall()[0]))
                     wins=int(GAME.Sanitise(c.execute("SELECT Wins FROM Player").fetchall()[0]))
                     championships=int(GAME.Sanitise(c.execute("SELECT Championships FROM Player").fetchall()[0]))
@@ -8868,7 +8875,7 @@ class Game:
                 canvas.create_text(750, 135, text="Constructor", fill="black", font=("Arial", 20), anchor="nw")
                 for x in range(25):
                     year=GAME.season-25+x
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         driver=GAME.Sanitise(c.execute("SELECT Driver FROM History WHERE Year=?",(year,)).fetchall()[0])
                         constructor=GAME.Sanitise(c.execute("SELECT Constructor FROM History WHERE Year=?",(year,)).fetchall()[0])
                     canvas.create_text(400, 160+(x*25), text=year, fill="black", font=("Arial", 20), anchor="nw")
@@ -8887,7 +8894,7 @@ class Game:
                 canvas.create_text(40, 440, text="Management:", fill="white", font=("Arial", 40), anchor="nw")
                 d=0
                 u=0
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                     previousPosition=int(GAME.Sanitise(c.execute("SELECT PreviousPosition FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                     if previousPosition==0 or position<=previousPosition:
@@ -8961,7 +8968,7 @@ class Game:
             elif event.x>=1180 and event.x<=1380 and event.y>=320 and event.y<=370:
                 engine=2
             if engine!=0:
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     if engine==1:
                         if int(GAME.Sanitise(c.execute("SELECT car1EngineDurability FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))==100:
                             num=0
@@ -8984,7 +8991,7 @@ class Game:
                     GAME.action=1
                     driveability=0
                     GAME.money-=(GAME.maximumUpgradePoints-GAME.remainingUpgradePoints)*500000
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         rating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Team=? AND Role="Technical Director"''',(GAME.team,)).fetchall()[0]))
                         c.execute("UPDATE Teams SET Money=? WHERE Name=?",(GAME.money,GAME.team,))
                     for x in range(len(GAME.upgradePoints)):
@@ -8993,7 +9000,7 @@ class Game:
                                 driveability+=round(random.randint(-250*GAME.upgradePoints[x],100*GAME.upgradePoints[x])/1000)
                             if x!=6:
                                 stat=round(random.randint(-1,round((rating**2)*GAME.upgradePoints[x]/4000))/3)
-                                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                                with sqlite3.connect(GAME.database) as c:
                                     if x==0:
                                         stat+=int(GAME.Sanitise(c.execute("SELECT DragReduction FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
                                         c.execute("UPDATE Cars SET DragReduction=? WHERE Team=?",(stat,GAME.team,))
@@ -9015,7 +9022,7 @@ class Game:
                             else:
                                 driveability+=round(random.randint(-5,5*GAME.upgradePoints[x])/8)
                     if driveability!=0:
-                        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                        with sqlite3.connect(GAME.database) as c:
                             driveability+=int(GAME.Sanitise(c.execute("SELECT Driveability FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
                             if driveability<1:
                                 driveability=1
@@ -9073,7 +9080,7 @@ class Game:
             elif event.x>=250 and event.x<=450 and event.y>=340 and event.y<=390:
                 #Scout Drivers
                 GAME.scouting="Driver"
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='1' AND ContractEnd>? AND NewTeam='0') OR (NewTeam=? AND NewRole='1')",(GAME.team,GAME.season,GAME.team,)).fetchall()
                     if len(f)>0:
                         f=c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='2' AND ContractEnd>? AND NewTeam='0') OR (NewTeam=? AND NewRole='2')",(GAME.team,GAME.season,GAME.team,)).fetchall()
@@ -9095,7 +9102,7 @@ class Game:
                         GAME.Button("Propose Contract",1220,730)
                         drivers=[]
                         for x in range(len(Drivers)):
-                            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                            with sqlite3.connect(GAME.database) as c:
                                 if int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(Drivers[x],)).fetchall()[0]))>=minimumRating:
                                     drivers.append(Drivers[x])
                         if len(drivers)>0:
@@ -9115,7 +9122,7 @@ class Game:
                             canvas.create_text(1120, 100, text="Contract End", fill="black", font=("Arial", 20), anchor="nw")
                             for x in range(len(drivers)):
                                 driver=drivers[x]
-                                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                                with sqlite3.connect(GAME.database) as c:
                                     salary="$"+str("{:,}".format(int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))))
                                     if salary=="$0":
                                         salary="-"
@@ -9144,19 +9151,19 @@ class Game:
                         GAME.Menu()
             elif event.x>=900 and event.x<=1100 and event.y>=40 and event.y<=90:
                 #Scout Technical Directors
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND Role='Technical Director'",(GAME.team,)).fetchall()
                 if len(f)==0:
                     GAME.ScoutStaff("Technical Director")
             elif event.x>=900 and event.x<=1100 and event.y>=340 and event.y<=390:
                 #Scout Sporting Directors
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND Role='Sporting Director'",(GAME.team,)).fetchall()
                 if len(f)==0:
                     GAME.ScoutStaff("Sporting Director")
             elif event.x>=900 and event.x<=1100 and event.y>=640 and event.y<=690:
                 #Scout Race Engineers
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND NewRole='Race Engineer 1'",(GAME.team,)).fetchall()
                     if len(f)==1:
                         f=c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND NewRole='Race Engineer 2'",(GAME.team,)).fetchall()
@@ -9164,7 +9171,7 @@ class Game:
                     GAME.ScoutStaff("Race Engineer")
             elif event.x>=250 and event.x<=450 and event.y>=640 and event.y<=690:
                 #Hire Reserve
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
                     if GAME.team=="Racing Bulls" and len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())>0:
                         team="Red Bull"
@@ -9175,7 +9182,7 @@ class Game:
                         GAME.HireReserve()
         elif GAME.screen=="View Contracts":
             if event.x>=600 and event.x<=800 and event.y>=730 and event.y<=780:
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Name FROM Drivers WHERE (Role='Reserve' OR Role='Junior') AND Team=?",(GAME.team,)).fetchall()
                     if len(f)==0 and GAME.team=="Racing Bulls":
                         f=c.execute("SELECT Name FROM Drivers WHERE (Role='Reserve' OR Role='Junior') AND Team='Red Bull'").fetchall()
@@ -9195,7 +9202,7 @@ class Game:
                     #Reserve Drivers
                     drivers=[]
                     roles=[]
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         if GAME.team=="Racing Bulls":
                             f=c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team='Red Bull'").fetchall()
                         else:
@@ -9213,7 +9220,7 @@ class Game:
                     if len(drivers)>0:
                         for x in range(len(drivers)):
                             driver=drivers[x]
-                            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                            with sqlite3.connect(GAME.database) as c:
                                 salary="$"+str("{:,}".format(int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))))
                                 contractEnd=GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                                 rating=GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
@@ -9229,7 +9236,7 @@ class Game:
                             counter+=1
                     #Junior Drivers
                     juniors=[]
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         if GAME.team=="Racing Bulls":
                             f=c.execute("SELECT Name FROM Drivers WHERE Role='Junior' AND Team='Red Bull'").fetchall()
                         else:
@@ -9245,7 +9252,7 @@ class Game:
                     if len(juniors)>0:
                         for x in range(len(f)):
                             driver=juniors[x]
-                            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                            with sqlite3.connect(GAME.database) as c:
                                 salary="$"+str("{:,}".format(int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))))
                                 contractEnd=GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                                 rating=GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
@@ -9259,7 +9266,7 @@ class Game:
                             counter+=1
             elif event.x>=1200 and event.x<=1400 and event.y>=730 and event.y<=780:
                 #Renew
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     GAME.options=[]
                     for x in range(2):
                         f=c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role=? AND ContractEnd=?",(GAME.team,str(x+1),GAME.season,)).fetchall()
@@ -9282,7 +9289,7 @@ class Game:
                 GAME.ViewContracts()
             elif event.x>=1000 and event.x<=1200 and event.y>=730 and event.y<=780:
                 #Renew
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     GAME.options=[]
                     #Reserves
                     if GAME.team=="Racing Bulls":
@@ -9311,7 +9318,7 @@ class Game:
                     GAME.SelectRenewal()
             elif event.x>=1220 and event.x<=1420 and event.y>=730 and event.y<=780:
                 #Promote
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     GAME.options=[]
                     GAME.roles=[]
                     #Reserves
@@ -9374,14 +9381,14 @@ class Game:
             elif event.x>=1100 and event.x<=1300 and event.y>=420 and event.y<=470:
                 #Propose Contract
                 if GAME.scouting=="Driver" or GAME.scouting=="Junior Driver":
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         GAME.scoutingAge=int(GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(GAME.options[GAME.displayedName],)).fetchall()[0]))
                     if GAME.scoutingAge>16:
                         GAME.role=GAME.car1
                     else:
                         GAME.role="Junior"
                 elif GAME.scouting=="Race Engineer":
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         if len(c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND NewRole='Race Engineer 1'",(GAME.team,)).fetchall())==0:
                             GAME.role=GAME.car1
                         else:
@@ -9392,7 +9399,7 @@ class Game:
                     GAME.salary=500000
                     GAME.contractLength=1
                 else:
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         minimumSalary=int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(GAME.options[GAME.displayedName],)).fetchall()[0]))
                         rating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(GAME.options[GAME.displayedName],)).fetchall()[0]))
                         GAME.salary=random.randint(rating*37500,rating*70000)
@@ -9409,7 +9416,7 @@ class Game:
                 #Propose Contract
                 name=GAME.options[GAME.displayedName]
                 if GAME.scouting=="Driver" or GAME.scouting=="Junior Driver":
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         contractEnd=int(GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))
                     if contractEnd==GAME.season and GAME.promoting==0:
                         resigned=GAME.Resign(name)
@@ -9422,7 +9429,7 @@ class Game:
                         else:
                             if random.randint(1,15)==15:
                                 GAME.action=1
-                            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                            with sqlite3.connect(GAME.database) as c:
                                 currentSalary=int(GAME.Sanitise(c.execute('''SELECT Salary FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
                                 rating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))
                             if GAME.role==GAME.car1 or GAME.role==GAME.car2:
@@ -9442,7 +9449,7 @@ class Game:
                                     role="1"
                                 else:
                                     role="2"
-                                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                                with sqlite3.connect(GAME.database) as c:
                                     try:
                                         ContractEnd=int(GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Team=? AND Role=? AND NewTeam='0'",(GAME.team,role,)).fetchall()[0]))
                                     except:
@@ -9459,7 +9466,7 @@ class Game:
                             if GAME.team in steam:
                                 appearance=GAME.team
                             else:
-                                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                                with sqlite3.connect(GAME.database) as c:
                                     appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
                             if appearance!="0":
                                 if appearance in steam:
@@ -9487,7 +9494,7 @@ class Game:
                         GAME.EndScouting()
                 else:
                     rehired=0
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         rating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Staff WHERE Name=?",(name,)).fetchall()[0]))
                         currentSalary=int(GAME.Sanitise(c.execute("SELECT Salary FROM Staff WHERE Name=?",(name,)).fetchall()[0]))
                         oldTeam=GAME.Sanitise(c.execute("SELECT Team FROM Staff WHERE Name=?",(name,)).fetchall()[0])
@@ -9503,7 +9510,7 @@ class Game:
                     if rehired==1:
                         GAME.news.append(f"BREAKING NEWS! {oldTeam} has extended their contract with")
                         GAME.news.append(f"{name} as a {GAME.scouting}.")
-                        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                        with sqlite3.connect(GAME.database) as c:
                             c.execute("UPDATE Staff SET NewTeam=?, NewRole=?, NewSalary=? WHERE Name=?",(oldTeam,oldRole,currentSalary,name,))
                         GAME.EndScouting()
                     else:
@@ -9518,7 +9525,7 @@ class Game:
                             if GAME.team in steam:
                                 appearance=GAME.team
                             else:
-                                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                                with sqlite3.connect(GAME.database) as c:
                                     appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
                             if appearance!="0":
                                 if appearance in steam:
@@ -9546,7 +9553,7 @@ class Game:
                 elif event.y>=630 and event.y<=675:
                     attribute=3
                 if modify!=0 and attribute!=0:
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         if attribute==1:
                             #Role
                             GAME.roleOptions=[GAME.car1,GAME.car2]
@@ -9603,7 +9610,7 @@ class Game:
                                     GAME.salary-=amount
                         elif GAME.scouting=="Driver":
                             if GAME.promoting==1:
-                                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                                with sqlite3.connect(GAME.database) as c:
                                     contractEnd=int(GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(GAME.options[GAME.displayedName],)).fetchall()[0]))
                                     if contractEnd>GAME.season:
                                         minimumLength=contractEnd-GAME.season
@@ -9625,7 +9632,7 @@ class Game:
         elif GAME.screen=="Contract":
             if event.x>=800 and event.x<=1000 and event.y>=660 and event.y<=710:
                 if GAME.scouting=="Driver":
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         if len(c.execute("SELECT Age FROM Drivers WHERE Name=? AND Age<17",(GAME.options[GAME.displayedName],)).fetchall())>0:
                             GAME.role="Junior Driver"
                     if GAME.role==GAME.car1:
@@ -9637,7 +9644,7 @@ class Game:
                     else:
                         role="Reserve"
                     contractEnd=GAME.season+GAME.contractLength
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         c.execute('''UPDATE Drivers SET NewTeam=?, NewRole=?, NewSalary=?, ContractEnd=? WHERE Name=?''',(GAME.team, role, GAME.salary, contractEnd, GAME.options[GAME.displayedName],))
                         if GAME.buyout>0:
                             GAME.money-=GAME.buyout
@@ -9652,7 +9659,7 @@ class Game:
                             role="Race Engineer 2"
                     else:
                         role=GAME.role
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         c.execute('''UPDATE Staff SET NewTeam=?, NewRole=?, NewSalary=? WHERE Name=?''',(GAME.team, role, GAME.salary, GAME.options[GAME.displayedName],))
                 if GAME.sound==1:
                     path=os.path.join(os.path.dirname(__file__), "Sound Effects", "Sign Contract Sound.wav")
@@ -9679,7 +9686,7 @@ class Game:
                 GAME.SelectDriver()
             elif event.x>=1100 and event.x<=1300 and event.y>=420 and event.y<=470:
                 #Hire
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     if GAME.car1=="":
                         GAME.car1=GAME.options[GAME.displayedName]
                         role="1"
@@ -9694,7 +9701,7 @@ class Game:
                         GAME.engine="Ferrari"
                     else:
                         GAME.engine="Mercedes"
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         c.execute("UPDATE Cars SET Engine=? WHERE Team=?",(GAME.engine,GAME.team,))
                     GAME.TeamData()
                 else:
@@ -9717,7 +9724,7 @@ class Game:
             elif event.x>=1100 and event.x<=1300 and event.y>=520 and event.y<=570:
                 #Choose
                 engineChoice=GAME.options[GAME.displayed]
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     if engineChoice=="No Change":
                         c.execute('''UPDATE Player SET NextYearEngine=?''',(GAME.engine,))
                     else:
@@ -9783,7 +9790,7 @@ class Game:
                 if GAME.screen=="Replacing":
                     GAME.replacing=GAME.options[GAME.displayed]
                     GAME.options=[]
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         if GAME.team=="Red Bull":
                             for x in range(2):
                                 try:
@@ -9801,7 +9808,7 @@ class Game:
                     GAME.SelectReplacement()
                 else:
                     replacement=GAME.options[GAME.displayed]
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         seat=GAME.Sanitise(c.execute("SELECT Role FROM Drivers WHERE Name=?",(GAME.replacing,)).fetchall())
                         role=GAME.Sanitise(c.execute("SELECT Role FROM Drivers WHERE Name=?",(replacement,)).fetchall())
                         c.execute("UPDATE Drivers SET Team=?, Role=? WHERE Name=?",(GAME.team,seat,replacement,))
@@ -9865,7 +9872,7 @@ class Game:
                     GAME.Renewal()
             elif event.x>=800 and event.x<=1000 and event.y>=660 and event.y<=710:
                 #Renew
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     if GAME.role=="1" or GAME.role=="2" or GAME.role=="Reserve" or GAME.role=="Junior":
                         if GAME.role=="Reserve" or GAME.role=="Junior" and GAME.team=="Racing Bulls" and len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())>0:
                             team="Red Bull"
@@ -9882,7 +9889,7 @@ class Game:
             if event.x>=1000 and event.x<=1200 and event.y>=730 and event.y<=780:
                 #Renew
                 GAME.options=[]
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     if len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Reserve' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Reserve')",(GAME.team,GAME.season,GAME.team,)).fetchall())<2:
                         f=c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team=?",(GAME.team,)).fetchall() 
                         for x in range(len(f)):
@@ -9976,7 +9983,7 @@ class Game:
                             GAME.CreateTeam()
                         else:
                             GAME.race+=1
-                            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                            with sqlite3.connect(GAME.database) as c:
                                 if GAME.oldTeam!=0:
                                     c.execute("UPDATE Player SET Team=?, Financial=5, Management=3, Warnings=0",(GAME.team,))
                                     c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
@@ -9993,7 +10000,7 @@ class Game:
                 #Accept
                 choice="Accept"
                 GAME.sponsor=GAME.displayed
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     c.execute("UPDATE Teams SET Sponsor=? WHERE Name=?",(GAME.sponsor,GAME.team,))
                     c.execute("UPDATE Sponsors SET Team='None' WHERE Team=?",(GAME.team,))
                     c.execute("UPDATE Sponsors SET Team=? WHERE Name=?",(GAME.team,GAME.sponsor,))
@@ -10144,7 +10151,7 @@ class Game:
             elif event.x>=890 and event.x<=1090 and event.y>=550 and event.y<=600:
                 #Accept
                 choice="Accept"
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     c.execute("UPDATE Player SET MovingTo=?",(GAME.offer,))
             if choice!=0:
                 GAME.Menu()
@@ -10171,7 +10178,7 @@ class Game:
                     button=(event.y-140)//60
                     if event.y<=190+(button*60):
                         #Hire
-                        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                        with sqlite3.connect(GAME.database) as c:
                             driver=GAME.options[button]
                             contractEnd=int(GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
                             if contractEnd==0:
@@ -10262,12 +10269,19 @@ class Game:
             elif event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
                 #Back
                 GAME.Instructions()
+        elif GAME.screen=="Select Save File":
+            if event.x>=265 and event.x<=1160 and event.y>=260 and event.y<=600 and GAME.loaded==1:
+                GAME.database=f"F1 Manager 26 Save Data {GAME.database}.db"
+                GAME.LoadGame()
+            elif event.x>=1210 and event.x<=1325 and event.y>=330 and event.y<=480:
+                GAME.database+=1
+                GAME.ViewSave()
     def CarData(self):
         GAME.CarRanking()
         GAME.ChangeScreen("Car Data")
         GAME.DisplayLogo()
         canvas.create_text(40, 5, text="Car Rankings", fill="white", font=("Arial", 100), anchor="nw")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             f=c.execute("SELECT Name FROM Teams").fetchall()
             for x in range(len(f)):
                 team=GAME.Sanitise(c.execute("SELECT Team FROM Cars WHERE Ranking=?",(x+1,)).fetchall()[0])
@@ -10288,7 +10302,7 @@ class Game:
         else:
             engine=GAME.engine
         canvas.create_text(870, 150, text=f"Engine: {engine}", fill="white", font=("Arial", 40), anchor="nw")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             EN1=int(GAME.Sanitise(c.execute("SELECT car1Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
             EN2=int(GAME.Sanitise(c.execute("SELECT car2Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
             if str(EN1)[len(str(EN1))-1]=="1":
@@ -10313,7 +10327,7 @@ class Game:
         canvas.create_text(870, 250, text=f"Car 2: {EN2}{suffix2} Engine {ED2}%", fill="white", font=("Arial", 40), anchor="nw")
         #Engine Ranking
         canvas.create_text(870, 375, text="Engine Ranking", fill="white", font=("Arial", 40), anchor="nw")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             f=c.execute("SELECT Name FROM Engines WHERE Power>0").fetchall()
             scores=[]
             engines=[]
@@ -10372,7 +10386,7 @@ class Game:
             GAME.Menu()
         else:
             GAME.money-=research
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 rating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Team=? AND Role="Technical Director"''',(GAME.team,)).fetchall()[0]))
                 research=research*(rating**3)*random.randint(2,3)
                 research+=int(GAME.Sanitise(c.execute('''SELECT Research FROM Cars WHERE Team=?''',(GAME.team,)).fetchall()[0]))
@@ -10392,7 +10406,7 @@ class Game:
             GAME.Menu()
         else:
             GAME.money-=research
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 engine=GAME.Sanitise(c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(GAME.team,)).fetchall()[0])
                 rating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Team=? AND Role="Technical Director"''',(GAME.team,)).fetchall()[0]))
                 research=research*(rating**3)*random.randint(2,3)
@@ -10418,7 +10432,7 @@ class Game:
                 driver=GAME.car1
             else:
                 driver=GAME.car2
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 salary="$"+str("{:,}".format(int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))))
                 newTeam=GAME.Sanitise(c.execute("SELECT NewTeam FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                 if newTeam=="0" or newTeam==GAME.team:
@@ -10437,7 +10451,7 @@ class Game:
         #Staff
         staff=["Technical Director","Sporting Director","Race Engineer 1","Race Engineer 2"]
         for x in range(4):
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 name=GAME.Sanitise(c.execute("SELECT Name FROM Staff WHERE Role=? AND Team=?",(staff[x],GAME.team,)).fetchall()[0])
                 salary="$"+str("{:,}".format(int(GAME.Sanitise(c.execute("SELECT Salary FROM Staff WHERE Name=?",(name,)).fetchall()[0]))))
                 contractEnd=GAME.season
@@ -10454,7 +10468,7 @@ class Game:
             canvas.create_text(1000, 150+(counter*50), text=salary, fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(1200, 150+(counter*50), text=contractEnd, fill="black", font=("Arial", 20), anchor="nw")
             counter+=1
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             if len(c.execute("SELECT Name FROM Drivers WHERE (Role='Reserve' OR Role='Junior') AND Team=?",(GAME.team,)).fetchall())>0:
                 GAME.Button("Reserve & Junior Drivers",600,730)
             elif GAME.team=="Racing Bulls":
@@ -10478,7 +10492,7 @@ class Game:
             GAME.Button("Propose Contract",1220,730)
             staff=[]
             for x in range(len(Staff)):
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     if int(GAME.Sanitise(c.execute("SELECT Rating FROM Staff WHERE Name=?",(Staff[x],)).fetchall()[0]))>=minimumRating:
                         staff.append(Staff[x])
             if len(staff)>0:
@@ -10496,7 +10510,7 @@ class Game:
                 canvas.create_text(1100, 100, text="Contract End", fill="black", font=("Arial", 20), anchor="nw")
                 for x in range(len(staff)):
                     name=staff[x]
-                    with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                    with sqlite3.connect(GAME.database) as c:
                         salary="$"+str("{:,}".format(int(GAME.Sanitise(c.execute("SELECT Salary FROM Staff WHERE Name=?",(name,)).fetchall()[0]))))
                         if salary=="$0":
                             salary="-"
@@ -10619,7 +10633,7 @@ class Game:
             root.configure(background='black')
     def StartNewGame(self):
         GAME.drivers=[]
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         if GAME.newGame==0:
             c.execute('''DROP TABLE Teams''')
@@ -10658,7 +10672,7 @@ class Game:
                "legend","hp","oracle","petronas","aramco","bwt","visa & cash app","atlassian","stake","revolut","Gazoo Racing","placeholder","team principal","dead"]
         valid=GAME.Validate(GAME.team)
         if valid==1:
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 if len(c.execute("SELECT Name FROM Teams WHERE Name=?",(GAME.team,)).fetchall())>0:
                     valid=0
         if valid==1:
@@ -10674,7 +10688,7 @@ class Game:
             else:
                 GAME.ChangeScreen("Choose Engine 1")
     def CreateNewTeam(self):
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             c.execute("UPDATE Player SET Team=?",(GAME.team,))
             pos=len(c.execute("SELECT Name FROM Teams").fetchall())+1
             c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.team, 0, GAME.team, pos, 12, 5000000, 1000000, GAME.name, GAME.country, 50, 0, 0))
@@ -10738,7 +10752,7 @@ class Game:
         for x in range(len(drivers)):
             driver=drivers[x]
             team=teams[x]
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 salary="$"+str("{:,}".format(int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))))
                 rating=GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                 age=int(GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))-1
@@ -10768,7 +10782,7 @@ class Game:
         for x in range(len(drivers)):
             driver=drivers[x]
             team=teams[x]
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 rating=GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                 age=int(GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))-1
             canvas.create_text(150, 150+(x*50), text=driver, fill="black", font=("Arial", 20), anchor="nw")
@@ -10791,7 +10805,7 @@ class Game:
     def Renewal(self):
         name=GAME.options[GAME.displayed]
         driver=0
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             try:
                 GAME.role=GAME.Sanitise(c.execute("SELECT Role FROM Drivers WHERE Name=?",(name,)).fetchall()[0])
                 if GAME.role=="1" or GAME.role=="2":
@@ -10822,7 +10836,7 @@ class Game:
         if GAME.team in steam:
             appearance=GAME.team
         else:
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
         if appearance!="0":
             if appearance in steam:
@@ -10849,9 +10863,34 @@ class Game:
                 canvas.create_text(100, 390, text=f"{GAME.contractLength} Seasons", fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(800, 300, text=role, fill="black", font=("Arial", 25), anchor="nw")
             GAME.DisplayDriver(name,450,250)
+    def SelectSave(self):
+        if os.path.isfile("F1 Manager 26 Save Data 2.db"):
+            GAME.database=1
+            GAME.ViewSave()
+        else:
+            GAME.LoadGame()
+    def ViewSave(self):
+        GAME.loaded=0
+        GAME.ChangeScreen("Select Save File")
+        valid=1
+        try:
+            with sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db") as c:
+                if int(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]))<0:
+                    valid=0
+                canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
+                canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
+                canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
+        except:
+            valid=0
+        if valid==0:
+            GAME.database=1
+            GAME.ViewSave()
+        root.after(300, lambda: GAME.SaveReady())
+    def SaveReady(self):
+        GAME.loaded=1
     def LoadGame(self):
         GAME.drivers=[]
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             GAME.name=GAME.Sanitise(c.execute('''SELECT Name FROM Player''').fetchall()[0])
             GAME.country=GAME.Sanitise(c.execute('''SELECT Country FROM Player''').fetchall()[0])
             GAME.team=GAME.Sanitise(c.execute('''SELECT Team FROM Player''').fetchall()[0])
@@ -10878,13 +10917,13 @@ class Game:
         GAME.RaceTime()
     def DisplayTeam(self,team):
         for x in range(2):
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 driver=GAME.Sanitise(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role=?",(team,str(x+1),)).fetchall()[0])
             GAME.DisplayDriver(driver,200+(x*640),500)
             if GAME.screen==(team+" Display") or GAME.screen=="Generic Display":
                 canvas.create_text(950-(650-(650*x)), 340, text=driver, fill="black", font=("Arial", 20), anchor="nw")
     def DisplayDriver(self,driver,x,y):
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             if GAME.screen=="Contract":
                 team=GAME.team
             elif GAME.replay>0:
@@ -10964,7 +11003,7 @@ class Game:
             GAME.DisplayDriver(GAME.driver2,840,500)
     def WelcomeToTeam(self):
         GAME.ChangeScreen("Welcome To Team")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+        with sqlite3.connect(GAME.database) as c:
             GAME.engine=GAME.Sanitise(c.execute("SELECT Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0])
         X=400
         if len(GAME.team)>10:
@@ -10976,7 +11015,7 @@ class Game:
         if GAME.team in steam:
             appearance=GAME.team
         else:
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+            with sqlite3.connect(GAME.database) as c:
                 appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
         if appearance!="0":
             if appearance in steam:
@@ -10991,7 +11030,7 @@ class Game:
                 canvas.create_image(1250, 30, anchor=tk.NW, image=logo)
                 
     def DisplayGridLoop(self,position,teams):
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         try:
             c.execute('''SELECT Name FROM Teams WHERE PreviousPosition=?''',(position,))
@@ -11019,7 +11058,7 @@ class Game:
         teams = ["McLaren","Ferrari","Red Bull","Mercedes","Aston Martin",
                  "Alpine","Haas","Racing Bulls","Williams","Kick Sauber"]
         GAME.newTeams=[]
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as F1:
+        with sqlite3.connect(GAME.database) as F1:
             f = F1.execute("SELECT Name FROM Teams").fetchall()
         time=round(71500/(len(f)+1))
         delay_ms=time
@@ -11029,7 +11068,7 @@ class Game:
         root.after(delay_ms, lambda: GAME.ChangeScreen("Blank Screen"))
     def WelcomeToSeason(self):
         canvas.create_text(110, 150, text=f"Welcome to the {GAME.season} season.", fill="white", font=("Arial", 70), anchor="nw")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as F1:
+        with sqlite3.connect(GAME.database) as F1:
             regulationChange=int(GAME.Sanitise(F1.execute("SELECT RegulationChange FROM Player").fetchall()))
         if regulationChange==GAME.season+1:
             canvas.create_text(30, 500, text="This is the last season of this regulation cycle.", fill="white", font=("Arial", 50), anchor="nw")
@@ -11048,7 +11087,7 @@ class Game:
         done=0
         if GAME.actions==3:
             if GAME.team!="McLaren" and GAME.team!="Ferrari" and GAME.team!="Red Bull" and GAME.team!="Mercedes" and GAME.team!="Aston Martin" and GAME.team!="Alpine" and GAME.team!="Haas" and GAME.team!="Racing Bulls" and GAME.team!="Williams" and GAME.team!="Audi":
-                with sqlite3.connect("F1 Manager 26 Save Data.db") as c:
+                with sqlite3.connect(GAME.database) as c:
                     c.execute("UPDATE Player SET Actions=2")
                     GAME.actions=2
                     currentSponsor=GAME.Sanitise(c.execute("SELECT Sponsor FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
@@ -11086,12 +11125,12 @@ class Game:
     def PreSeasonTesting(self):
         GAME.CarRanking()
         GAME.ChangeScreen("Pre-Season Testing")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as F1:
+        with sqlite3.connect(GAME.database) as F1:
             f=F1.execute("SELECT Name FROM Teams").fetchall()
         canvas.create_text(300, 50, text="Pre-Season Testing suggests", fill="white", font=("Arial", 50), anchor="nw")
         canvas.create_text(250, 150, text="these are the current car rankings:", fill="white", font=("Arial", 50), anchor="nw")
         for x in range(len(f)):
-            with sqlite3.connect("F1 Manager 26 Save Data.db") as F1:
+            with sqlite3.connect(GAME.database) as F1:
                 team=GAME.Sanitise(F1.execute('''SELECT Team FROM Cars WHERE Ranking=?''',(x+1,)).fetchall())
             if x<round(len(f)/2):
                 canvas.create_text(10, 280+(50*x), text=(str(x+1)+". "+team), fill="white", font=("Arial", 30), anchor="nw")
@@ -11102,7 +11141,7 @@ class Game:
         GAME.Button("Next",1200,695)
     def PreSeasonEvents(self):
         if GAME.actions>=2:
-            F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+            F1=sqlite3.connect(GAME.database)
             c=F1.cursor()
             c.execute("UPDATE Teams SET Reputation=20 WHERE Reputation<20")
             if GAME.season==2028:
@@ -11181,7 +11220,7 @@ class Game:
                         F1.commit()
                         F1.close()
                         GAME.TeamAcquired(team,name)
-                        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+                        F1=sqlite3.connect(GAME.database)
                         c=F1.cursor()
                         if GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(name,)).fetchall()[0])=="0":
                             c.execute("UPDATE Teams SET Appearance=? WHERE Name=?",(name,name,))
@@ -11235,7 +11274,7 @@ class Game:
                             F1.commit()
                             F1.close()
                             GAME.TeamAcquired(team,buyer)
-                            F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+                            F1=sqlite3.connect(GAME.database)
                             c=F1.cursor()
                             c.execute('''UPDATE Teams SET Appearance=?, Country=? WHERE Name=?''',(name, country, name,))
                         else:
@@ -11250,7 +11289,7 @@ class Game:
                             else:
                                 name=buyer
                             GAME.TeamAcquired(team,name)
-                            F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+                            F1=sqlite3.connect(GAME.database)
                             c=F1.cursor()
                             c.execute("UPDATE Teams SET Appearance=? WHERE Name=?",(buyer,name,))
                             f=c.execute('''SELECT Money FROM Teams WHERE Name=?''',(name,)).fetchall()
@@ -11262,7 +11301,7 @@ class Game:
                         f=c.execute('''SELECT Name FROM Buyers''').fetchall()
                         F1.commit()
                         F1.close()
-                        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+                        F1=sqlite3.connect(GAME.database)
                         c=F1.cursor()
                         if len(f)<=0:
                             f=c.execute('''SELECT Name FROM Sponsors WHERE Team="None"''').fetchall()
@@ -11299,7 +11338,7 @@ class Game:
                         F1.commit()
                         F1.close()
                         GAME.TeamAcquired(team,name)
-                        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+                        F1=sqlite3.connect(GAME.database)
                         c=F1.cursor()
                         c.execute('''SELECT Country FROM Buyers WHERE Name=?''',(buyer,))
                         f=c.fetchall()
@@ -11317,7 +11356,7 @@ class Game:
                 teamsSigned=[]
                 F1.commit()
                 F1.close()
-                F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+                F1=sqlite3.connect(GAME.database)
                 c=F1.cursor()
                 for x in range(len(f)):
                     if random.randint(1,3)>1:
@@ -11456,7 +11495,7 @@ class Game:
                 GAME.Button("Hire",1150,140+(x*60))
     def TeamData(self):
         #Team Data
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         GAME.driversChosen=[GAME.driver1,GAME.driver2]
         for x in range(2):
@@ -11470,7 +11509,7 @@ class Game:
         raceEngineer2=GAME.GenerateName()
         technicalDirector=GAME.GenerateName()
         sportingDirector=GAME.GenerateName()
-        F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         c.execute('''INSERT into Staff (Name , Team , Role , Rating , Salary , Morale , Country , NewTeam , NewSalary , NewRole ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(raceEngineer1, GAME.team, "Race Engineer 1", 70, 500000, 0, random.choice(GAME.countries), 0, 0, 0))
         c.execute('''INSERT into Staff (Name , Team , Role , Rating , Salary , Morale , Country , NewTeam , NewSalary , NewRole ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(raceEngineer2, GAME.team, "Race Engineer 2", 70, 500000, 0, random.choice(GAME.countries), 0, 0, 0))
@@ -11486,7 +11525,7 @@ class Game:
     def Calendar(self):
         calendar=[]
         GAME.ChangeScreen("Calendar")
-        with sqlite3.connect("F1 Manager 26 Save Data.db") as F1:
+        with sqlite3.connect(GAME.database) as F1:
                 F1.execute("DELETE FROM Calendar")
                 if GAME.season==2026:
                     GAME.races=24
@@ -11601,8 +11640,8 @@ class Game:
         GAME.playing=0
 GAME=Game()
 
-if os.path.isfile("F1 Manager 26 Save Data.db"):
-    F1=sqlite3.connect("F1 Manager 26 Save Data.db")
+if os.path.isfile("F1 Manager 26 Save Data 1.db"):
+    F1=sqlite3.connect("F1 Manager 26 Save Data 1.db")
     c=F1.cursor()
     try:
         c.execute('''SELECT Race FROM Player''')
@@ -11667,7 +11706,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Mazda Display","Lamborghini Display","Volkswagen Display","Volvo Display","JLR Display","Gazoo Racing Display","Lotus Display","Replay Screen","F1 Movie 1","F1 Movie 2",
         "F1 Movie 3","F1 Movie 4","F1 Movie 5","F1 Movie 6","F1 Movie 7","F1 Movie 8","F1 Movie 9","F1 Movie 10","Safety Car Menu","Red Flag Menu","Choose a Team 2021","Latifi Crash",
         "Hamilton Wins","Verstappen Wins","Canada 2011 Victory","Canada 2011 Defeat","Choose a Team 2000","Schumacher Victory","Hakkinen Victory","Senna Celebration",
-        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","2000 Box"]
+        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","2000 Box","Select Save File"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
