@@ -1,12 +1,12 @@
 <h1>F1 Manager 26</h1>
 <body>
-  <p>This game allows you to step into the role of Team Principal of one of the 2026 Formula One Teams or to create your own.</p>
-  <p>You are in charge of managing finances, contracts, race strategy and more.</p>
+  <p>This game allows you to step into the role of Team Principal of one of the 2026 Formula One Teams or to create your own.
+    You are in charge of managing finances, contracts, race strategy and more.</p>
 
   <h2>Important Information and Tips</h2>
 
   <h3>Race Management</h3>
-  <p>Higher Tyre or Fuel aggression increases pace but increases tyre wear or fuel usage respectively. Higher fuel aggression also increases the engine temperature</p>
+  <p>Higher Tyre or Fuel aggression increases pace but increases tyre wear or fuel usage respectively. Higher fuel aggression also increases the engine temperature.</p>
   <p>ERS is important to manage, higher ERS deployment modes increase pace but battery can be quickly depleted. The overtake mode can only be used within 1 second of the car ahead and is useful for making passes but drains a large amount of battery.</p>
   <p>Tyres have a risk of puncturing once they reach 30% remaining, this risk increases with higher wear. To box to new tyres, just click on the helmet icon. In this menu, you can also give instructions to the drivers.</p>
   <p>You will need to manage your engine's temperature. Engines heat up due to high fuel aggression and driving in the dirty of a car within 2 seconds ahead. Overheating the engine can lead to faults or even an engine failure that will end that driver's race.</p>
