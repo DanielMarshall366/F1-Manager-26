@@ -4,10 +4,15 @@
   <p>You are in charge of managing finances, contracts, race strategy and more.</p>
 
   <h2>Important Information and Tips</h2>
+
+  <h3>Race Management</h3>
   <p>Higher Tyre or Fuel aggression increases pace but increases tyre wear or fuel usage respectively. Higher fuel aggression also increases the engine temperature</p>
   <p>ERS is important to manage, higher ERS deployment modes increase pace but battery can be quickly depleted. The overtake mode can only be used within 1 second of the car ahead and is useful for making passes but drains a large amount of battery.</p>
-  <p>Tyres have a risk of puncturing once they reach 30% remaining, this risk increases with higher wear.</p>
-  <p>To box to new tyres, just click on the helmet icon. In this menu, you can also give instructions to the drivers.</p>
+  <p>Tyres have a risk of puncturing once they reach 30% remaining, this risk increases with higher wear. To box to new tyres, just click on the helmet icon. In this menu, you can also give instructions to the drivers.</p>
+  <p>You will need to manage your engine's temperature. Engines heat up due to high fuel aggression and driving in the dirty of a car within 2 seconds ahead. Overheating the engine can lead to faults or even an engine failure that will end that driver's race.</p>
+  <p>Engines will wear after each race, if they have a fault they will have increased wear. If an engine has under 40% durability remaining, it has a high likelihood of developing a fault, so it would be wise to swap it for a new engine. Higher engine durability means more straight-line speed for the car. Each car gets 4 engines per season, for any engines after that you will need to pay $10,000,000 and take a grid penalty. This grid penalty will be 10 places for the first engine taken over the limit and 5 places for each engine after that.</p>
+
+  <h3>Team Management</h3>
   <p>Upgrades are important to improve your current car's performance and research is to improve next year's car if there are new regulations. There is separate research for the car's aerodynamics and engine but many teams will have their engines supplied by another manufacturer.</p>
   <p>Always make sure to sign new contracts or renew your existing ones before other teams get there first.</p>
 
