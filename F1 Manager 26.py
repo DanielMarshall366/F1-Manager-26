@@ -734,8 +734,8 @@ class Game:
                     maximum-=2
                     if maximum<1:
                         maximum=1
-            if money>=80000000:
-                extra=(money-75000000)//5000000
+            if money>=55000000:
+                extra=(money-50000000)//5000000
                 if reduced==1:
                     extra=round(extra/1.5)
                 maximum+=extra
@@ -8705,8 +8705,8 @@ class Game:
                                 reduced=1
                                 if GAME.maximumUpgradePoints<1:
                                     GAME.maximumUpgradePoints=1
-                    if GAME.money>=80000000:
-                        extra=(GAME.money-75000000)//5000000
+                    if GAME.money>=55000000:
+                        extra=(GAME.money-50000000)//5000000
                         if reduced==1:
                             extra=round(extra/1.5)
                         GAME.maximumUpgradePoints+=extra
