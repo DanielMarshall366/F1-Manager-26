@@ -10898,8 +10898,9 @@ class Game:
             valid=0
         if valid==0:
             GAME.SelectSave()
-        GAME.Button("Back",5,730)
-        root.after(300, lambda: GAME.SaveReady())
+        else:
+            GAME.Button("Back",5,730)
+            root.after(300, lambda: GAME.SaveReady())
     def SaveReady(self):
         GAME.loaded=1
     def LoadGame(self):
