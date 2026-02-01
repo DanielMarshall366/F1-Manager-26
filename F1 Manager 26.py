@@ -10615,12 +10615,10 @@ class Game:
         elif GAME.team=="Red Bull":
             root.configure(background='#2400B2')
         elif "Aston Martin" in GAME.team:
-            root.configure(background='#00A205')
+            root.configure(background='#53C393')
         elif "Alpine" in GAME.team:
-            root.configure(background='#FF99FF')
-        elif GAME.team=="Haas":
-            root.configure(background='#CC0000')
-        elif "Williams" in GAME.team or "Racing Bulls" in GAME.team or "Honda" in GAME.team:
+            root.configure(background='#FF58FF')
+        elif "Williams" in GAME.team or "Racing Bulls" in GAME.team or "Honda" in GAME.team or "Haas" in GAME.team:
             root.configure(background='White')
         elif "Ferrari" in GAME.team:
             root.configure(background='red')
@@ -10871,9 +10869,31 @@ class Game:
             with sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db") as c:
                 if int(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]))<0:
                     valid=0
-                canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill="#DADADA", font=("Arial", 50), anchor="nw")
-                canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill="#DADADA", font=("Arial", 50), anchor="nw")
-                canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0]), fill="#DADADA", font=("Arial", 50), anchor="nw")
+                else:
+                    team=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0])
+                    if team=="McLaren":
+                        colour="orange"
+                    elif team=="Mercedes":
+                        colour="#BFC1C3"
+                    elif team=="Red Bull":
+                        colour="#2400B2"
+                    elif "Aston Martin" in team:
+                        colour="#53C393"
+                    elif "Alpine" in team:
+                        colour="#FF58FF"
+                    elif "Williams" in team or "Racing Bulls" in team or "Honda" in team or "Haas" in team:
+                        colour="white"
+                    elif "Ferrari" in team:
+                        colour="red"
+                    elif "Renault" in team:
+                        colour="yellow"
+                    elif "Audi" in team:
+                        colour="#AFB8C1"
+                    else:
+                        colour="#DADADA"
+                    canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
+                    canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
+                    canvas.create_text(400, 440, text=team, fill=colour, font=("Arial", 50), anchor="nw")
         else:
             valid=0
         if valid==0:
