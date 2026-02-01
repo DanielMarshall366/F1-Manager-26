@@ -11684,11 +11684,11 @@ for x in range(len(Images)):
     images.append(tk.PhotoImage(file=path))
 driverHeads=["Max Verstappen","Lando Norris","Charles Leclerc","Oscar Piastri","Carlos Sainz","George Russell","Lewis Hamilton","Fernando Alonso","Pierre Gasly","Nico Hulkenberg",
              "Yuki Tsunoda","Lance Stroll","Esteban Ocon","Alexander Albon","Oliver Bearman","Liam Lawson","Jack Doohan","Gabriel Bortoleto","Isack Hadjar","Kimi Antonelli",
-             "Franco Colapinto","Felipe Drugovich","Theo Pourchaire","Frederik Vesti","Jak Crawford","Victor Martins","Mick Schumacher","Valtteri Bottas","Zhou Guanyu",
-             "Antonio Giovinazzi","Arvid Lindblad","Pato Oward","Ayumu Iwasa","Stoffel Vandoorne","Paul Aron","Ryo Hirakawa","Doriane Pin","Abbi Pulling","Juan Manuel Fangio",
-             "Michael Schumacher","Ayrton Senna","Alain Prost","Jackie Stewart","Niki Lauda","Sergio Perez","Alex Dunne","Kevin Magnussen","Logan Sargeant","Sebastian Vettel",
-             "Daniel Ricciardo","Kimi Raikkonen","Jenson Button","Nigel Mansell","Nicholas Latifi","Mika Hakkinen","David Coulthard","Luke Browning","Leonardo Fornaroli",
-             "Rubens Barrichello","Jim Clark","Young Hamilton","Felipe Massa","Heikki Kovalainen","Johnny Cecotto"]
+             "Franco Colapinto","Frederik Vesti","Jak Crawford","Victor Martins","Mick Schumacher","Valtteri Bottas","Zhou Guanyu","Antonio Giovinazzi","Arvid Lindblad","Pato Oward",
+             "Ayumu Iwasa","Stoffel Vandoorne","Paul Aron","Ryo Hirakawa","Doriane Pin","Abbi Pulling","Juan Manuel Fangio","Michael Schumacher","Ayrton Senna","Alain Prost",
+             "Jackie Stewart","Niki Lauda","Sergio Perez","Alex Dunne","Kevin Magnussen","Logan Sargeant","Sebastian Vettel","Daniel Ricciardo","Kimi Raikkonen","Jenson Button",
+             "Nigel Mansell","Nicholas Latifi","Mika Hakkinen","David Coulthard","Luke Browning","Leonardo Fornaroli","Rubens Barrichello","Jim Clark","Young Hamilton",
+             "Felipe Massa","Heikki Kovalainen","Johnny Cecotto"]
 for x in range(3):
     driverHeads.append(f"Man {x+1}")
     if x<2:
