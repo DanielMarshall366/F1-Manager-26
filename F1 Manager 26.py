@@ -10871,10 +10871,9 @@ class Game:
             with sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db") as c:
                 if int(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]))<0:
                     valid=0
-                canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
-                canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
-                canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Country FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
-                canvas.create_text(400, 510, text=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0]), fill="white", font=("Arial", 50), anchor="nw")
+                canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill="#DADADA", font=("Arial", 50), anchor="nw")
+                canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill="#DADADA", font=("Arial", 50), anchor="nw")
+                canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0]), fill="#DADADA", font=("Arial", 50), anchor="nw")
         else:
             valid=0
         if valid==0:
