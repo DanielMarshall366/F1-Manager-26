@@ -10797,11 +10797,6 @@ class Game:
             canvas.create_text(920, 150+(x*50), text=rating, fill="black", font=("Arial", 20), anchor="nw")
         GAME.options=drivers.copy()
         GAME.Button("Choose Driver",600,730)
-    def SelectRookie(self):
-        GAME.ChangeScreen("Choose Rookie")
-        GAME.Button("Name Selector",150,350)
-        GAME.Button("Hire",1100,420)
-        canvas.create_text(250, 420, text=GAME.options[GAME.displayedName], fill="black", font=("Arial", 40), anchor="nw")
     def SelectRenewal(self):
         GAME.ChangeScreen("Choose Renewal")
         GAME.Button("Name Selector",150,350)
