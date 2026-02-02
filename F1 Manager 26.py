@@ -10608,28 +10608,30 @@ class Game:
         GAME.Button("Name Selector",250,100)
         canvas.create_text(350, 170, text=GAME.options[GAME.displayed], fill="black", font=("Arial", 40), anchor="nw")
     def BackgroundColour(self):
-        if GAME.team==0:
-            root.configure(background='black')
-        elif GAME.team=="McLaren":
-            root.configure(background='orange')
+        if GAME.team=="McLaren":
+            root.configure(background="#FFA100")
         elif GAME.team=="Red Bull":
             root.configure(background='#2400B2')
         elif "Aston Martin" in GAME.team:
-            root.configure(background='#53C393')
+            root.configure(background="#49C18D")
         elif "Alpine" in GAME.team:
             root.configure(background='#FF58FF')
-        elif "Williams" in GAME.team or "Racing Bulls" in GAME.team or "Honda" in GAME.team or "Haas" in GAME.team:
-            root.configure(background='White')
+        elif "Williams" in GAME.team:
+            root.configure(background="#5196FF")
+        elif "Racing Bulls" in GAME.team or "Honda" in GAME.team:
+            root.configure(background="White")
+        elif "Haas" in GAME.team:
+            root.configure(background="#D70000")
         elif "Ferrari" in GAME.team:
-            root.configure(background='red')
+            root.configure(background="#EE1818")
         elif "Renault" in GAME.team:
-            root.configure(background='yellow')
+            root.configure(background="yellow")
         elif "Audi" in GAME.team:
             root.configure(background='#AFB8C1')
         elif GAME.team=="West McLaren" or GAME.team=="Vodafone McLaren":
             root.configure(background='#DADADA')
         else:
-            root.configure(background='black')
+            root.configure(background="black")
     def StartNewGame(self):
         GAME.drivers=[]
         GAME.database=1
@@ -10872,23 +10874,27 @@ class Game:
                 else:
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0])
                     if team=="McLaren":
-                        colour="orange"
+                        colour="#FFA100"
                     elif team=="Mercedes":
-                        colour="#BFC1C3"
+                        colour="#E5E5E5"
                     elif team=="Red Bull":
                         colour="#2400B2"
                     elif "Aston Martin" in team:
-                        colour="#53C393"
+                        colour="#49C18D"
                     elif "Alpine" in team:
                         colour="#FF58FF"
-                    elif "Williams" in team or "Racing Bulls" in team or "Honda" in team or "Haas" in team:
+                    elif "Racing Bulls" in team or "Honda" in team:
                         colour="white"
+                    elif "Williams" in team:
+                        colour="#5196FF"
                     elif "Ferrari" in team:
-                        colour="red"
+                        colour="#EE1818"
                     elif "Renault" in team:
                         colour="yellow"
                     elif "Audi" in team:
                         colour="#AFB8C1"
+                    elif "Haas" in team:
+                        colour="#D70000"
                     else:
                         colour="#DADADA"
                     canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
