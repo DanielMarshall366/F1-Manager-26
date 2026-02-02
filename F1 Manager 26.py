@@ -3141,6 +3141,7 @@ class Game:
                                 GAME.faults.insert(index,fault)
                                 if fault=="Failure":
                                     GAME.AddToLog(GAME.drivers[index]+" has an engine failure, they are out of the race.")
+                                    GAME.Voice(GAME.drivers[index],"Out")
                                 else:
                                     GAME.AddToLog(GAME.drivers[index]+" has a "+fault+" fault with their engine.")
 
@@ -3671,6 +3672,10 @@ class Game:
                                     severity=random.randint(GAME.risk,150)
                                     if severity>=135:
                                         #Severe
+                                        if random.randint(1,2)==1:
+                                            GAME.Voice(0,"Crash")
+                                        else:
+                                            GAME.Voice(crasher,out)
                                         driversOut=random.randint(1,2)
                                         drivers=[crasher,crashedInto]
                                         GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a severe crash.")
@@ -3762,6 +3767,7 @@ class Game:
                                                 GAME.crashMessage.append(crasher+" has a 10 second penalty.")
                                             GAME.damage.insert(index, damage)
                                     elif severity>=100:
+                                        GAME.Voice(0,"Crash")
                                         #Damaging
                                         GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a bad crash.")
                                         GAME.crashMessage.append(crasher+" crashed into "+crashedInto+", it was a bad crash.")
@@ -3831,6 +3837,7 @@ class Game:
                                                 GAME.safety=3
                                         GAME.damage.insert(index, damage)
                                     else:
+                                        GAME.Voice(0,"Crash")
                                         #Minor
                                         GAME.AddToLog(crasher+" crashed into "+crashedInto+".")
                                         GAME.crashMessage.append(crasher+" crashed into "+crashedInto+".")
@@ -3959,6 +3966,10 @@ class Game:
                                         mistake-=2
                                 if mistake<=1 and not ((driver=="Ayrton Senna" or driver=="Alain Prost" or driver=="Nigel Mansell" or driver=="Niki Lauda") and GAME.replay==6):
                                     #Crashed into wall
+                                    if random.randint(1,2)==1:
+                                        GAME.Voice(0,"Crash")
+                                    else:
+                                        GAME.Voice(driver,"Out")
                                     GAME.AddToLog(f"{driver} crashed into the wall and is out of the race.")
                                     GAME.repairBill[driverID]+=random.randint(2000000,5000000)
                                     if GAME.replay==0:
@@ -5066,6 +5077,10 @@ class Game:
                                 severity=random.randint(GAME.risk,150)
                                 if severity>=135:
                                     #Severe
+                                    if random.randint(1,2)==1:
+                                        GAME.Voice(0,"Crash")
+                                    else:
+                                        GAME.Voice(crasher,"Out")
                                     driversOut=random.randint(1,2)
                                     drivers=[crasher,crashedInto]
                                     GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a severe crash.")
@@ -5146,6 +5161,7 @@ class Game:
                                         GAME.damage.insert(index, damage)
                                 elif severity>=100:
                                     #Damaging
+                                    GAME.Voice(0,"Crash")
                                     GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a bad crash.")
                                     #Crasher
                                     index=GAME.drivers.index(crasher)
@@ -5211,6 +5227,7 @@ class Game:
                                     GAME.damage.insert(index, damage)
                                 else:
                                     #Minor
+                                    GAME.Voice(0,"Crash")
                                     GAME.AddToLog(crasher+" crashed into "+crashedInto+".")
                                     #Crasher
                                     index=GAME.drivers.index(crasher)
@@ -8724,7 +8741,7 @@ class Game:
                             extra=round(extra/1.5)
                         GAME.maximumUpgradePoints+=extra
                 if GAME.maximumUpgradePoints>(round(GAME.money/3))//500000:
-                    GAME.maximumUpgradePoints=(round(money/3))//500000
+                    GAME.maximumUpgradePoints=(round(GAME.money/3))//500000
                 GAME.remainingUpgradePoints=GAME.maximumUpgradePoints
                 GAME.upgradePoints=[]
                 for x in range(7):
@@ -9699,7 +9716,7 @@ class Game:
                     else:
                         GAME.car2=GAME.options[GAME.displayedName]
                         role="2"
-                    c.execute("UPDATE Drivers SET Team=?, Role=?, ContractEnd=2025, NewTeam='0' WHERE Name=?",(GAME.team,role,GAME.options[GAME.displayedName],))
+                    c.execute("UPDATE Drivers SET Team=?, Role=?, ContractEnd=2026, NewTeam='0' WHERE Name=?",(GAME.team,role,GAME.options[GAME.displayedName],))
                 if GAME.car2=="":
                     GAME.DisplayDriverMarket()
                 elif GAME.team=="Marlboro Ferrari" or GAME.team=="Vodafone McLaren" or GAME.team=="West McLaren":
@@ -10032,62 +10049,6 @@ class Game:
                     GAME.replay=6
                 if GAME.replay!=0:
                     GAME.ReplayObjective()
-        elif GAME.screen=="Choose a Team 2":
-            if event.x>=54 and event.x<=460 and event.y>=166 and event.y<=288:
-                GAME.team="McLaren"
-            elif event.x>=556 and event.x<=920 and event.y>=162 and event.y<=312:
-                GAME.team="Ferrari"
-            elif event.x>=1066 and event.x<=1336 and event.y>=167 and event.y<=300:
-                GAME.team="Red Bull"
-            elif event.x>=42 and event.x<=446 and event.y>=339 and event.y<=461:
-                GAME.team="Mercedes"
-            elif event.x>=492 and event.x<=950 and event.y>=347 and event.y<=463:
-                GAME.team="Aston Martin"
-            elif event.x>=1059 and event.x<=1377 and event.y>=326 and event.y<=476:
-                GAME.team="Alpine"
-            elif event.x>=36 and event.x<=462 and event.y>=486 and event.y<=614:
-                GAME.team="Haas"
-            elif event.x>=518 and event.x<=928 and event.y>=481 and event.y<=633:
-                GAME.team="Racing Bulls"
-            elif event.x>=1123 and event.x<=1319 and event.y>=482 and event.y<=620:
-                GAME.team="Williams"
-            elif event.x>=635 and event.x<=790 and event.y>=650:
-                GAME.team="Kick Sauber"
-            if GAME.team!="":
-                GAME.BackgroundColour()
-                if GAME.team=="McLaren":
-                    drivers=["Oscar Piastri","Lando Norris"]
-                elif GAME.team=="Ferrari":
-                    drivers=["Charles Leclerc","Lewis Hamilton"]
-                elif GAME.team=="Red Bull":
-                    if GAME.replay==3:
-                        drivers=["Max Verstappen","Liam Lawson"]
-                    else:
-                        drivers=["Max Verstappen","Yuki Tsunoda"]
-                elif GAME.team=="Mercedes":
-                    drivers=["George Russell","Kimi Antonelli"]
-                elif GAME.team=="Aston Martin":
-                    drivers=["Lance Stroll","Fernando Alonso"]
-                elif GAME.team=="Alpine":
-                    if GAME.replay==3:
-                        drivers=["Pierre Gasly","Jack Doohan"]
-                    else:
-                        drivers=["Pierre Gasly","Franco Colapinto"]
-                elif GAME.team=="Haas":
-                    drivers=["Esteban Ocon","Oliver Bearman"]
-                elif GAME.team=="Racing Bulls":
-                    if GAME.replay==3:
-                        drivers=["Yuki Tsunoda","Isack Hadjar"]
-                    else:
-                        drivers=["Liam Lawson","Isack Hadjar"]
-                elif GAME.team=="Williams":
-                    drivers=["Alexander Albon","Carlos Sainz"]
-                else:
-                    drivers=["Nico Hulkenberg","Gabriel Bortoleto"]
-                GAME.driver1=drivers[0]
-                GAME.driver2=drivers[1]
-                GAME.car1ID=GAME.drivers.index(GAME.driver1)
-                GAME.car2ID=GAME.drivers.index(GAME.driver2)
         elif GAME.screen=="Safety Car Menu":
             tyre=-1
             if event.y>=235 and event.y<=325:
@@ -11663,7 +11624,7 @@ class Game:
                         rate=f.getframerate()
                         duration=frames/float(rate)
                         delay=d+round(duration*1000)
-                    root.after(delay-50, lambda: GAME.StopMusic())
+                    root.after(delay-50, lambda: GAME.StopMusic()
                 else:
                     delay=d
             root.after(delay, lambda: GAME.VoiceDone())
