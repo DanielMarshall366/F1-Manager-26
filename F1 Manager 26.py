@@ -10873,6 +10873,21 @@ class Game:
                     canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(400, 440, text=team, fill=colour, font=("Arial", 50), anchor="nw")
+                    if team in steam:
+                        appearance=team
+                    else:
+                        appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
+                    if appearance!="0":
+                        if appearance in steam:
+                            logo=logos[steam.index(appearance)-1]
+                        else:
+                            try:
+                                logo=sponsorLogos[sponsors.index(appearance)]
+                            except:
+                                logo=0
+                        if logo!=0:
+                            canvas.image=logo
+                            canvas.create_image(1050, 270, anchor=tk.NW, image=logo)
         else:
             valid=0
         if valid==0:
@@ -11624,7 +11639,7 @@ class Game:
                         rate=f.getframerate()
                         duration=frames/float(rate)
                         delay=d+round(duration*1000)
-                    root.after(delay-50, lambda: GAME.StopMusic()
+                    root.after(delay-50, lambda: GAME.StopMusic())
                 else:
                     delay=d
             root.after(delay, lambda: GAME.VoiceDone())
