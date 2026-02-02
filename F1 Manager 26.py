@@ -197,7 +197,7 @@ class Game:
         self.pit=0
         self.events=0
         self.driver=1
-        self.database=1
+        self.database="F1 Manager 26 Save Data 1.db"
         self.loaded=0
 
     def FillDatabase(self):
@@ -4270,14 +4270,8 @@ class Game:
             GAME.pause=0
     def Box(self,driverNumber):
         GAME.pittingDriver=driverNumber
-        if GAME.replay==5:
-            GAME.ChangeScreen("2000 Box")
-            for x in range(3):
-                if x==2:
-                    text=f"{GAME.expectedTyreLife[3]} Laps"
-                else:
-                    text=f"{GAME.expectedTyreLife[x*2]} Laps"
-                canvas.create_text(210+(x*440), 610, text=text, fill="white", font=("Arial", 30), anchor="nw")
+        if GAME.replay>4:
+            GAME.OldBox()
         else:
             GAME.ChangeScreen("Box")
             for x in range(5):
@@ -4286,10 +4280,18 @@ class Game:
                 else:
                     text=f"{GAME.expectedTyreLife[x]} Laps"
                 canvas.create_text(100+(x*280), 560, text=text, fill="white", font=("Arial", 30), anchor="nw")
-        if driverNumber==1:
-            index=GAME.car1ID
+            GAME.Button("Back",5,730)
+    def OldBox(self):
+        if GAME.screen=="Old box":
+            GAME.ChangeScreen("Old Box")
         else:
-            index=GAME.car2ID
+            GAME.ChangeScreen("Old box")
+        for x in range(3):
+            if x==2:
+                text=f"{GAME.expectedTyreLife[3]} Laps"
+            else:
+                text=f"{GAME.expectedTyreLife[x*2]} Laps"
+            canvas.create_text(210+(x*440), 610, text=text, fill="white", font=("Arial", 30), anchor="nw")
         GAME.Button("Back",5,730)
     def TyreData(self):
         GAME.ChangeScreen("Tyre Data")
@@ -8193,6 +8195,9 @@ class Game:
             screen="Contract Name"
         elif screen=="New Tyres":
             screen="Choose Tyres"
+        elif screen=="Old box":
+            screen="Old Box"
+            root.after(500, lambda: GAME.OldBox())
         elif screen not in Images:
             screen="Blank Screen"
         imageOnCanvas = canvas.create_image(0, 0, anchor=tk.NW, image=images[Images.index(screen)])
@@ -8221,6 +8226,7 @@ class Game:
             image=icons[7]
             canvas.image=image
             canvas.create_image(1295, 710, anchor=tk.NW, image=image)
+            GAME.database="F1 Manager 26 Save Data 1.db"
         elif GAME.screen=="Opening Menu":
             if event.x>=500 and event.x<=700 and event.y>=575 and event.y<=625:
                 GAME.StartNewGame()
@@ -10244,7 +10250,7 @@ class Game:
                     sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
                     winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
                 GAME.Settings()
-        elif GAME.screen=="2000 Box":
+        elif GAME.screen=="Old Box":
             if event.y>=205 and event.y<=655:
                 tyre=0
                 if event.x>=80 and event.x<=480:
@@ -10608,7 +10614,9 @@ class Game:
         GAME.Button("Name Selector",250,100)
         canvas.create_text(350, 170, text=GAME.options[GAME.displayed], fill="black", font=("Arial", 40), anchor="nw")
     def BackgroundColour(self):
-        if GAME.team=="McLaren":
+        if GAME.team==0:
+            root.configure(background="black")
+        elif GAME.team=="McLaren":
             root.configure(background="#FFA100")
         elif GAME.team=="Red Bull":
             root.configure(background='#2400B2')
@@ -10944,28 +10952,29 @@ class Game:
             if GAME.screen==(team+" Display") or GAME.screen=="Generic Display":
                 canvas.create_text(950-(650-(650*x)), 340, text=driver, fill="black", font=("Arial", 20), anchor="nw")
     def DisplayDriver(self,driver,x,y):
-        with sqlite3.connect(GAME.database) as c:
-            if GAME.screen=="Contract":
-                team=GAME.team
-            elif GAME.replay>0:
-                team=GAME.teams[GAME.drivers.index(driver)]
-            else:
-                try:
-                    team=GAME.teams[GAME.drivers.index(driver)]
-                except:
-                    team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall())
-            if driver=="Sonny Hayes" or driver=="Joshua Pearce":
-                team=driver
-            elif team=="AlphaTauri" and GAME.replay>0:
-                team="Racing Bulls"
-            elif team=="McLaren":
-                if GAME.replay==3 or GAME.replay==4:
-                    team="Vodafone McLaren"
-                elif GAME.replay==5:
-                    team="West McLaren"
-            elif team=="Ferrari":
-                if GAME.replay==5 or GAME.replay==4:
-                    team="Marlboro Ferrari"
+        if GAME.replay==0:
+            with sqlite3.connect(GAME.database) as c:
+                if GAME.screen=="Contract":
+                    team=GAME.team
+                else:
+                    try:
+                        team=GAME.teams[GAME.drivers.index(driver)]
+                    except:
+                        team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall())
+                if driver=="Sonny Hayes" or driver=="Joshua Pearce":
+                    team=driver
+                elif team=="AlphaTauri" and GAME.replay>0:
+                    team="Racing Bulls"
+                elif team=="McLaren":
+                    if GAME.replay==3 or GAME.replay==4:
+                        team="Vodafone McLaren"
+                    elif GAME.replay==5:
+                        team="West McLaren"
+                elif team=="Ferrari":
+                    if GAME.replay==5 or GAME.replay==4:
+                        team="Marlboro Ferrari"
+        else:
+            team=GAME.teams[GAME.drivers.index(driver)]
             if team in steam:
                 index=steam.index(team)
                 suit=GAME.suits[index]
@@ -11702,7 +11711,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Mazda Display","Lamborghini Display","Volkswagen Display","Volvo Display","JLR Display","Gazoo Racing Display","Lotus Display","Replay Screen","F1 Movie 1","F1 Movie 2",
         "F1 Movie 3","F1 Movie 4","F1 Movie 5","F1 Movie 6","F1 Movie 7","F1 Movie 8","F1 Movie 9","F1 Movie 10","Safety Car Menu","Red Flag Menu","Choose a Team 2021","Latifi Crash",
         "Hamilton Wins","Verstappen Wins","Canada 2011 Victory","Canada 2011 Defeat","Choose a Team 2000","Schumacher Victory","Hakkinen Victory","Senna Celebration",
-        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","2000 Box","Select Save File"]
+        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Old Box","Select Save File"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
