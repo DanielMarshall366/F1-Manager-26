@@ -8229,6 +8229,7 @@ class Game:
             GAME.database="F1 Manager 26 Save Data 1.db"
         elif GAME.screen=="Opening Menu":
             if event.x>=500 and event.x<=700 and event.y>=575 and event.y<=625:
+                GAME.database=1
                 GAME.StartNewGame()
             elif event.x>=735 and event.x<=935 and event.y>=575 and event.y<=625 and GAME.newGame==0:
                 GAME.SelectSave()
@@ -10644,15 +10645,22 @@ class Game:
         GAME.drivers=[]
         GAME.database=1
         while True:
-            try: 
+            F1=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
+            race=GAME.Sanitise(F1.execute("SELECT Race FROM Player").fetchall())
+            F1.commit()
+            F1.close()
+            if len(race)==0:
+                os.remove(f"F1 Manager 26 Save Data {GAME.database}.db")
                 F1=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
-                if int(GAME.Sanitise(F1.execute("SELECT Race FROM Player").fetchall()[0]))<0:
-                    break
-                else:
-                    GAME.database+=1
-            except:
                 break
+            elif int(race)<0:
+                os.remove(f"F1 Manager 26 Save Data {GAME.database}.db")
+                F1=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
+                break
+            else:
+                GAME.database+=1
         GAME.database=f"F1 Manager 26 Save Data {GAME.database}.db"
+        F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         c.execute('''CREATE TABLE Teams(Name str, Appearance str,OriginalName st, Position int, Points int, Money int, Income int, TeamPrincipal str, Country str, Reputation int, Sponsor str, PreviousPosition int, PressConferences int)''')
         c.execute('''CREATE TABLE Drivers(Name str, Appearance str, Team str, Role str, Country str, Position int, Points int, Salary int, Condition str, Rating int, Overtaking int, Defending int, Pace int, Experience int, Control int, Reaction int, Calmness int, Age int, Marketability int, DevelopmentRate int, ContractEnd int, NewTeam str, NewSalary int, NewRole str, Championships int, Wins int, Legend int)''')
@@ -10874,6 +10882,7 @@ class Game:
             with sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db") as c:
                 if int(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]))<0:
                     valid=0
+                    os.remove(f"F1 Manager 26 Save Data {GAME.database}.db")
                 else:
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0])
                     if team=="McLaren":
@@ -10947,10 +10956,11 @@ class Game:
             if GAME.screen==(team+" Display") or GAME.screen=="Generic Display":
                 canvas.create_text(950-(650-(650*x)), 340, text=driver, fill="black", font=("Arial", 20), anchor="nw")
     def DisplayDriver(self,driver,x,y):
-        if GAME.replay==0:
             with sqlite3.connect(GAME.database) as c:
                 if GAME.screen=="Contract":
                     team=GAME.team
+                elif GAME.replay>0:
+                    team=GAME.teams[GAME.drivers.index(driver)]
                 else:
                     try:
                         team=GAME.teams[GAME.drivers.index(driver)]
@@ -10968,8 +10978,6 @@ class Game:
                 elif team=="Ferrari":
                     if GAME.replay==5 or GAME.replay==4:
                         team="Marlboro Ferrari"
-        else:
-            team=GAME.teams[GAME.drivers.index(driver)]
             if team in steam:
                 index=steam.index(team)
                 suit=GAME.suits[index]
