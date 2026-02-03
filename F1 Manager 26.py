@@ -1576,7 +1576,7 @@ class Game:
                     management-=1
                     if management<1:
                         management=1
-                    financial-=2
+                    financial-=1
                 if financial<1:
                     financial=1
                 if management==1 or financial==1:
@@ -11013,17 +11013,17 @@ class Game:
                     X=xDif[0]
                     Y=yDif[0]
                 if driver=="Liam Lawson":
-                    Y+=15
+                    Y-=15
                 elif driver=="Esteban Ocon" or driver=="Isack Hadjar":
-                    Y+=10
+                    Y-=10
                 elif driver=="Jack Doohan":
-                    Y-=8
+                    Y+=8
                     X+=4
                 elif driver=="Zhou Guanyu":
-                    Y+=8
+                    Y-=8
                     X-=5
                 elif driver=="Kevin Magnussen":
-                    Y+=15
+                    Y-=15
                 if driver in driverHeads:
                     head=driver
                 else:
@@ -11033,7 +11033,7 @@ class Game:
                         head="Man 3"
                 head=heads[driverHeads.index(head)]
                 canvas.image=head
-                canvas.create_image(x+X, y+Y, anchor=tk.NW, image=head)
+                canvas.create_image(x+X, y-Y, anchor=tk.NW, image=head)
     def DisplayRaceTeam(self):
         if GAME.driver1!=0:
             GAME.DisplayDriver(GAME.driver1,200,500)
@@ -11744,7 +11744,7 @@ steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","BMW","Amazon","Ford","Tesla","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
        "Alfa Romeo"]
 xDif=[90,90,88,95,110,100,92,100,95,98,105,102,100,85,95,97,95,98,110]
-yDif=[-115,-105,-100,-115,-108,-108,-90,-70,-122,-100,-103,-52,-145,-105,-80,-100,-85,-50,-5]
+yDif=[115,105,100,115,108,108,90,70,122,80,103,52,145,105,80,100,85,50,5]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 GAME.suits=[tk.PhotoImage(file=path)]
 logos=[]
