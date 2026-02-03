@@ -7846,9 +7846,10 @@ class Game:
                 warnings=int(GAME.Sanitise(c.execute("SELECT Warnings FROM Player").fetchall()[0]))
                 position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                 previousPosition=int(GAME.Sanitise(c.execute("SELECT PreviousPosition FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
-                if previousPosition==0 or position<=previousPosition:
+                last=len(c.execute("SELECT Name FROM Teams").fetchall())
+                if (previousPosition==0 or position<=previousPosition) and position!=last:
                     performance="Happy"
-                elif position<=previousPosition+1:
+                elif position<=previousPosition+1 and position!=last:
                     performance="Unhappy"
                     u+=1
                 else:
@@ -8930,10 +8931,11 @@ class Game:
                 with sqlite3.connect(GAME.database) as c:
                     position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                     previousPosition=int(GAME.Sanitise(c.execute("SELECT PreviousPosition FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
-                    if previousPosition==0 or position<=previousPosition:
+                    last=len(c.execute("SELECT Name FROM Teams").fetchall())
+                    if (previousPosition==0 or position<=previousPosition) and position!=last:
                         performance="Happy"
                         performanceColour="#00FF00"
-                    elif position<=previousPosition+1:
+                    elif position<=previousPosition+1 and position!=last:
                         performance="Unhappy"
                         performanceColour="#FF8000"
                         u+=1
