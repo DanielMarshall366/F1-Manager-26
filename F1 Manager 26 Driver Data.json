@@ -340,10 +340,10 @@
         },
 	{
           "Name": "Jack Doohan",
-          "Team": "Free Agent", 
-          "Role": "Free Agent", 
+          "Team": "Haas", 
+          "Role": "Reserve", 
           "Country": "Australia",
-          "Salary": 0,       
+          "Salary": 800000,       
           "Rating": 69,
 	  "Overtaking": 75,
 	  "Defending": 75,
@@ -355,7 +355,7 @@
 	  "Age": 23,
 	  "Marketability": 60,
           "DevelopmentRate": 80, 
-          "ContractEnd": 0, 
+          "ContractEnd": 2026, 
           "Championships": 0,
           "Wins": 0       
         },
