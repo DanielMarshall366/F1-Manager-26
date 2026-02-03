@@ -2500,7 +2500,8 @@ class Game:
         if len(GAME.news)>0:
             GAME.ChangeScreen("Breaking News")
             for x in range(len(GAME.news)):
-                canvas.create_text(150, 180+(x*30), text=GAME.news[x], fill="white", font=("Arial", 20), anchor="nw")
+                if x<20:
+                    canvas.create_text(150, 180+(x*30), text=GAME.news[x], fill="white", font=("Arial", 20), anchor="nw")
             GAME.news=[]
             root.after(10000, lambda: GAME.PressConferences())
         else:
