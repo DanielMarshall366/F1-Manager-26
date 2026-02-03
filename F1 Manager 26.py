@@ -10899,9 +10899,10 @@ class Game:
                         colour="#D70000"
                     else:
                         colour="#DADADA"
-                    canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
-                    canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
-                    canvas.create_text(400, 440, text=team, fill=colour, font=("Arial", 50), anchor="nw")
+                    canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
+                    canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
+                    canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]),)).fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
+                    canvas.create_text(400, 510, text=team, fill=colour, font=("Arial", 50), anchor="nw")
                     if team in steam:
                         appearance=team
                     else:
@@ -10917,6 +10918,8 @@ class Game:
                         if logo!=0:
                             canvas.image=logo
                             canvas.create_image(1050, 270, anchor=tk.NW, image=logo)
+                    if len(c.execute("SELECT Name FROM Drivers WHERE Legend!=0").fetchall())>0:
+                        canvas.create_text(275, 265, text="Legends", fill="#F5C939", font=("Arial", 30), anchor="nw")
         else:
             valid=0
         if valid==0:
