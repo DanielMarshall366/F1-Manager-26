@@ -3141,7 +3141,8 @@ class Game:
                                 GAME.faults.insert(index,fault)
                                 if fault=="Failure":
                                     GAME.AddToLog(GAME.drivers[index]+" has an engine failure, they are out of the race.")
-                                    GAME.Voice(GAME.drivers[index],"Out")
+                                    if GAME.playing==0 and GAME.sound==1:
+                                        GAME.Voice(GAME.drivers[index],"Out")
                                 else:
                                     GAME.AddToLog(GAME.drivers[index]+" has a "+fault+" fault with their engine.")
 
@@ -3672,10 +3673,11 @@ class Game:
                                     severity=random.randint(GAME.risk,150)
                                     if severity>=135:
                                         #Severe
-                                        if random.randint(1,2)==1:
-                                            GAME.Voice(0,"Crash")
-                                        else:
-                                            GAME.Voice(crasher,out)
+                                        if GAME.playing==0 and GAME.sound==1:
+                                            if random.randint(1,2)==1:
+                                                GAME.Voice(0,"Crash")
+                                            else:
+                                                GAME.Voice(crasher,out)
                                         driversOut=random.randint(1,2)
                                         drivers=[crasher,crashedInto]
                                         GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a severe crash.")
@@ -3767,7 +3769,8 @@ class Game:
                                                 GAME.crashMessage.append(crasher+" has a 10 second penalty.")
                                             GAME.damage.insert(index, damage)
                                     elif severity>=100:
-                                        GAME.Voice(0,"Crash")
+                                        if GAME.playing==0 and GAME.sound==1:
+                                            GAME.Voice(0,"Crash")
                                         #Damaging
                                         GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a bad crash.")
                                         GAME.crashMessage.append(crasher+" crashed into "+crashedInto+", it was a bad crash.")
@@ -3837,7 +3840,8 @@ class Game:
                                                 GAME.safety=3
                                         GAME.damage.insert(index, damage)
                                     else:
-                                        GAME.Voice(0,"Crash")
+                                        if GAME.playing==0 and GAME.sound==1:
+                                            GAME.Voice(0,"Crash")
                                         #Minor
                                         GAME.AddToLog(crasher+" crashed into "+crashedInto+".")
                                         GAME.crashMessage.append(crasher+" crashed into "+crashedInto+".")
@@ -3966,10 +3970,11 @@ class Game:
                                         mistake-=2
                                 if mistake<=1 and not ((driver=="Ayrton Senna" or driver=="Alain Prost" or driver=="Nigel Mansell" or driver=="Niki Lauda") and GAME.replay==6):
                                     #Crashed into wall
-                                    if random.randint(1,2)==1:
-                                        GAME.Voice(0,"Crash")
-                                    else:
-                                        GAME.Voice(driver,"Out")
+                                    if GAME.playing==0 and GAME.sound==1:
+                                        if random.randint(1,2)==1:
+                                            GAME.Voice(0,"Crash")
+                                        else:
+                                            GAME.Voice(driver,"Out")
                                     GAME.AddToLog(f"{driver} crashed into the wall and is out of the race.")
                                     GAME.repairBill[driverID]+=random.randint(2000000,5000000)
                                     if GAME.replay==0:
@@ -4135,7 +4140,8 @@ class Game:
             GAME.lapPittedTo.append(55)
         GAME.pause=1
         GAME.RefreshScreen()
-        GAME.Voice(0,"Race Start")
+        if GAME.sound==1:
+            GAME.Voice(0,"Race Start")
     def MovieFinalLap(self):
         GAME.replay=8
         for x in range(2):
@@ -5077,10 +5083,11 @@ class Game:
                                 severity=random.randint(GAME.risk,150)
                                 if severity>=135:
                                     #Severe
-                                    if random.randint(1,2)==1:
-                                        GAME.Voice(0,"Crash")
-                                    else:
-                                        GAME.Voice(crasher,"Out")
+                                    if GAME.playing==0 and GAME.sound==1:
+                                        if random.randint(1,2)==1:
+                                            GAME.Voice(0,"Crash")
+                                        else:
+                                            GAME.Voice(crasher,"Out")
                                     driversOut=random.randint(1,2)
                                     drivers=[crasher,crashedInto]
                                     GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a severe crash.")
@@ -5161,7 +5168,8 @@ class Game:
                                         GAME.damage.insert(index, damage)
                                 elif severity>=100:
                                     #Damaging
-                                    GAME.Voice(0,"Crash")
+                                    if GAME.playing==0 and GAME.sound==1:
+                                        GAME.Voice(0,"Crash")
                                     GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a bad crash.")
                                     #Crasher
                                     index=GAME.drivers.index(crasher)
@@ -5227,7 +5235,8 @@ class Game:
                                     GAME.damage.insert(index, damage)
                                 else:
                                     #Minor
-                                    GAME.Voice(0,"Crash")
+                                    if GAME.playing==0 and GAME.sound==1:
+                                        GAME.Voice(0,"Crash")
                                     GAME.AddToLog(crasher+" crashed into "+crashedInto+".")
                                     #Crasher
                                     index=GAME.drivers.index(crasher)
