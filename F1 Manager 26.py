@@ -1585,16 +1585,17 @@ class Game:
             approvals=["Happy","Satisfied","Unhappy","Disappointed"]
             consequences=["Increased Sponsor Revenue","No Change","Decreased Sponsor Revenue"]
             if fired==1:
-                consequence=f"End of {GAME.sponsor} partnership."
+                consequence=["End of partnership with",f"{GAME.sponsor}."]
             elif approval==1:
-                consequence=f"Worsened Relations with {GAME.sponsor}"
+                consequence=["Worsened Relations with",f"{GAME.sponsor}."]
             else:
-                consequence=consequences[4-approval]
+                consequence=[consequences[4-approval]]
             approval=approvals[4-approval]
             canvas.create_text(60, 230, text=f"Sponsor: {GAME.sponsor}", fill="#D4D4D4", font=("Arial", 30), anchor="nw")
             canvas.create_text(60, 420, text=f"Approval: {approval}", fill="#D4D4D4", font=("Arial", 30), anchor="nw")
             canvas.create_text(60, 470, text="Consequences:", fill="#D4D4D4", font=("Arial", 30), anchor="nw")
-            canvas.create_text(60, 520, text=consequence, fill="#D4D4D4", font=("Arial", 30), anchor="nw")
+            for x in range(len(consequence)):
+                canvas.create_text(60, 520+(50*x), text=consequence[x], fill="#D4D4D4", font=("Arial", 30), anchor="nw")
             if GAME.team in steam:
                 appearance=GAME.team
             else:
@@ -6704,8 +6705,10 @@ class Game:
                 GAME.rawPace.append(pace)
                 GAME.confidence.append(Confidence)
             GAME.raceCountry=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(race,)).fetchall()[0])
-        car1Confidence=GAME.confidence[GAME.car1ID]
-        car2Confidence=GAME.confidence[GAME.car2ID]
+        if GAME.driver1 in GAME.drivers:
+            car1Confidence=GAME.confidence[GAME.car1ID]
+        if GAME.driver2 in GAME.drivers:
+            car2Confidence=GAME.confidence[GAME.car2ID]
         self.positions=[]
         self.tyrePace=[]
         self.tyre=[]
@@ -6785,10 +6788,10 @@ class Game:
         if GAME.driver2=="":
             GAME.driver2=0
         GAME.DisplayRaceTeam()
-        if GAME.driver1!=0:
+        if GAME.driver1 in GAME.drivers:
             canvas.create_text(300, 290, text=GAME.driver1, fill="white", font=("Arial", 20), anchor="nw")
             canvas.create_text(300, 340, text=("Confidence: "+str(car1Confidence)), fill="white", font=("Arial", 20), anchor="nw")
-        if GAME.driver2!=0:
+        if GAME.driver2 in GAME.drivers:
             canvas.create_text(950, 290, text=GAME.driver2, fill="white", font=("Arial", 20), anchor="nw")
             canvas.create_text(950, 340, text=("Confidence: "+str(car2Confidence)), fill="white", font=("Arial", 20), anchor="nw")
         GAME.Button("Qualifying",1200,695)
@@ -8444,8 +8447,12 @@ class Game:
             tyre=0
             if GAME.driver1 in GAME.drivers:
                 GAME.car1ID=GAME.drivers.index(GAME.driver1)
+            else:
+                GAME.car1ID=-1
             if GAME.driver2 in GAME.drivers:
                 GAME.car2ID=GAME.drivers.index(GAME.driver2)
+            else:
+                GAME.car2ID=-1
             if event.x>=5 and event.x<=220 and event.y>=110 and event.y<=320:
                 tyre="Soft"
             elif event.x>=5 and event.x<=220 and event.y>=330 and event.y<=540:
@@ -8463,7 +8470,7 @@ class Game:
                     index=GAME.car2ID
                 GAME.tyre.pop(index)
                 GAME.tyre.insert(index,tyre)
-                if GAME.driver==1 and GAME.car1ID in GAME.positions:
+                if GAME.driver==1 and GAME.driver2 in GAME.drivers:
                     GAME.driver=2
                     GAME.ChooseStartingTyres()
                 else:
@@ -8506,7 +8513,7 @@ class Game:
                 GAME.fuelAggression.insert(index,GAME.aggressions[1])
                 GAME.ERSdeployment.pop(index)
                 GAME.ERSdeployment.insert(index,GAME.aggressions[2])
-                if GAME.driver==1 and GAME.car1ID in GAME.positions:
+                if GAME.driver==1 and GAME.driver2 in GAME.drivers:
                     GAME.driver=2
                     GAME.ChooseStartingAggression()
                 else:
@@ -11475,45 +11482,46 @@ class Game:
         GAME.ChangeScreen("Reserve Options")
         GAME.Button("Back",5,730)
         GAME.options=[]
-        f=c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Junior' AND Age>17",(GAME.team,)).fetchall()
-        if len(f)>0:
-            for driver in f:
-                GAME.options.append(GAME.Sanitise(driver))
-        if len(GAME.options)<3:
-            f=c.execute("SELECT Name FROM Drivers WHERE Team='Free Agent' AND Age>17").fetchall()
-            for x in range(3-len(GAME.options)):
-                driver=random.choice(f)
-                f.remove(driver)
-                GAME.options.append(GAME.Sanitise(driver))
-        if len(GAME.options)==0:
-            GAME.Menu()
-        else:
-            canvas.create_text(150, 100, text="Name", fill="black", font=("Arial", 20), anchor="nw")
-            canvas.create_text(450, 100, text="Team", fill="black", font=("Arial", 20), anchor="nw")
-            canvas.create_text(650, 100, text="Age", fill="black", font=("Arial", 20), anchor="nw")
-            canvas.create_text(750, 100, text="Rating", fill="black", font=("Arial", 20), anchor="nw")
-            canvas.create_text(850, 100, text="Salary", fill="black", font=("Arial", 20), anchor="nw")
-            canvas.create_text(980, 100, text="Contract End", fill="black", font=("Arial", 20), anchor="nw")
-            for x in range(len(GAME.options)):
-                driver=GAME.options[x]
-                team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
-                age=GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
-                rating=GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
-                salary=int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
-                if salary<3000000:
-                    salary=3000000
-                salary="$"+str("{:,}".format(salary))
-                if team=="Free Agent":
-                    contractEnd=GAME.season
-                else:
-                    contractEnd=GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
-                canvas.create_text(150, 150+(x*60), text=driver, fill="black", font=("Arial", 20), anchor="nw")
-                canvas.create_text(450, 150+(x*60), text=team, fill="black", font=("Arial", 20), anchor="nw")
-                canvas.create_text(650, 150+(x*60), text=age, fill="black", font=("Arial", 20), anchor="nw")
-                canvas.create_text(750, 150+(x*60), text=rating, fill="black", font=("Arial", 20), anchor="nw")
-                canvas.create_text(850, 150+(x*60), text=salary, fill="black", font=("Arial", 20), anchor="nw")
-                canvas.create_text(1050, 150+(x*60), text=contractEnd, fill="black", font=("Arial", 20), anchor="nw")
-                GAME.Button("Hire",1150,140+(x*60))
+        with sqlite3.connect(GAME.database) as c:
+            f=c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Junior' AND Age>17",(GAME.team,)).fetchall()
+            if len(f)>0:
+                for driver in f:
+                    GAME.options.append(GAME.Sanitise(driver))
+            if len(GAME.options)<3:
+                f=c.execute("SELECT Name FROM Drivers WHERE Team='Free Agent' AND Age>17").fetchall()
+                for x in range(3-len(GAME.options)):
+                    driver=random.choice(f)
+                    f.remove(driver)
+                    GAME.options.append(GAME.Sanitise(driver))
+            if len(GAME.options)==0:
+                GAME.Menu()
+            else:
+                canvas.create_text(150, 100, text="Name", fill="black", font=("Arial", 20), anchor="nw")
+                canvas.create_text(450, 100, text="Team", fill="black", font=("Arial", 20), anchor="nw")
+                canvas.create_text(650, 100, text="Age", fill="black", font=("Arial", 20), anchor="nw")
+                canvas.create_text(750, 100, text="Rating", fill="black", font=("Arial", 20), anchor="nw")
+                canvas.create_text(850, 100, text="Salary", fill="black", font=("Arial", 20), anchor="nw")
+                canvas.create_text(980, 100, text="Contract End", fill="black", font=("Arial", 20), anchor="nw")
+                for x in range(len(GAME.options)):
+                    driver=GAME.options[x]
+                    team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                    age=GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                    rating=GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                    salary=int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
+                    if salary<3000000:
+                        salary=3000000
+                    salary="$"+str("{:,}".format(salary))
+                    if team=="Free Agent":
+                        contractEnd=GAME.season
+                    else:
+                        contractEnd=GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                    canvas.create_text(150, 150+(x*60), text=driver, fill="black", font=("Arial", 20), anchor="nw")
+                    canvas.create_text(450, 150+(x*60), text=team, fill="black", font=("Arial", 20), anchor="nw")
+                    canvas.create_text(650, 150+(x*60), text=age, fill="black", font=("Arial", 20), anchor="nw")
+                    canvas.create_text(750, 150+(x*60), text=rating, fill="black", font=("Arial", 20), anchor="nw")
+                    canvas.create_text(850, 150+(x*60), text=salary, fill="black", font=("Arial", 20), anchor="nw")
+                    canvas.create_text(1050, 150+(x*60), text=contractEnd, fill="black", font=("Arial", 20), anchor="nw")
+                    GAME.Button("Hire",1150,140+(x*60))
     def TeamData(self):
         #Team Data
         F1=sqlite3.connect(GAME.database)
