@@ -1695,8 +1695,18 @@ class Game:
         GAME.Button("Next Race",805,220)
         GAME.DisplayMoney()
     def DisplayMoney(self):
-        money="{:,}".format(GAME.money)
-        canvas.create_text(1100, 700, text=f"${money}", fill="white", font=("Arial", 30), anchor="nw")
+        if GAME.money<0:
+            negative=1
+            money=-GAME.money
+        else:
+            negative=0
+            money=GAME.money
+        money="{:,}".format(money)
+        if negative==1:
+            text=f"-${money}"
+        else:
+            text=f"${money}"
+        canvas.create_text(1100, 700, text=text, fill="white", font=("Arial", 30), anchor="nw")
     def Hire(self,team):
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
