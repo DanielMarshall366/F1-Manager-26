@@ -2739,7 +2739,7 @@ class Game:
                         pass
             elif GAME.replay==6:
                 if 11 in GAME.positions:
-                    if GAME.positions.index(11)>9:
+                    if GAME.positions.index(11)>6:
                         GAME.overtakeability=3
                     else:
                         GAME.overtakeability=2
@@ -6199,7 +6199,7 @@ class Game:
             GAME.temperature=10
             GAME.length=3.337
             GAME.laps=78
-            GAME.overtakeability=2
+            GAME.overtakeability=3
             GAME.risk=88
             GAME.maxRain=0
             GAME.maxWater=5.5
