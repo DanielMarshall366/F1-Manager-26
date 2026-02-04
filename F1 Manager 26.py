@@ -10919,7 +10919,7 @@ class Game:
                             canvas.image=logo
                             canvas.create_image(1050, 270, anchor=tk.NW, image=logo)
                     if len(c.execute("SELECT Name FROM Drivers WHERE Legend!=0").fetchall())>0:
-                        canvas.create_text(275, 265, text="Legends", fill="#F5C939", font=("Arial", 30), anchor="nw")
+                        canvas.create_text(275, 265, text="Legends", fill="#F5C939", font=("Algerian", 30), anchor="nw")
         else:
             valid=0
         if valid==0:
