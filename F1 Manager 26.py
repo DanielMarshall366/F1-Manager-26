@@ -2739,7 +2739,7 @@ class Game:
                         pass
             elif GAME.replay==6:
                 if 11 in GAME.positions:
-                    if GAME.positions.index(11)>6:
+                    if GAME.positions.index(11)>8:
                         GAME.overtakeability=3
                     else:
                         GAME.overtakeability=2
@@ -4293,14 +4293,29 @@ class Game:
                             GAME.Button(instructions[i+3],5+(x*1225),610+(i*60))
                         else:
                             GAME.Button(instructions[i],5+(x*1225),610+(i*60))
+                    if GAME.replay==6:
+                        tyre=tyres[4]
+                        canvas.create_image(140+(x*1225), 525, anchor=tk.NW, image=tyre)
             GAME.Button("Back",5,30)
             GAME.Button("Tyre Data",1230,30)
         else:
             GAME.pause=0
     def Box(self,driverNumber):
         GAME.pittingDriver=driverNumber
-        if GAME.replay>4:
+        if GAME.replay==5:
             GAME.OldBox()
+        elif GAME.replay==6:
+            if GAME.pittingDriver==1:
+                index=GAME.car1ID
+            else:
+                index=GAME.car2ID
+            GAME.pitLap.pop(index)
+            GAME.pitLap.insert(index,GAME.lap[index])
+            GAME.pitTyre.pop(index)
+            GAME.pitTyre.insert(index,"Wet")
+            GAME.pause=1
+            GAME.RefreshScreen()
+            GAME.NextMove()
         else:
             GAME.ChangeScreen("Box")
             for x in range(5):
