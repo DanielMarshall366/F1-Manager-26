@@ -2529,7 +2529,7 @@ class Game:
                 if position==1 and GAME.race==round(GAME.races/2)+2:
                     GAME.PressConference("Upgrade")
                 elif pressConferences>GAME.races:
-                    pressConferences=GAME.races
+                    GAME.PressConference(0)
                 elif GAME.race>round((GAME.races-pressConferences)/2) and GAME.race<GAME.races-round((23-pressConferences)/2):
                     GAME.PressConference(0)
                 else:
@@ -3641,6 +3641,10 @@ class Game:
                                     message=(driver+" overtook "+ahead+" for 3rd place.")
                                 elif x==21:
                                     message=(driver+" overtook "+ahead+" for 21st place.")
+                                elif x==22:
+                                    message=(driver+" overtook "+ahead+" for 22nd place.")
+                                elif x==23:
+                                    message=(driver+" overtook "+ahead+" for 23rd place.")
                                 else:
                                     message=(driver+" overtook "+ahead+" for "+str(x)+"th place.")
                                 GAME.AddToLog(message)
@@ -6947,7 +6951,7 @@ class Game:
         y=130
         for idx, driver in enumerate(GAME.positions):
             name=GAME.drivers[driver]
-            if name in penalised:
+            if name in penalised and idx<10:
                 place=idx + 1
                 places=penalised[name]
                 suffix={1: "st", 2: "nd", 3: "rd"}.get(place if place < 20 else place % 10, "th")
@@ -7314,12 +7318,9 @@ class Game:
                 GAME.weatherMessage.append("WARNING! Remember that drivers must take 2 pit stops in this race.")
         if len(GAME.weatherMessage)==1:
             canvas.create_text(20, 10, text=GAME.weatherMessage[0], fill="black", font=("Arial", 40), anchor="nw")
-        elif len(GAME.weatherMessage)==2:
+        else:
             for x in range(2):
                 canvas.create_text(20, 5+(x*40), text=GAME.weatherMessage[x], fill="black", font=("Arial", 30), anchor="nw")
-        else:
-            for x in range(len(GAME.weatherMessage)):
-                canvas.create_text(20, 5+(x*30), text=GAME.weatherMessage[x], fill="black", font=("Arial", 20), anchor="nw")
         canvas.create_text(1250, 10, text=(str(GAME.laps)+" Laps"), fill="black", font=("Arial", 40), anchor="nw")
         canvas.create_text(230, 200, text=("Estimated: "+str(GAME.expectedTyreLife[0])+" Laps"), fill="black", font=("Arial", 20), anchor="nw")
         if GAME.replay==5:
