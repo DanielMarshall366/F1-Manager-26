@@ -883,6 +883,27 @@
           "ContractEnd": 2027, 
           "Championships": 0,
           "Wins": 0
+        },
+	{
+          "Name": "Kush Maini",
+          "Team": "Alpine", 
+          "Role": "Reserve", 
+          "Country": "India",
+          "Salary": 1000000,       
+          "Rating": 68,
+	  "Overtaking": 75,
+	  "Defending": 75,
+	  "Pace": 78, 
+          "Experience": 30, 
+          "Control": 75,
+          "Reaction": 75,       
+          "Calmness": 80,
+	  "Age": 25,
+	  "Marketability": 70,
+          "DevelopmentRate": 80, 
+          "ContractEnd": 2026, 
+          "Championships": 0,
+          "Wins": 0
         }
       ],
       "Legends" : [

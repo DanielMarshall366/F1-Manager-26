@@ -11751,7 +11751,7 @@ driverHeads=["Max Verstappen","Lando Norris","Charles Leclerc","Oscar Piastri","
              "Ayumu Iwasa","Stoffel Vandoorne","Paul Aron","Ryo Hirakawa","Doriane Pin","Abbi Pulling","Juan Manuel Fangio","Michael Schumacher","Ayrton Senna","Alain Prost",
              "Jackie Stewart","Niki Lauda","Sergio Perez","Alex Dunne","Kevin Magnussen","Logan Sargeant","Sebastian Vettel","Daniel Ricciardo","Kimi Raikkonen","Jenson Button",
              "Nigel Mansell","Nicholas Latifi","Mika Hakkinen","David Coulthard","Luke Browning","Leonardo Fornaroli","Rubens Barrichello","Jim Clark","Young Hamilton",
-             "Felipe Massa","Heikki Kovalainen","Johnny Cecotto","Colton Herta","Freddie Slater"]
+             "Felipe Massa","Heikki Kovalainen","Johnny Cecotto","Colton Herta","Freddie Slater","Kush Maini"]
 for x in range(3):
     driverHeads.append(f"Man {x+1}")
     if x<2:
