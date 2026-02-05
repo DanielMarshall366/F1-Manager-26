@@ -1647,8 +1647,8 @@ class Game:
         if GAME.actions==0:
             GAME.action=1
         GAME.ChangeScreen("Board Room")
-        GAME.Button("Standings",225,170)
-        GAME.Button("Data",1100,640)
+        GAME.Button("Standings",400,510)
+        GAME.Button("Data",950,650)
         with sqlite3.connect(GAME.database) as c:
             if int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))==GAME.season+1:
                 nextEngine=GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])
@@ -1658,7 +1658,7 @@ class Game:
                 else:
                     manufacturedEngine=GAME.Sanitise(manufacturedEngine[0])
                 if (manufacturedEngine!=0 and(nextEngine=="0" or nextEngine==manufacturedEngine)) or nextEngine=="Honda" or GAME.action==0:
-                    GAME.Button("Research",888,380)
+                    GAME.Button("Research",870,580)
             if GAME.team=="Red Bull":
                 if len(c.execute("SELECT Name FROM Teams WHERE Name='Racing Bulls'").fetchall())==1 or len(c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team='Red Bull'").fetchall())>0:
                     GAME.swappable=1
@@ -1668,21 +1668,23 @@ class Game:
             elif GAME.team=="Alpine":
                 if len(c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team='Alpine'").fetchall())>0:
                     GAME.swappable=1
-            if GAME.swappable==1:
-                GAME.Button("Swap Drivers",700,600)
             if GAME.action==0:
                 if GAME.money>0:
-                    GAME.Button("Upgrade Car",1040,90)
-                GAME.Button("Scouting",400,455)
+                    GAME.Button("Upgrade Car",820,510)
+                GAME.Button("Scouting",350,580)
                 GAME.actions=1
                 c.execute("UPDATE Player SET Actions=1")
             else:
-                GAME.Button("View Contracts",400,455)
+                GAME.Button("View Contracts",350,580)
                 unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
                 if unableToRace>0 and len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(GAME.team,)).fetchall())<unableToRace:
-                    GAME.Button("Hire Reserve",400,525)
+                    GAME.Button("Hire Reserve",300,650)
+                    if GAME.swappable==1:
+                        GAME.swappable=0
                 GAME.actions=0
                 c.execute("UPDATE Player SET Actions=0")
+            if GAME.swappable==1:
+                GAME.Button("Swap Drivers",300,650)
             #Board Finances
             if GAME.money<2000000:
                 financial=int(GAME.Sanitise(c.execute("SELECT Financial FROM Player").fetchall()[0]))
@@ -1692,8 +1694,9 @@ class Game:
                     if financial>2:
                         financial=3
                 c.execute("UPDATE Player SET Financial=?",(financial,))
-        GAME.Button("Next Race",805,220)
+        GAME.Button("Next Race",620,412)
         GAME.DisplayMoney()
+        GAME.BoardRoomLogo()
     def DisplayMoney(self):
         if GAME.money<0:
             negative=1
@@ -1706,7 +1709,25 @@ class Game:
             text=f"-${money}"
         else:
             text=f"${money}"
-        canvas.create_text(1100, 700, text=text, fill="white", font=("Arial", 30), anchor="nw")
+        canvas.create_text(1190, 700, text=text, fill="white", font=("Arial", 30), anchor="nw")
+    def BoardRoomLogo(self):
+        if GAME.team in steam:
+            appearance=GAME.team
+        else:
+            with sqlite3.connect(GAME.database) as c:
+                appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
+        if appearance!="0":
+            if appearance in steam:
+                logo=logos[steam.index(appearance)-1]
+            else:
+                try:
+                    logo=sponsorLogos[sponsors.index(appearance)]
+                except:
+                    logo=0
+            if logo!=0:
+                canvas.image=logo
+                canvas.create_image(1090, 220, anchor=tk.NW, image=logo)
+                canvas.create_image(240, 220, anchor=tk.NW, image=logo)
     def Hire(self,team):
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
@@ -8740,21 +8761,22 @@ class Game:
             if event.x>=1230 and event.x<=1430 and event.y>=5 and event.y<=55:
                 GAME.SaveRace()
         elif GAME.screen=="Board Room":
-            if event.x>=225 and event.x<=425 and event.y>=170 and event.y<=225:
+            if event.x>=400 and event.x<=600 and event.y>=510 and event.y<=560:
                 #Standings
                 GAME.Standings()
-            elif event.x>=1100 and event.x<=1300 and event.y>=640 and event.y<=690:
+            elif event.x>=950 and event.x<=1150 and event.y>=650 and event.y<=700:
                 #Data
                 GAME.ChangeScreen("Data")
-                GAME.Button("Team Data",250,40)
-                GAME.Button("Car Data",250,340)
-                GAME.Button("Calendar",900,40)
-                GAME.Button("Achievements",900,340)
-                GAME.Button("History",900,640)
-                GAME.Button("Team Management",250,640)
+                GAME.Button("Team Data",400,510)
+                GAME.Button("Car Data",350,580)
+                GAME.Button("Team Management",300,650)
+                GAME.Button("Calendar",820,510)
+                GAME.Button("Achievements",870,580)
+                GAME.Button("History",920,650)
                 GAME.Button("Back",5,730)
                 GAME.DisplayMoney()
-            elif event.x>=1040 and event.x<=1240 and event.y>=90 and event.y<=140 and GAME.action==0 and GAME.money>0:
+                GAME.BoardRoomLogo()
+            elif event.x>=820 and event.x<=1020 and event.y>=510 and event.y<=560 and GAME.action==0 and GAME.money>0:
                 #Upgrade
                 GAME.maximumUpgradePoints=round(GAME.money/1500000)
                 if GAME.maximumUpgradePoints>10:
@@ -8790,24 +8812,25 @@ class Game:
                 for x in range(7):
                     GAME.upgradePoints.append(0)
                 GAME.UpgradePage()
-            elif event.x>=400 and event.x<=600 and event.y>=455 and event.y<=505:
+            elif event.x>=350 and event.x<=550 and event.y>=580 and event.y<=630:
                 if GAME.action==0:
                     #Scouting
                     GAME.ChangeScreen("Scouting")
-                    GAME.Button("View Contracts",250,40)
-                    GAME.Button("Scout Drivers",250,340)
-                    GAME.Button("Scout Technical Directors",900,40)
-                    GAME.Button("Scout Sporting Directors",900,340)
-                    GAME.Button("Scout Race Engineers",900,640)
+                    GAME.Button("View Contracts",400,510)
+                    GAME.Button("Scout Drivers",350,580)
+                    GAME.Button("Scout Technical Directors",820,510)
+                    GAME.Button("Scout Sporting Directors",870,580)
+                    GAME.Button("Scout Race Engineers",920,650)
                     with sqlite3.connect(GAME.database) as c:
                         unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
                         if unableToRace>0 and len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(GAME.team,)).fetchall())<unableToRace:
-                            GAME.Button("Hire Reserve",250,640)
+                            GAME.Button("Hire Reserve",300,650)
                     GAME.Button("Back",5,730)
                     GAME.DisplayMoney()
+                    GAME.BoardRoomLogo()
                 else:
                     GAME.ViewContracts()
-            elif event.x>=888 and event.x<=1088 and event.y>=380 and event.y<=430:
+            elif event.x>=870 and event.x<=1070 and event.y>=580 and event.y<=630:
                 #Research
                 with sqlite3.connect(GAME.database) as c:
                     if int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))==GAME.season+1:
@@ -8829,33 +8852,34 @@ class Game:
                         else:
                             if GAME.action==0:
                                 GAME.AerodynamicResearch()
-            elif event.x>=805 and event.x<=1005 and event.y>=220 and event.y<=270:
+            elif event.x>=620 and event.x<=820 and event.y>=412 and event.y<=462:
                 #Next Race
                 GAME.Reserves()
-            elif event.x>=700 and event.x<=900 and event.y>=600 and event.y<=650 and GAME.swappable==1:
-                #Swap Drivers
-                GAME.options=[GAME.car1,GAME.car2]
-                GAME.displayedName=0
-                GAME.SelectDriverToReplace()
-            elif event.x>=400 and event.x<=600 and event.y>=525 and event.y<=575:
-                #Hire Reserve
-                with sqlite3.connect(GAME.database) as c:
-                    unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
-                    if GAME.team=="Racing Bulls" and len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())>0:
-                        team="Red Bull"
-                    else:
-                        team=GAME.team
-                    reserves=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(team,)).fetchall())
-                if unableToRace>0 and reserves<unableToRace:
-                    GAME.HireReserve()
+            elif event.x>=300 and event.x<=500 and event.y>=650 and event.y<=700:
+                if GAME.swappable==1:
+                    #Swap Drivers
+                    GAME.options=[GAME.car1,GAME.car2]
+                    GAME.displayedName=0
+                    GAME.SelectDriverToReplace()
+                else:
+                    #Hire Reserve
+                    with sqlite3.connect(GAME.database) as c:
+                        unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
+                        if GAME.team=="Racing Bulls" and len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())>0:
+                            team="Red Bull"
+                        else:
+                            team=GAME.team
+                        reserves=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(team,)).fetchall())
+                    if unableToRace>0 and reserves<unableToRace:
+                        GAME.HireReserve()
         elif (GAME.screen=="Standings" or GAME.screen=="Data" or GAME.screen=="Team Data" or GAME.screen=="Car Data" or GAME.screen=="calendar" or GAME.screen=="Achievements"
               or GAME.screen=="History" or GAME.screen=="Upgrade" or GAME.screen=="Select Research Type" or GAME.screen=="Scouting"
               or GAME.screen=="View Contracts" or GAME.screen=="Junior & Reserve Drivers" or GAME.screen=="Driver List" or GAME.screen=="Staff List" or GAME.screen=="Contract Name"
               or GAME.screen=="Contract" or GAME.screen=="Replacing" or GAME.screen=="Replacement" or GAME.screen=="Renewal" or GAME.screen=="Team Management"
               or GAME.screen=="Reserve Options") and event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
             GAME.Menu()
-        elif GAME.screen=="Data": 
-            if event.x>=250 and event.x<=450 and event.y>=40 and event.y<=90:
+        elif GAME.screen=="Data":
+            if event.x>=400 and event.x<=600 and event.y>=510 and event.y<=560:
                 #Team Data
                 GAME.ChangeScreen("Team Data")
                 GAME.DisplayLogo()
@@ -8900,10 +8924,10 @@ class Game:
                 canvas.create_text(40, 600, text=f"Next Regulation Cycle: {regulationChange}", fill="white", font=("Arial", 40), anchor="nw")
                 GAME.DisplayMoney()
                 GAME.Button("Back",5,730)
-            elif event.x>=250 and event.x<=450 and event.y>=340 and event.y<=390:
+            elif event.x>=350 and event.x<=550 and event.y>=580 and event.y<=630:
                 #Car Data
                 GAME.CarData()
-            elif event.x>=900 and event.x<=1100 and event.y>=40 and event.y<=90:
+            elif event.x>=820 and event.x<=1020 and event.y>=510 and event.y<=560:
                 #Calendar
                 GAME.ChangeScreen("calendar")
                 canvas.create_text(350, 10, text=f"{GAME.season} Season", fill="white", font=("Arial", 100), anchor="nw")
@@ -8913,7 +8937,7 @@ class Game:
                     for x in range(len(f)):
                         GAME.CalendarDisplay(x,GAME.Sanitise(f[x]))
                 canvas.create_text(220, 725, text=f"Next Race: {GAME.Sanitise(f[GAME.race-1])}", fill="white", font=("Arial", 40), anchor="nw")
-            elif event.x>=900 and event.x<=1100 and event.y>=340 and event.y<=390:
+            elif event.x>=870 and event.x<=1070 and event.y>=580 and event.y<=630:
                 #Achievements
                 GAME.ChangeScreen("Achievements")
                 GAME.DisplayLogo()
@@ -8932,7 +8956,7 @@ class Game:
                     canvas.create_text(40, 520, text=f"Wins: {wins}", fill="white", font=("Arial", 40), anchor="nw")
                 if championships>0:
                     canvas.create_text(40, 600, text=f"Championships: {championships}", fill="white", font=("Arial", 40), anchor="nw")
-            elif event.x>=900 and event.x<=1100 and event.y>=640 and event.y<=690:
+            elif event.x>=920 and event.x<=1120 and event.y>=650 and event.y<=700:
                 #History
                 GAME.ChangeScreen("History")
                 GAME.Button("Back",5,730)
@@ -8947,7 +8971,7 @@ class Game:
                     canvas.create_text(400, 160+(x*25), text=year, fill="black", font=("Arial", 20), anchor="nw")
                     canvas.create_text(470, 160+(x*25), text=driver, fill="black", font=("Arial", 20), anchor="nw")
                     canvas.create_text(750, 160+(x*25), text=constructor, fill="black", font=("Arial", 20), anchor="nw")
-            elif event.x>=250 and event.x<=450 and event.y>=640 and event.y<=690:
+            elif event.x>=300 and event.x<=500 and event.y>=650 and event.y<=700:
                 #Team Management
                 GAME.ChangeScreen("Team Management")
                 GAME.DisplayLogo()
@@ -9141,10 +9165,10 @@ class Game:
             elif event.x>=890 and event.x<=1190 and event.y>=450 and event.y<=500:
                 GAME.ResearchEngine()
         elif GAME.screen=="Scouting":
-            if event.x>=250 and event.x<=450 and event.y>=40 and event.y<=90:
+            if event.x>=400 and event.x<=600 and event.y>=510 and event.y<=560:
                 #View Contracts
                 GAME.ViewContracts()
-            elif event.x>=250 and event.x<=450 and event.y>=340 and event.y<=390:
+            elif event.x>=350 and event.x<=550 and event.y>=580 and event.y<=630:
                 #Scout Drivers
                 GAME.scouting="Driver"
                 with sqlite3.connect(GAME.database) as c:
@@ -9216,19 +9240,19 @@ class Game:
                             GAME.Menu()
                     else:
                         GAME.Menu()
-            elif event.x>=900 and event.x<=1100 and event.y>=40 and event.y<=90:
+            elif event.x>=820 and event.x<=1020 and event.y>=510 and event.y<=560:
                 #Scout Technical Directors
                 with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND Role='Technical Director'",(GAME.team,)).fetchall()
                 if len(f)==0:
                     GAME.ScoutStaff("Technical Director")
-            elif event.x>=900 and event.x<=1100 and event.y>=340 and event.y<=390:
+            elif event.x>=870 and event.x<=1070 and event.y>=580 and event.y<=630:
                 #Scout Sporting Directors
                 with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND Role='Sporting Director'",(GAME.team,)).fetchall()
                 if len(f)==0:
                     GAME.ScoutStaff("Sporting Director")
-            elif event.x>=900 and event.x<=1100 and event.y>=640 and event.y<=690:
+            elif event.x>=920 and event.x<=1120 and event.y>=650 and event.y<=700:
                 #Scout Race Engineers
                 with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND NewRole='Race Engineer 1'",(GAME.team,)).fetchall()
@@ -9236,7 +9260,7 @@ class Game:
                         f=c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND NewRole='Race Engineer 2'",(GAME.team,)).fetchall()
                 if len(f)==0:
                     GAME.ScoutStaff("Race Engineer")
-            elif event.x>=250 and event.x<=450 and event.y>=640 and event.y<=690:
+            elif event.x>=300 and event.x<=500 and event.y>=650 and event.y<=700:
                 #Hire Reserve
                 with sqlite3.connect(GAME.database) as c:
                     unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
@@ -11652,7 +11676,7 @@ class Game:
             x+=500
         canvas.create_text(x, y, text=(str(i+1)+". "+track), fill="white", font=("Arial", 20), anchor="nw")
     def Voice(self, subject, line):
-        if not (((line=="Overtake" or line=="Lead") and GAME.replay==2) or GAME.pause==3 or GAME.replay==8 or GAME.replay==9):
+        if not (((line=="Overtake" or line=="Lead") and GAME.replay==2) or GAME.pause==3 or GAME.replay==8 or GAME.replay==9 or GAME.replay==6):
             GAME.playing=1
             delay=0
             if subject!=0:
