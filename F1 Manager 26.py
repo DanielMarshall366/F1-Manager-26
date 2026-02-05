@@ -4884,14 +4884,13 @@ class Game:
                         aggressions=["Conserve","Balanced","Push"]
                         aggression=aggressions[GAME.fuelAggression[indexes[x]]-1]
                     elif GAME.ers>0:
-                        aggressions=["Harvest","Neutral"]
+                        
                         if GAME.ers==1:
                             if GAME.ERSdeployment[indexes[x]]==4 and (GAME.ERS[indexes[x]]<50 or GAME.water>=1 or GAME.positions[0]==indexes[x] or GAME.time[indexes[x]]>=1):
                                 GAME.ERSdeployment[indexes[x]]=3
-                            aggressions.append("Boost")
-                            aggressions.append("Overtake")
+                            aggressions=["Recharge","Neutral","Boost","Overtake"]
                         else:
-                            aggressions.append("Deployed")
+                            aggressions=["Harvest","Neutral","Deployed"]
                         aggression=aggressions[GAME.ERSdeployment[indexes[x]]-1]
                     else:
                         aggression=0
@@ -7347,10 +7346,10 @@ class Game:
                     aggressions=["Conserve","Light","Balanced","Aggressive","Attack"]
                 elif x==1:
                     aggressions=["Conserve","Balanced","Push"]
+                elif GAME.ers==1:
+                    aggressions=["Recharge","Neutral","Boost"]
                 else:
-                    aggressions=["Harvest","Neutral","Boost"]
-                    if GAME.ers==2:
-                        aggressions[2]="Deployed"
+                    aggressions=["Harvest","Neutral","Deployed"]
                 canvas.create_text(300,132+(260*x), text=aggressions[GAME.aggressions[x]-1], fill="black", font=("Arial", 20), anchor="nw")
         if GAME.driver==1 and GAME.car1ID in GAME.positions:
             driver=GAME.driver1
@@ -11752,7 +11751,7 @@ driverHeads=["Max Verstappen","Lando Norris","Charles Leclerc","Oscar Piastri","
              "Ayumu Iwasa","Stoffel Vandoorne","Paul Aron","Ryo Hirakawa","Doriane Pin","Abbi Pulling","Juan Manuel Fangio","Michael Schumacher","Ayrton Senna","Alain Prost",
              "Jackie Stewart","Niki Lauda","Sergio Perez","Alex Dunne","Kevin Magnussen","Logan Sargeant","Sebastian Vettel","Daniel Ricciardo","Kimi Raikkonen","Jenson Button",
              "Nigel Mansell","Nicholas Latifi","Mika Hakkinen","David Coulthard","Luke Browning","Leonardo Fornaroli","Rubens Barrichello","Jim Clark","Young Hamilton",
-             "Felipe Massa","Heikki Kovalainen","Johnny Cecotto"]
+             "Felipe Massa","Heikki Kovalainen","Johnny Cecotto","Colton Herta","Freddie Slater"]
 for x in range(3):
     driverHeads.append(f"Man {x+1}")
     if x<2:
