@@ -7446,7 +7446,7 @@ class Game:
                 elif x==1:
                     colour="#C8CDD2"
                 elif x==2:
-                colour="#D79B5A"
+                    colour="#D79B5A"
                 else:
                     colour="white"
                 name=GAME.Sanitise(c.execute('''SELECT Name FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0])
