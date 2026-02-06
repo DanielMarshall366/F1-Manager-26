@@ -7419,11 +7419,8 @@ class Game:
         F1.close()
     def Standings(self):
         GAME.ChangeScreen("Standings")
-        GAME.DisplayLogo()
         with sqlite3.connect(GAME.database) as c:
             f=c.execute('''SELECT Name FROM Teams''').fetchall()
-            canvas.create_text(10, 5, text="Constructors' Standings", fill="white", font=("Arial", 30), anchor="nw")
-            canvas.create_text(600, 5, text="Drivers' Standings", fill="white", font=("Arial", 30), anchor="nw")
             for x in range(len(f)):
                 name=GAME.Sanitise(c.execute('''SELECT Name FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0])
                 engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
@@ -7436,38 +7433,54 @@ class Game:
                 if len(fullName)>30:
                     fullName=name
                 if x<9:
-                    canvas.create_text(10, 100+(x*25), text=f"{x+1}. {fullName}", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(150, 130+(x*25), text=f"{x+1}. {fullName}", fill="white", font=("Arial", 15), anchor="nw")
                 else:
-                    canvas.create_text(5, 100+(x*25), text=f"{x+1}. {fullName}", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(145, 130+(x*25), text=f"{x+1}. {fullName}", fill="white", font=("Arial", 15), anchor="nw")
                 if points==1:
-                    canvas.create_text(350, 100+(x*25), text="1 Point", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(500, 130+(x*25), text="1 Point", fill="white", font=("Arial", 15), anchor="nw")
                 elif points<10:
-                    canvas.create_text(350, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(500, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
                 elif points<100:
-                    canvas.create_text(345, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(495, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
                 elif points<1000:
-                    canvas.create_text(340, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(490, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
                 else:
-                    canvas.create_text(335, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(485, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
         f=c.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall()
         for x in range(len(f)):
-            name=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
-            team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
-            if team=="Dead":
-                team=""
-            points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0]))
-            if x<9:
-                canvas.create_text(600, 100+(x*25), text=f"{x+1}. {name} {team}", fill="white", font=("Arial", 15), anchor="nw")
+            if x<26:
+                name=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
+                team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
+                if team=="Dead":
+                    team=""
+                points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0]))
+                if x<9:
+                    canvas.create_text(770, 130+(x*25), text=f"{x+1}. {name} {team}", fill="white", font=("Arial", 15), anchor="nw")
+                else:
+                    canvas.create_text(765, 130+(x*25), text=f"{x+1}. {name} {team}", fill="white", font=("Arial", 15), anchor="nw")
+                if points==1:
+                    canvas.create_text(1290, 130+(x*25), text="1 Point", fill="white", font=("Arial", 15), anchor="nw")
+                elif points<10:
+                    canvas.create_text(1290, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                elif points<100:
+                     canvas.create_text(1285, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                else:
+                    canvas.create_text(1280, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+        if GAME.team in steam:
+            appearance=GAME.team
+        else:
+            appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
+        if appearance!="0":
+            if appearance in steam:
+                logo=logos[steam.index(appearance)-1]
             else:
-                canvas.create_text(595, 100+(x*25), text=f"{x+1}. {name} {team}", fill="white", font=("Arial", 15), anchor="nw")
-            if points==1:
-                canvas.create_text(1140, 100+(x*25), text="1 Point", fill="white", font=("Arial", 15), anchor="nw")
-            elif points<10:
-                canvas.create_text(1140, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
-            elif points<100:
-                 canvas.create_text(1135, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
-            else:
-                canvas.create_text(1130, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                try:
+                    logo=sponsorLogos[sponsors.index(appearance)]
+                except:
+                    logo=0
+            if logo!=0:
+                canvas.image=logo
+                canvas.create_image(1300, 5, anchor=tk.NW, image=logo)
         GAME.Button("Back",5,730)
     def WinterHiring(self):
         with sqlite3.connect(GAME.database) as c:
@@ -11783,7 +11796,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Mazda Display","Lamborghini Display","Volkswagen Display","Volvo Display","JLR Display","Gazoo Racing Display","Lotus Display","Replay Screen","F1 Movie 1","F1 Movie 2",
         "F1 Movie 3","F1 Movie 4","F1 Movie 5","F1 Movie 6","F1 Movie 7","F1 Movie 8","F1 Movie 9","F1 Movie 10","Safety Car Menu","Red Flag Menu","Choose a Team 2021","Latifi Crash",
         "Hamilton Wins","Verstappen Wins","Canada 2011 Victory","Canada 2011 Defeat","Choose a Team 2000","Schumacher Victory","Hakkinen Victory","Senna Celebration",
-        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Old Box","Select Save File","Calendar"]
+        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Old Box","Select Save File","Calendar","Standings"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
