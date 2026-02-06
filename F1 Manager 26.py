@@ -8874,7 +8874,7 @@ class Game:
                         reserves=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(team,)).fetchall())
                     if unableToRace>0 and reserves<unableToRace:
                         GAME.HireReserve()
-        elif (GAME.screen=="Standings" or GAME.screen=="Data" or GAME.screen=="Team Data" or GAME.screen=="Car Data" or GAME.screen=="Calendar" or GAME.screen=="Achievements"
+        elif (GAME.screen=="Standings" or GAME.screen=="Data" or GAME.screen=="Team Data" or GAME.screen=="Car Data" or GAME.screen=="Achievements"
               or GAME.screen=="History" or GAME.screen=="Upgrade" or GAME.screen=="Select Research Type" or GAME.screen=="Scouting"
               or GAME.screen=="View Contracts" or GAME.screen=="Junior & Reserve Drivers" or GAME.screen=="Driver List" or GAME.screen=="Staff List" or GAME.screen=="Contract Name"
               or GAME.screen=="Contract" or GAME.screen=="Replacing" or GAME.screen=="Replacement" or GAME.screen=="Renewal" or GAME.screen=="Team Management"
@@ -8941,7 +8941,7 @@ class Game:
                             GAME.CalendarDisplay(x,y,GAME.Sanitise(f[(x*5)+y]))
                     for z in range(len(f)%5):
                         GAME.CalendarDisplay(4,z,GAME.Sanitise(f[((len(f)//5)*5)+z]))
-                canvas.create_text(250, 600, text=f"Next Race: {GAME.Sanitise(f[GAME.race-1])}", fill="#DADADA", font=("Arial", 50), anchor="nw")
+                canvas.create_text(250, 600, text=f"Next Race: {GAME.Sanitise(f[GAME.race-1])}", fill="#C4C4C4", font=("Arial", 50), anchor="nw")
             elif event.x>=870 and event.x<=1070 and event.y>=580 and event.y<=630:
                 #Achievements
                 GAME.ChangeScreen("Achievements")
@@ -10318,6 +10318,9 @@ class Game:
                 GAME.ViewSave()
             elif event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
                 GAME.ChangeScreen("Title Screen")
+        elif GAME.screen=="Calendar":
+            if event.x>=5 and event.x<=205 and event.y>=720 and event.y<=770:
+                GAME.Menu()
     def CarData(self):
         GAME.CarRanking()
         GAME.ChangeScreen("Car Data")
@@ -11664,7 +11667,7 @@ class Game:
                     calendar.append(finale)
                 for x in range(GAME.races):
                     F1.execute("INSERT into Calendar (ID, Track) VALUES(?, ?)",(x+1,calendar[x],))
-        canvas.create_text(350, 20, text=f"Here's the {GAME.season} Calendar:", fill="white", font=("Arial", 50), anchor="nw")
+        canvas.create_text(570, 10, text=f"{GAME.season} Calendar", fill="#F5C939", font=("Arial", 40), anchor="nw")
         delay=500
         for x in range(GAME.races):
             track=calendar[x]
@@ -11676,14 +11679,21 @@ class Game:
                 root.after(delay, lambda a=x, b=y, t=track: GAME.CalendarDisplay(a, b, t))
                 delay+=500
             for z in range(GAME.races%5):
-                track=,calendar[((GAME.races//5)*5)+z]
+                track=calendar[((GAME.races//5)*5)+z]
                 root.after(delay, lambda a=4, b=z, t=track: GAME.CalendarDisplay(a, b, t))
                 delay+=500
         root.after(delay, lambda: GAME.Button("Next",1200,695))
     def CalendarDisplay(self,a,b,track):
         x=265+(190*b)
         y=205+(71*a)
-        canvas.create_text(x, y, text=(f"{(a*5)+b+1}. {track}"), fill="white", font=("Arial", 15), anchor="nw")
+        number=(a*5)+b+1
+        if number<GAME.race:
+            colour="#E20000"
+        elif number==GAME.race:
+            colour="green"
+        else:
+            colour="#DADADA"
+        canvas.create_text(x, y, text=(f"{number}. {track}"), fill=colour, font=("Arial", 15), anchor="nw")
     def Voice(self, subject, line):
         if not (((line=="Overtake" or line=="Lead") and GAME.replay==2) or GAME.pause==3 or GAME.replay==8 or GAME.replay==9 or GAME.replay==6):
             GAME.playing=1
