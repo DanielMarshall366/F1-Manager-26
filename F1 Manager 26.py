@@ -6968,16 +6968,19 @@ class Game:
         GAME.positions=starting_grid
         GAME.ChangeScreen("Breaking News")
         y=130
+        i=0
         for idx, driver in enumerate(GAME.positions):
             name=GAME.drivers[driver]
-            if name in penalised and idx<10:
-                place=idx + 1
-                places=penalised[name]
-                suffix={1: "st", 2: "nd", 3: "rd"}.get(place if place < 20 else place % 10, "th")
-                y+=50
-                canvas.create_text(150, y, text=f"{name} has a {places} place grid penalty for", fill="white", font=("Arial", 30), anchor="nw")
-                y+=50
-                canvas.create_text(150, y, text=f"taking a new engine, they will be starting the race in {place}{suffix}.", fill="white", font=("Arial", 30), anchor="nw")
+            if name in penalised:
+                if i<10:
+                    i+=1
+                    place=idx + 1
+                    places=penalised[name]
+                    suffix={1: "st", 2: "nd", 3: "rd"}.get(place if place < 20 else place % 10, "th")
+                    y+=50
+                    canvas.create_text(150, y, text=f"{name} has a {places} place grid penalty for", fill="white", font=("Arial", 30), anchor="nw")
+                    y+=50
+                    canvas.create_text(150, y, text=f"taking a new engine, they will be starting the race in {place}{suffix}.", fill="white", font=("Arial", 30), anchor="nw")
         root.after(5000, lambda: GAME.RacePreparation())
     def RacePreparation(self):
         #Soft
