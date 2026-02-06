@@ -8275,6 +8275,8 @@ class Game:
         elif screen=="Old box":
             screen="Old Box"
             root.after(500, lambda: GAME.OldBox())
+        elif screen=="calendar":
+            screen="Calendar"
         elif screen not in Images:
             screen="Blank Screen"
         imageOnCanvas = canvas.create_image(0, 0, anchor=tk.NW, image=images[Images.index(screen)])
@@ -8457,7 +8459,7 @@ class Game:
         elif GAME.screen=="Pre-Season Testing":
             if event.x>=1200 and event.x<=1400 and event.y>=700 and event.y<=750:
                 GAME.Calendar()
-        elif GAME.screen=="Calendar":
+        elif GAME.screen=="calendar":
             if event.x>=1200 and event.x<=1400 and event.y>=700 and event.y<=750:
                 GAME.race=1
                 with sqlite3.connect(GAME.database) as F1:
@@ -8872,7 +8874,7 @@ class Game:
                         reserves=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(team,)).fetchall())
                     if unableToRace>0 and reserves<unableToRace:
                         GAME.HireReserve()
-        elif (GAME.screen=="Standings" or GAME.screen=="Data" or GAME.screen=="Team Data" or GAME.screen=="Car Data" or GAME.screen=="calendar" or GAME.screen=="Achievements"
+        elif (GAME.screen=="Standings" or GAME.screen=="Data" or GAME.screen=="Team Data" or GAME.screen=="Car Data" or GAME.screen=="Calendar" or GAME.screen=="Achievements"
               or GAME.screen=="History" or GAME.screen=="Upgrade" or GAME.screen=="Select Research Type" or GAME.screen=="Scouting"
               or GAME.screen=="View Contracts" or GAME.screen=="Junior & Reserve Drivers" or GAME.screen=="Driver List" or GAME.screen=="Staff List" or GAME.screen=="Contract Name"
               or GAME.screen=="Contract" or GAME.screen=="Replacing" or GAME.screen=="Replacement" or GAME.screen=="Renewal" or GAME.screen=="Team Management"
@@ -8929,14 +8931,17 @@ class Game:
                 GAME.CarData()
             elif event.x>=820 and event.x<=1020 and event.y>=510 and event.y<=560:
                 #Calendar
-                GAME.ChangeScreen("calendar")
-                canvas.create_text(350, 10, text=f"{GAME.season} Season", fill="white", font=("Arial", 100), anchor="nw")
-                GAME.Button("Back",5,730)
+                GAME.ChangeScreen("Calendar")
+                canvas.create_text(570, 10, text=f"{GAME.season} Season", fill="#F5C939", font=("Arial", 40), anchor="nw")
+                GAME.Button("Back",5,725)
                 with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Track FROM Calendar").fetchall()
-                    for x in range(len(f)):
-                        GAME.CalendarDisplay(x,GAME.Sanitise(f[x]))
-                canvas.create_text(220, 725, text=f"Next Race: {GAME.Sanitise(f[GAME.race-1])}", fill="white", font=("Arial", 40), anchor="nw")
+                    for x in range(len(f)//5):
+                        for y in range(5):
+                            GAME.CalendarDisplay(x,y,GAME.Sanitise(f[(x*5)+y]))
+                    for z in range(len(f)%5):
+                        GAME.CalendarDisplay(4,z,GAME.Sanitise(f[((len(f)//5)*5)+z]))
+                canvas.create_text(250, 600, text=f"Next Race: {GAME.Sanitise(f[GAME.race-1])}", fill="#DADADA", font=("Arial", 50), anchor="nw")
             elif event.x>=870 and event.x<=1070 and event.y>=580 and event.y<=630:
                 #Achievements
                 GAME.ChangeScreen("Achievements")
@@ -11607,7 +11612,7 @@ class Game:
         canvas.create_image(x, y, anchor=tk.NW, image=button)
     def Calendar(self):
         calendar=[]
-        GAME.ChangeScreen("Calendar")
+        GAME.ChangeScreen("calendar")
         with sqlite3.connect(GAME.database) as F1:
                 F1.execute("DELETE FROM Calendar")
                 if GAME.season==2026:
@@ -11665,16 +11670,20 @@ class Game:
             track=calendar[x]
             root.after(delay, lambda i=x, t=track: GAME.CalendarDisplay(i, t))
             delay+=500
+        for x in range(GAME.races//5):
+            for y in range(5):
+                track=calendar[(x*5)+y]
+                root.after(delay, lambda a=x, b=y, t=track: GAME.CalendarDisplay(a, b, t))
+                delay+=500
+            for z in range(GAME.races%5):
+                track=,calendar[((GAME.races//5)*5)+z]
+                root.after(delay, lambda a=4, b=z, t=track: GAME.CalendarDisplay(a, b, t))
+                delay+=500
         root.after(delay, lambda: GAME.Button("Next",1200,695))
-    def CalendarDisplay(self,i,track):
-        x=300
-        if i>=9:
-            x-=10
-        y=150+(30*i)
-        if i>=round(GAME.races/2):
-            y-=(30*round(GAME.races/2))
-            x+=500
-        canvas.create_text(x, y, text=(str(i+1)+". "+track), fill="white", font=("Arial", 20), anchor="nw")
+    def CalendarDisplay(self,a,b,track):
+        x=265+(190*b)
+        y=205+(71*a)
+        canvas.create_text(x, y, text=(f"{(a*5)+b+1}. {track}"), fill="white", font=("Arial", 15), anchor="nw")
     def Voice(self, subject, line):
         if not (((line=="Overtake" or line=="Lead") and GAME.replay==2) or GAME.pause==3 or GAME.replay==8 or GAME.replay==9 or GAME.replay==6):
             GAME.playing=1
@@ -11764,7 +11773,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Mazda Display","Lamborghini Display","Volkswagen Display","Volvo Display","JLR Display","Gazoo Racing Display","Lotus Display","Replay Screen","F1 Movie 1","F1 Movie 2",
         "F1 Movie 3","F1 Movie 4","F1 Movie 5","F1 Movie 6","F1 Movie 7","F1 Movie 8","F1 Movie 9","F1 Movie 10","Safety Car Menu","Red Flag Menu","Choose a Team 2021","Latifi Crash",
         "Hamilton Wins","Verstappen Wins","Canada 2011 Victory","Canada 2011 Defeat","Choose a Team 2000","Schumacher Victory","Hakkinen Victory","Senna Celebration",
-        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Old Box","Select Save File"]
+        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Old Box","Select Save File","Calendar"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
