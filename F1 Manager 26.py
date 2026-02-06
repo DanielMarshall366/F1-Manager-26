@@ -7422,7 +7422,7 @@ class Game:
     def Standings(self,final):
         GAME.ChangeScreen("Standings")
         if final==1:
-            GAME.screen=="Final Standings"
+            GAME.screen="Final Standings"
         with sqlite3.connect(GAME.database) as c:
             f=c.execute('''SELECT Name FROM Teams''').fetchall()
             if GAME.race<=GAME.races:
@@ -10953,7 +10953,10 @@ class Game:
                         colour="#DADADA"
                     canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
-                    canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]),)).fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
+                    try:
+                        canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]),)).fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
+                    except:
+                        canvas.create_text(400, 440, text="Pre-Season", fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(400, 510, text=team, fill=colour, font=("Arial", 50), anchor="nw")
                     if team in steam:
                         appearance=team
@@ -11674,19 +11677,15 @@ class Game:
                     F1.execute("INSERT into Calendar (ID, Track) VALUES(?, ?)",(x+1,calendar[x],))
         canvas.create_text(570, 10, text=f"{GAME.season} Calendar", fill="#F5C939", font=("Arial", 40), anchor="nw")
         delay=500
-        for x in range(GAME.races):
-            track=calendar[x]
-            root.after(delay, lambda i=x, t=track: GAME.CalendarDisplay(i, t))
-            delay+=500
         for x in range(GAME.races//5):
             for y in range(5):
                 track=calendar[(x*5)+y]
                 root.after(delay, lambda a=x, b=y, t=track: GAME.CalendarDisplay(a, b, t))
                 delay+=500
-            for z in range(GAME.races%5):
-                track=calendar[((GAME.races//5)*5)+z]
-                root.after(delay, lambda a=4, b=z, t=track: GAME.CalendarDisplay(a, b, t))
-                delay+=500
+        for z in range(GAME.races%5):
+            track=calendar[((GAME.races//5)*5)+z]
+            root.after(delay, lambda a=4, b=z, t=track: GAME.CalendarDisplay(a, b, t))
+            delay+=500
         root.after(delay, lambda: GAME.Button("Next",1200,695))
     def CalendarDisplay(self,a,b,track):
         x=265+(190*b)
