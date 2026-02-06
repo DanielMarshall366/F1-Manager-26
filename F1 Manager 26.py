@@ -7417,8 +7417,10 @@ class Game:
             teams.pop(highestIndex)
         F1.commit()
         F1.close()
-    def Standings(self):
+    def Standings(self,final):
         GAME.ChangeScreen("Standings")
+        if final==1:
+            GAME.screen=="Final Standings"
         with sqlite3.connect(GAME.database) as c:
             f=c.execute('''SELECT Name FROM Teams''').fetchall()
             for x in range(len(f)):
@@ -7481,7 +7483,10 @@ class Game:
             if logo!=0:
                 canvas.image=logo
                 canvas.create_image(1300, 5, anchor=tk.NW, image=logo)
-        GAME.Button("Back",5,730)
+        if final==0:
+            GAME.Button("Back",5,730)
+        else:
+            GAME.Button("End Season",1200,730)
     def WinterHiring(self):
         with sqlite3.connect(GAME.database) as c:
             teams=c.execute("SELECT Name FROM Teams").fetchall()
@@ -8192,7 +8197,7 @@ class Game:
         if GAME.sound==1:
             GAME.Voice(driver,"Champion")
         else:
-            root.after(10000, lambda: GAME.FinalStandings())
+            root.after(10000, lambda: GAME.Standings(1))
     def DriverCelebration(self,driver):
         path=os.path.join(os.path.dirname(__file__), "Sound Effects", f"{driver} Celebration.wav")
         if os.path.isfile(path):
@@ -8218,57 +8223,7 @@ class Game:
         if os.path.isfile(path):
             winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
         if GAME.replay==0:
-            root.after(10000, lambda: GAME.FinalStandings())
-    def FinalStandings(self):
-        GAME.ChangeScreen("Final Standings")
-        GAME.DisplayLogo()
-        with sqlite3.connect(GAME.database) as c:
-            f=c.execute('''SELECT Name FROM Teams''').fetchall()
-            canvas.create_text(10, 5, text="Constructors' Standings", fill="white", font=("Arial", 30), anchor="nw")
-            canvas.create_text(600, 5, text="Drivers' Standings", fill="white", font=("Arial", 30), anchor="nw")
-            for x in range(len(f)):
-                name=GAME.Sanitise(c.execute('''SELECT Name FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0])
-                engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
-                if engine=="Red Bull":
-                    engine="Ford RBPT"
-                if engine==name:
-                    engine=""
-                points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0]))
-                fullName=f"{name} {engine}"
-                if len(fullName)>30:
-                    fullName=name
-                if x<9:
-                    canvas.create_text(10, 100+(x*25), text=f"{x+1}. {fullName}", fill="white", font=("Arial", 15), anchor="nw")
-                else:
-                    canvas.create_text(5, 100+(x*25), text=f"{x+1}. {fullName}", fill="white", font=("Arial", 15), anchor="nw")
-                if points==1:
-                    canvas.create_text(350, 100+(x*25), text="1 Point", fill="white", font=("Arial", 15), anchor="nw")
-                elif points<10:
-                    canvas.create_text(350, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
-                elif points<100:
-                    canvas.create_text(345, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
-                elif points<1000:
-                    canvas.create_text(340, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
-                else:
-                    canvas.create_text(335, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
-        f=c.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall()
-        for x in range(len(f)):
-            name=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
-            team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
-            points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0]))
-            if x<9:
-                canvas.create_text(600, 100+(x*25), text=f"{x+1}. {name} {team}", fill="white", font=("Arial", 15), anchor="nw")
-            else:
-                canvas.create_text(595, 100+(x*25), text=f"{x+1}. {name} {team}", fill="white", font=("Arial", 15), anchor="nw")
-            if points==1:
-                canvas.create_text(1140, 100+(x*25), text="1 Point", fill="white", font=("Arial", 15), anchor="nw")
-            elif points<10:
-                canvas.create_text(1140, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
-            elif points<100:
-                 canvas.create_text(1135, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
-            else:
-                canvas.create_text(1130, 100+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
-        GAME.Button("End Season",1200,695)
+            root.after(10000, lambda: GAME.Standings(1))
     def ChangeScreen(self,screen):
         GAME.screen=screen
         canvas.delete('all')
@@ -8778,7 +8733,7 @@ class Game:
         elif GAME.screen=="Board Room":
             if event.x>=400 and event.x<=600 and event.y>=510 and event.y<=560:
                 #Standings
-                GAME.Standings()
+                GAME.Standings(0)
             elif event.x>=950 and event.x<=1150 and event.y>=650 and event.y<=700:
                 #Data
                 GAME.ChangeScreen("Data")
@@ -10053,7 +10008,7 @@ class Game:
                     GAME.pause=1
                     GAME.Start()
         elif GAME.screen=="Final Standings":
-            if event.x>=1200 and event.x<=1400 and event.y>=695 and event.y<=745:
+            if event.x>=1200 and event.x<=1400 and event.y>=730 and event.y<=780:
                 if GAME.sound==1:
                     GAME.StopMusic()
                 GAME.RaceTime()
