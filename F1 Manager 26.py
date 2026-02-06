@@ -7423,51 +7423,86 @@ class Game:
             GAME.screen=="Final Standings"
         with sqlite3.connect(GAME.database) as c:
             f=c.execute('''SELECT Name FROM Teams''').fetchall()
+            if GAME.race<=GAME.races:
+                racesLeft=GAME.races-GAME.race+1
+                pointsSystem=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Old Points System'").fetchall()))
+                double=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Double Points On Last Race'").fetchall()))
+                if pointsSystem==0:
+                    constructorsPoints=43*(racesLeft+double)
+                    driversPoints=25*(racesLeft+double)
+                else:
+                    constructorsPoints=18*(racesLeft+double)
+                    driversPoints=10*(racesLeft+double)
+            else:
+                constructorsPoints=0
+                driversPoints=0
             for x in range(len(f)):
+                points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0]))
+                if x==0:
+                    colour="#F5C939"
+                    firstPoints=points
+                elif firstPoints-points>=constructorsPoints and GAME.race<=GAME.races:
+                    colour="#E20000"
+                elif x==1:
+                    colour="#C8CDD2"
+                elif x==2:
+                colour="#D79B5A"
+                else:
+                    colour="white"
                 name=GAME.Sanitise(c.execute('''SELECT Name FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0])
                 engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
                 if engine=="Red Bull":
                     engine="Ford RBPT"
                 if engine in name:
                     engine=""
-                points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0]))
                 fullName=f"{name} {engine}"
                 if len(fullName)>30:
                     fullName=name
                 if x<9:
-                    canvas.create_text(150, 130+(x*25), text=f"{x+1}. {fullName}", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(150, 130+(x*25), text=f"{x+1}. {fullName}", fill=colour, font=("Arial", 15), anchor="nw")
                 else:
-                    canvas.create_text(145, 130+(x*25), text=f"{x+1}. {fullName}", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(145, 130+(x*25), text=f"{x+1}. {fullName}", fill=colour, font=("Arial", 15), anchor="nw")
                 if points==1:
-                    canvas.create_text(500, 130+(x*25), text="1 Point", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(500, 130+(x*25), text="1 Point", fill=colour, font=("Arial", 15), anchor="nw")
                 elif points<10:
-                    canvas.create_text(500, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(500, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
                 elif points<100:
-                    canvas.create_text(495, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(495, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
                 elif points<1000:
-                    canvas.create_text(490, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(490, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
                 else:
-                    canvas.create_text(485, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(485, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
         f=c.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall()
         for x in range(len(f)):
             if x<26:
+                points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0]))
+                if x==0:
+                    colour="#F5C939"
+                    firstPoints=points
+                elif firstPoints-points>=driversPoints and GAME.race<=GAME.races:
+                    colour="#E20000"
+                elif x==1:
+                    colour="#C8CDD2"
+                elif x==2:
+                    colour="#D79B5A"
+                else:
+                    colour="white"
                 name=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
                 team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
                 if team=="Dead":
                     team=""
-                points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0]))
                 if x<9:
-                    canvas.create_text(770, 130+(x*25), text=f"{x+1}. {name} {team}", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(770, 130+(x*25), text=f"{x+1}. {name} {team}", fill=colour, font=("Arial", 15), anchor="nw")
                 else:
-                    canvas.create_text(765, 130+(x*25), text=f"{x+1}. {name} {team}", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(765, 130+(x*25), text=f"{x+1}. {name} {team}", fill=colour, font=("Arial", 15), anchor="nw")
                 if points==1:
-                    canvas.create_text(1290, 130+(x*25), text="1 Point", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(1290, 130+(x*25), text="1 Point", fill=colour, font=("Arial", 15), anchor="nw")
                 elif points<10:
-                    canvas.create_text(1290, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(1290, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
                 elif points<100:
-                     canvas.create_text(1285, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                     canvas.create_text(1285, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
                 else:
-                    canvas.create_text(1280, 130+(x*25), text=f"{points} Points", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(1280, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
         if GAME.team in steam:
             appearance=GAME.team
         else:
