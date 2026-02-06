@@ -1572,13 +1572,12 @@ class Game:
             if approval<3:
                 if approval==2:
                     financial-=1
+                    if financial<1:
+                        financial=1
                 else:
                     management-=1
                     if management<1:
                         management=1
-                    financial-=1
-                if financial<1:
-                    financial=1
                 if management==1 or financial==1:
                     if fired==0:
                         fired=1
@@ -11690,6 +11689,8 @@ class Game:
         x=265+(190*b)
         y=205+(71*a)
         number=(a*5)+b+1
+        if number>9:
+            x-=5
         if number<GAME.race:
             colour="#E20000"
         elif number==GAME.race:
