@@ -2342,7 +2342,7 @@ class Game:
                                 GAME.YourDriverDied(name)
                             else:
                                 GAME.Replace(name)
-                            c.execute('''UPDATE Drivers SET Condition="Dead", Team="Dead", Role="Dead" WHERE Name=?''',(name,))
+                            c.execute('''UPDATE Drivers SET Condition="Dead", Team="Dead", Role="Dead", NewTeam="Dead" WHERE Name=?''',(name,))
                             GAME.Replace(name)
             #Legends
             if GAME.legends==1:
@@ -5551,14 +5551,14 @@ class Game:
                                 cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position, GAME.drivers[y],))
         #Deaths
         if len(GAME.dead)>0:
-            with sqlite3.connect(GAME.database) as c:
-                for driver in GAME.dead:
+            for driver in GAME.dead:
+                with sqlite3.connect(GAME.database) as c:
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
-                    c.execute("UPDATE Drivers SET Team='Dead', Role='Dead', Condition='Dead' WHERE Name=?",(driver,))
-                    if team==GAME.team:
-                        GAME.YourDriverDied(driver)
-                    else:
-                        GAME.Replace(driver)
+                    c.execute("UPDATE Drivers SET Team='Dead', Role='Dead', Condition='Dead', NewTeam='Dead' WHERE Name=?",(driver,))
+                if team==GAME.team:
+                    GAME.YourDriverDied(driver)
+                else:
+                    GAME.Replace(driver)
         with sqlite3.connect(GAME.database) as conn:
             cursor = conn.cursor()
             f=cursor.execute("SELECT Name FROM Drivers WHERE (Role='1' OR Role='2') AND Position=0").fetchall()
