@@ -3998,9 +3998,9 @@ class Game:
                                 if GAME.replay==3 and GAME.tyre[driverID]!="Intermediate" and GAME.tyre[driverID]!="Wet":
                                     mistake=random.randint(2,5)
                                 elif GAME.street==1:
-                                    mistake=random.randint(0,5)
+                                    mistake=random.randint(0,9)
                                 else:
-                                    mistake=random.randint(1,5)
+                                    mistake=random.randint(1,9)
                                 if GAME.tyreRemaining[driverID]==0:
                                     if mistake>2:
                                         mistake-=2
@@ -4030,7 +4030,7 @@ class Game:
                                     GAME.engineDurability.pop(driverID)
                                     GAME.engineDurability.insert(driverID,engineDurability)
                                 else:
-                                    if mistake>3:
+                                    if mistake>5:
                                         #Lock up
                                         GAME.AddToLog(f"{driver} locked up.")
                                         tyreRemaining=GAME.tyreRemaining[driverID]
@@ -7341,7 +7341,7 @@ class Game:
         if len(GAME.weatherMessage)==1:
             canvas.create_text(20, 10, text=GAME.weatherMessage[0], fill="black", font=("Arial", 40), anchor="nw")
         else:
-            for x in range(2):
+            for x in range(len(GAME.weatherMessage)):
                 canvas.create_text(20, 5+(x*40), text=GAME.weatherMessage[x], fill="black", font=("Arial", 30), anchor="nw")
         canvas.create_text(1250, 10, text=(str(GAME.laps)+" Laps"), fill="black", font=("Arial", 40), anchor="nw")
         canvas.create_text(230, 200, text=("Estimated: "+str(GAME.expectedTyreLife[0])+" Laps"), fill="black", font=("Arial", 20), anchor="nw")
