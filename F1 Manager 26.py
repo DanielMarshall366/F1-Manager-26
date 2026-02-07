@@ -1694,6 +1694,7 @@ class Game:
                         financial=3
                 c.execute("UPDATE Player SET Financial=?",(financial,))
         GAME.Button("Next Race",620,412)
+        GAME.Button("Quit",5,730)
         GAME.DisplayMoney()
         GAME.BoardRoomLogo()
     def DisplayMoney(self):
@@ -8911,6 +8912,12 @@ class Game:
                         reserves=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(team,)).fetchall())
                     if unableToRace>0 and reserves<unableToRace:
                         GAME.HireReserve()
+            elif event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
+                #Quit
+                GAME.ChangeScreen("Title Screen")
+                if GAME.music==1:
+                    SoundPath = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
+                    winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
         elif (GAME.screen=="Standings" or GAME.screen=="Data" or GAME.screen=="Team Data" or GAME.screen=="Car Data" or GAME.screen=="Achievements"
               or GAME.screen=="History" or GAME.screen=="Upgrade" or GAME.screen=="Select Research Type" or GAME.screen=="Scouting"
               or GAME.screen=="View Contracts" or GAME.screen=="Junior & Reserve Drivers" or GAME.screen=="Driver List" or GAME.screen=="Staff List" or GAME.screen=="Contract Name"
@@ -10719,20 +10726,28 @@ class Game:
         GAME.drivers=[]
         GAME.database=1
         while True:
-            F1=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
-            race=GAME.Sanitise(F1.execute("SELECT Race FROM Player").fetchall())
-            F1.commit()
-            F1.close()
-            if len(race)==0:
-                os.remove(f"F1 Manager 26 Save Data {GAME.database}.db")
-                F1=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
+            database=f"F1 Manager 26 Save Data {GAME.database}.db"
+            try:
+                F1=sqlite3.connect(database)
+                race=GAME.Sanitise(F1.execute("SELECT Race FROM Player").fetchall())
+                F1.commit()
+                F1.close()
+                if len(race)==0:
+                    os.remove(database)
+                    F1=sqlite3.connect(database)
+                    break
+                elif int(race)<0:
+                    os.remove(database)
+                    F1=sqlite3.connect(database)
+                    break
+                else:
+                    GAME.database+=1
+            except:
+                F1.commit()
+                F1.close()
+                os.remove(database)
+                F1=sqlite3.connect(database)
                 break
-            elif int(race)<0:
-                os.remove(f"F1 Manager 26 Save Data {GAME.database}.db")
-                F1=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
-                break
-            else:
-                GAME.database+=1
         GAME.database=f"F1 Manager 26 Save Data {GAME.database}.db"
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
@@ -10953,10 +10968,14 @@ class Game:
         GAME.ChangeScreen("Select Save File")
         valid=1
         if os.path.isfile(f"F1 Manager 26 Save Data {GAME.database}.db"):
-            with sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db") as c:
-                if int(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]))<0:
+            c=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
+            race=GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall())
+            if len(race)==0:
+                valid=0
+            else:
+                race=int(race[0])
+                if race<0:
                     valid=0
-                    os.remove(f"F1 Manager 26 Save Data {GAME.database}.db")
                 else:
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0])
                     if team=="McLaren":
@@ -10985,7 +11004,6 @@ class Game:
                         colour="#DADADA"
                     canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
-                    race=int(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]))
                     try:
                         canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(race,)).fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
                     except:
@@ -11011,9 +11029,13 @@ class Game:
                             canvas.create_image(1050, 270, anchor=tk.NW, image=logo)
                     if len(c.execute("SELECT Name FROM Drivers WHERE Legend!=0").fetchall())>0:
                         canvas.create_text(275, 265, text="Legends", fill="#F5C939", font=("Algerian", 30), anchor="nw")
+            c.commit()
+            c.close()
         else:
             valid=0
         if valid==0:
+            if os.path.isfile(f"F1 Manager 26 Save Data {GAME.database}.db"):
+                os.remove(f"F1 Manager 26 Save Data {GAME.database}.db")
             GAME.SelectSave()
         else:
             GAME.Button("Back",5,730)
