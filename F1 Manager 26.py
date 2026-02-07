@@ -847,8 +847,8 @@ class Game:
         if money>=1000008:
             if GAME.race==GAME.races:
                 research=random.randint(round(money/2),money)
-            elif money>=target*2:
-                research=target
+            elif money>=target*3:
+                research=target*(money//(target*3))
             else:
                 research=random.randint(round(money/3),money/2)
             money-=research
@@ -1555,7 +1555,7 @@ class Game:
                 tier=1
             position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
             previousPosition=int(GAME.Sanitise(c.execute("SELECT PreviousPosition FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
-            improvement=position-previousPosition
+            improvement=previousPosition-position
             if position==len(c.execute("SELECT Name FROM Teams").fetchall()):
                 approval=1
             elif position==1 or improvement>1 or (tier<3 and improvement>0):
@@ -1628,7 +1628,7 @@ class Game:
                 reputation-=20
                 GAME.sponsor="0"
                 c.execute("UPDATE Sponsors SET Team='None' WHERE Team=?",(GAME.team,))
-                c.execute("UPDATE Teams SET Sponsor='0' WHERE Team=?",(GAME.team,))
+                c.execute("UPDATE Teams SET Sponsor='0' WHERE Name=?",(GAME.team,))
             else:
                 reputation-=30
                 income-=500000
@@ -10973,10 +10973,14 @@ class Game:
                         colour="#DADADA"
                     canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(400, 370, text=GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
+                    race=int(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]))
                     try:
-                        canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall()[0]),)).fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
+                        canvas.create_text(400, 440, text=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(race,)).fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
                     except:
-                        canvas.create_text(400, 440, text="Pre-Season", fill=colour, font=("Arial", 50), anchor="nw")
+                        if race==0:
+                            canvas.create_text(400, 440, text="Pre-Season", fill=colour, font=("Arial", 50), anchor="nw")
+                        else:
+                            canvas.create_text(400, 440, text="Post-Season", fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(400, 510, text=team, fill=colour, font=("Arial", 50), anchor="nw")
                     if team in steam:
                         appearance=team
