@@ -7439,19 +7439,34 @@ class Game:
                 constructorsPoints=0
                 driversPoints=0
             for x in range(len(f)):
+                name=GAME.Sanitise(c.execute('''SELECT Name FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0])
                 points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0]))
                 if x==0:
                     colour="#F5C939"
                     firstPoints=points
+                    if name in steam:
+                        appearance=name
+                    else:
+                        appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(name,)).fetchall()[0])
+                    if appearance!="0":
+                        if appearance in steam:
+                            logo=logos[steam.index(appearance)-1]
+                        else:
+                            try:
+                                logo=sponsorLogos[sponsors.index(appearance)]
+                            except:
+                                logo=0
+                        if logo!=0:
+                            canvas.image=logo
+                            canvas.create_image(280, 500, anchor=tk.NW, image=logo)
                 elif firstPoints-points>=constructorsPoints and GAME.race<=GAME.races:
-                    colour="#E20000"
+                    colour="#B60000"
                 elif x==1:
                     colour="#C8CDD2"
                 elif x==2:
                     colour="#D79B5A"
                 else:
                     colour="white"
-                name=GAME.Sanitise(c.execute('''SELECT Name FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0])
                 engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
                 if engine=="Red Bull":
                     engine="Ford RBPT"
@@ -7482,7 +7497,7 @@ class Game:
                     colour="#F5C939"
                     firstPoints=points
                 elif firstPoints-points>=driversPoints and GAME.race<=GAME.races:
-                    colour="#E20000"
+                    colour="#B60000"
                 elif x==1:
                     colour="#C8CDD2"
                 elif x==2:
@@ -8284,6 +8299,9 @@ class Game:
             screen="Calendar"
         elif screen not in Images:
             screen="Blank Screen"
+        elif screen=="Upgrade":
+            if f"{GAME.team} Upgrade" in Images:
+                screen=f"{GAME.team} Upgrade"
         imageOnCanvas = canvas.create_image(0, 0, anchor=tk.NW, image=images[Images.index(screen)])
     def Settings(self):
         GAME.ChangeScreen("Settings")
@@ -11694,7 +11712,7 @@ class Game:
         if number>9:
             x-=5
         if number<GAME.race:
-            colour="#E20000"
+            colour="#B60000"
         elif number==GAME.race:
             colour="green"
         else:
@@ -11789,7 +11807,8 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Mazda Display","Lamborghini Display","Volkswagen Display","Volvo Display","JLR Display","Gazoo Racing Display","Lotus Display","Replay Screen","F1 Movie 1","F1 Movie 2",
         "F1 Movie 3","F1 Movie 4","F1 Movie 5","F1 Movie 6","F1 Movie 7","F1 Movie 8","F1 Movie 9","F1 Movie 10","Safety Car Menu","Red Flag Menu","Choose a Team 2021","Latifi Crash",
         "Hamilton Wins","Verstappen Wins","Canada 2011 Victory","Canada 2011 Defeat","Choose a Team 2000","Schumacher Victory","Hakkinen Victory","Senna Celebration",
-        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Old Box","Select Save File","Calendar","Standings"]
+        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Old Box","Select Save File","Calendar","Standings",
+        "Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Haas Upgrade","Audi Upgrade","Alpine Upgrade"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
