@@ -7438,6 +7438,7 @@ class Game:
             else:
                 constructorsPoints=0
                 driversPoints=0
+            won=0
             for x in range(len(f)):
                 name=GAME.Sanitise(c.execute('''SELECT Name FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0])
                 points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0]))
@@ -7460,7 +7461,12 @@ class Game:
                             canvas.image=logo
                             canvas.create_image(280, 500, anchor=tk.NW, image=logo)
                 elif firstPoints-points>=constructorsPoints and GAME.race<=GAME.races:
-                    colour="#B60000"
+                    if x==1:
+                        won=1
+                    if won==1:
+                        colour="#DADADA"
+                    else:
+                        colour="#B60000"
                 elif x==1:
                     colour="#C8CDD2"
                 elif x==2:
@@ -7490,6 +7496,7 @@ class Game:
                 else:
                     canvas.create_text(485, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
         f=c.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall()
+        won=0
         for x in range(len(f)):
             if x<26:
                 points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0]))
@@ -7497,7 +7504,12 @@ class Game:
                     colour="#F5C939"
                     firstPoints=points
                 elif firstPoints-points>=driversPoints and GAME.race<=GAME.races:
-                    colour="#B60000"
+                    if x==1:
+                        won=1
+                    if won==1:
+                        colour="#DADADA"
+                    else:
+                        colour="#B60000"
                 elif x==1:
                     colour="#C8CDD2"
                 elif x==2:
@@ -11557,7 +11569,8 @@ class Game:
                         c.execute("UPDATE Engines SET Manufacturer='None' WHERE Manufacturer=?",(team,))
                         if engine=="Honda":
                             c.execute("UPDATE Engines SET Manufacturer=? WHERE Name='Honda'",(team,))
-                        GAME.news.append(f"BREAKING NEWS! {team} has switched from {old} to {engine} for their engines.")
+                        GAME.news.append(f"BREAKING NEWS! {team} has switched from {old}")
+                        GAME.news.append(f"to {engine} for their engines.")
                         
             c.execute("UPDATE Player SET Actions=1")
             GAME.actions=1
