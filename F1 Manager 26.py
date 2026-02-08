@@ -1293,16 +1293,16 @@ class Game:
                                     except:
                                         pass
                             if previousPos!=0:
-                                if pos-previousPos<0 or pos==1:
+                                if previousPos-pos>0 or pos==1:
                                     message.append(f"{team} is having a great season, they are currently in P{pos} in the Championship,")
                                     message.append(f"having finished P{previousPos} last season.")
                                     message.append("")
                                     message.append(f"And {driver} is currently P{driverPos} in the Drivers' Championship.")
-                                elif pos-previousPos>-2 and pos<9:
+                                elif previousPos-pos>-2 and pos<9:
                                     message.append(f"{team} is having a decent season, they are currently in P{pos} in the Championship,")
                                     message.append("")
                                     message.append(f"And {driver} is currently P{driverPos} in the Drivers' Championship.")
-                                elif pos-previousPos>-3:
+                                elif previousPos-pos>-3:
                                     message.append(f"{team} isn't having a good season, they are currently in P{pos} in the Championship,")
                                     message.append("")
                                     message.append(f"And {driver} is currently P{driverPos} in the Drivers' Championship.")
@@ -2320,6 +2320,8 @@ class Game:
 
                 #Illness
                 driver=0
+                dead=[]
+                deadTeam=[]
                 if random.randint(1,40)==40:
                     driver=GAME.Sanitise(random.choice(c.execute('''SELECT Name FROM Drivers WHERE Condition="Well" AND (Role="1" OR Role="2")''').fetchall()))
                     GAME.news.append("BREAKING NEWS! "+driver+" is ill and will be unable to race in the next Grand Prix.")
@@ -2339,12 +2341,16 @@ class Game:
                                 causeOfDeath="injuries"
                             message="BREAKING NEWS! It is a sad day because "+name+" has died from their "+causeOfDeath+", they will be missed."
                             GAME.news.append(message)
-                            if GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])==GAME.team:
-                                GAME.YourDriverDied(name)
-                            else:
-                                GAME.Replace(name)
-                            c.execute('''UPDATE Drivers SET Condition="Dead", Team="Dead", Role="Dead", NewTeam="Dead" WHERE Name=?''',(name,))
-                            GAME.Replace(name)
+                            dead.append(name)
+                            deadTeam.append(GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+            if len(dead)>0:
+                for x in range(len(dead)):
+                    if deadTeam[x]==GAME.team:
+                        GAME.YourDriverDied(dead[x])
+                    else:
+                        GAME.Replace(dead[x])
+                    with sqlite3.connect(GAME.database) as c:
+                        c.execute('''UPDATE Drivers SET Condition="Dead", Team="Dead", Role="Dead", NewTeam="Dead" WHERE Name=?''',(dead[x],))
             #Legends
             if GAME.legends==1:
                 hired=0
@@ -4017,7 +4023,7 @@ class Game:
                                     if GAME.replay==0:
                                         if GAME.street==1 or random.randint(1,4)==4:
                                             GAME.safety=3
-                                            if random.randint(1,100)==100 and GAME.season>2026:
+                                            if random.randint(1,150)==150 and GAME.season>2026:
                                                     #Dead
                                                     GAME.AddToLog(f"{driver} has died.")
                                                     GAME.dead.append(driver)
@@ -5555,11 +5561,12 @@ class Game:
             for driver in GAME.dead:
                 with sqlite3.connect(GAME.database) as c:
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
-                    c.execute("UPDATE Drivers SET Team='Dead', Role='Dead', Condition='Dead', NewTeam='Dead' WHERE Name=?",(driver,))
                 if team==GAME.team:
                     GAME.YourDriverDied(driver)
                 else:
                     GAME.Replace(driver)
+                with sqlite3.connect(GAME.database) as c:
+                    c.execute("UPDATE Drivers SET Team='Dead', Role='Dead', Condition='Dead', NewTeam='Dead' WHERE Name=?",(driver,))
         with sqlite3.connect(GAME.database) as conn:
             cursor = conn.cursor()
             f=cursor.execute("SELECT Name FROM Drivers WHERE (Role='1' OR Role='2') AND Position=0").fetchall()
@@ -11872,7 +11879,7 @@ for x in range(len(driverHeads)):
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","BMW","Amazon","Ford","Tesla","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
        "Alfa Romeo"]
-xDif=[90,90,88,95,110,100,92,100,95,98,105,102,100,85,95,97,95,98,95]
+xDif=[90,90,88,95,110,100,92,100,95,90,105,102,100,85,95,97,95,98,95]
 yDif=[115,105,100,115,108,108,90,70,122,80,103,52,145,105,80,100,85,50,88]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 GAME.suits=[tk.PhotoImage(file=path)]
