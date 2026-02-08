@@ -3717,7 +3717,9 @@ class Game:
                                     if severity>=135:
                                         #Severe
                                         if GAME.playing==0 and GAME.sound==1:
-                                            if random.randint(1,2)==1:
+                                            if crasher=="Isack Hadjar":
+                                                GAME.Voice(0,"Destroyed The Car")
+                                            elif random.randint(1,2)==1:
                                                 GAME.Voice(0,"Crash")
                                             else:
                                                 GAME.Voice(crasher,out)
@@ -3813,7 +3815,10 @@ class Game:
                                             GAME.damage.insert(index, damage)
                                     elif severity>=100:
                                         if GAME.playing==0 and GAME.sound==1:
-                                            GAME.Voice(0,"Crash")
+                                            if crasher=="Isack Hadjar":
+                                                GAME.Voice(0,"Destroyed The Car")
+                                            else:
+                                                GAME.Voice(0,"Crash")
                                         #Damaging
                                         GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a bad crash.")
                                         GAME.crashMessage.append(crasher+" crashed into "+crashedInto+", it was a bad crash.")
@@ -3884,7 +3889,10 @@ class Game:
                                         GAME.damage.insert(index, damage)
                                     else:
                                         if GAME.playing==0 and GAME.sound==1:
-                                            GAME.Voice(0,"Crash")
+                                            if crasher=="Isack Hadjar":
+                                                GAME.Voice(0,"Destroyed The Car")
+                                            else:
+                                                GAME.Voice(0,"Crash")
                                         #Minor
                                         GAME.AddToLog(crasher+" crashed into "+crashedInto+".")
                                         GAME.crashMessage.append(crasher+" crashed into "+crashedInto+".")
@@ -4014,10 +4022,12 @@ class Game:
                                 if mistake<=1 and not ((driver=="Ayrton Senna" or driver=="Alain Prost" or driver=="Nigel Mansell" or driver=="Niki Lauda") and GAME.replay==6):
                                     #Crashed into wall
                                     if GAME.playing==0 and GAME.sound==1:
-                                        if random.randint(1,2)==1:
+                                        if crasher=="Isack Hadjar":
+                                            GAME.Voice(0,"Destroyed The Car")
+                                        elif random.randint(1,2)==1:
                                             GAME.Voice(0,"Crash")
                                         else:
-                                            GAME.Voice(driver,"Out")
+                                            GAME.Voice(crasher,out)
                                     GAME.AddToLog(f"{driver} crashed into the wall and is out of the race.")
                                     GAME.repairBill[driverID]+=random.randint(2000000,5000000)
                                     if GAME.replay==0:
@@ -5141,10 +5151,12 @@ class Game:
                                 if severity>=135:
                                     #Severe
                                     if GAME.playing==0 and GAME.sound==1:
-                                        if random.randint(1,2)==1:
+                                        if crasher=="Isack Hadjar":
+                                            GAME.Voice(0,"Destroyed The Car")
+                                        elif random.randint(1,2)==1:
                                             GAME.Voice(0,"Crash")
                                         else:
-                                            GAME.Voice(crasher,"Out")
+                                            GAME.Voice(crasher,out)
                                     driversOut=random.randint(1,2)
                                     drivers=[crasher,crashedInto]
                                     GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a severe crash.")
@@ -5226,7 +5238,10 @@ class Game:
                                 elif severity>=100:
                                     #Damaging
                                     if GAME.playing==0 and GAME.sound==1:
-                                        GAME.Voice(0,"Crash")
+                                        if crasher=="Isack Hadjar":
+                                            GAME.Voice(0,"Destroyed The Car")
+                                        else:
+                                            GAME.Voice(0,"Crash")
                                     GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a bad crash.")
                                     #Crasher
                                     index=GAME.drivers.index(crasher)
@@ -5293,7 +5308,10 @@ class Game:
                                 else:
                                     #Minor
                                     if GAME.playing==0 and GAME.sound==1:
-                                        GAME.Voice(0,"Crash")
+                                        if crasher=="Isack Hadjar":
+                                            GAME.Voice(0,"Destroyed The Car")
+                                        else:
+                                            GAME.Voice(0,"Crash")
                                     GAME.AddToLog(crasher+" crashed into "+crashedInto+".")
                                     #Crasher
                                     index=GAME.drivers.index(crasher)
@@ -7928,8 +7946,8 @@ class Game:
                 else:
                     message="bringing back the old ERS system."
         GAME.ChangeScreen("Rule Vote")
-        canvas.create_text(10, 200, text="The FIA is proposing", fill="black", font=("Arial", 20), anchor="nw")
-        canvas.create_text(10, 230, text=message, fill="black", font=("Arial", 20), anchor="nw")
+        canvas.create_text(10, 200, text="The FIA is proposing", fill="#DADADA", font=("Arial", 20), anchor="nw")
+        canvas.create_text(10, 230, text=message, fill="#DADADA", font=("Arial", 20), anchor="nw")
         GAME.Button("Vote Against",350,450)
         GAME.Button("Vote For",890,450)
         GAME.vote=0
@@ -7938,8 +7956,8 @@ class Game:
     def Voted(self):
         GAME.ChangeScreen("Rule Vote")
         GAME.Button("Start Season",1200,600)
-        canvas.create_text(10, 200, text="The FIA is proposing", fill="black", font=("Arial", 20), anchor="nw")
-        canvas.create_text(10, 230, text=GAME.displayed, fill="black", font=("Arial", 20), anchor="nw")
+        canvas.create_text(10, 200, text="The FIA is proposing", fill="#DADADA", font=("Arial", 20), anchor="nw")
+        canvas.create_text(10, 230, text=GAME.displayed, fill="#DADADA", font=("Arial", 20), anchor="nw")
         with sqlite3.connect(GAME.database) as c:
             teams=c.execute('''SELECT Name FROM Teams''').fetchall()
         votes=[]
@@ -7959,14 +7977,14 @@ class Game:
             else:
                 vote="Against"
             if x<round(len(teams)/2):
-                canvas.create_text(10, 280+(50*x), text=f"{team}: {vote}", fill="black", font=("Arial", 30), anchor="nw")
+                canvas.create_text(10, 280+(50*x), text=f"{team}: {vote}", fill="#DADADA", font=("Arial", 30), anchor="nw")
             else:
-                canvas.create_text(725, 280+(50*(x-round(len(teams)/2))), text=f"{team}: {vote}", fill="black", font=("Arial", 30), anchor="nw")
+                canvas.create_text(725, 280+(50*(x-round(len(teams)/2))), text=f"{team}: {vote}", fill="#DADADA", font=("Arial", 30), anchor="nw")
         if votesFor>=len(teams)/2:
             vote="for"
         else:
             vote="against"
-        canvas.create_text(10, 700, text=f"The majority voted {vote} the rule change.", fill="black", font=("Arial", 50), anchor="nw")
+        canvas.create_text(10, 700, text=f"The majority voted {vote} the rule change.", fill="#DADADA", font=("Arial", 50), anchor="nw")
         with sqlite3.connect(GAME.database) as c:
             if vote=="for":
                 c.execute("UPDATE Regulations SET True=? WHERE Regulation=?",(GAME.proposed,GAME.regulation,))
