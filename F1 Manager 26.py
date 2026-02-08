@@ -7946,8 +7946,8 @@ class Game:
                 else:
                     message="bringing back the old ERS system."
         GAME.ChangeScreen("Rule Vote")
-        canvas.create_text(10, 200, text="The FIA is proposing", fill="#DADADA", font=("Arial", 20), anchor="nw")
-        canvas.create_text(10, 230, text=message, fill="#DADADA", font=("Arial", 20), anchor="nw")
+        canvas.create_text(10, 150, text="The FIA is proposing", fill="#DADADA", font=("Arial", 20), anchor="nw")
+        canvas.create_text(10, 180, text=message, fill="#DADADA", font=("Arial", 20), anchor="nw")
         GAME.Button("Vote Against",350,450)
         GAME.Button("Vote For",890,450)
         GAME.vote=0
@@ -7956,8 +7956,8 @@ class Game:
     def Voted(self):
         GAME.ChangeScreen("Rule Vote")
         GAME.Button("Start Season",1200,600)
-        canvas.create_text(10, 200, text="The FIA is proposing", fill="#DADADA", font=("Arial", 20), anchor="nw")
-        canvas.create_text(10, 230, text=GAME.displayed, fill="#DADADA", font=("Arial", 20), anchor="nw")
+        canvas.create_text(10, 150, text="The FIA is proposing", fill="#DADADA", font=("Arial", 20), anchor="nw")
+        canvas.create_text(10, 180, text=GAME.displayed, fill="#DADADA", font=("Arial", 20), anchor="nw")
         with sqlite3.connect(GAME.database) as c:
             teams=c.execute('''SELECT Name FROM Teams''').fetchall()
         votes=[]
@@ -7977,14 +7977,14 @@ class Game:
             else:
                 vote="Against"
             if x<round(len(teams)/2):
-                canvas.create_text(10, 280+(50*x), text=f"{team}: {vote}", fill="#DADADA", font=("Arial", 30), anchor="nw")
+                canvas.create_text(10, 230+(50*x), text=f"{team}: {vote}", fill="#DADADA", font=("Arial", 30), anchor="nw")
             else:
-                canvas.create_text(725, 280+(50*(x-round(len(teams)/2))), text=f"{team}: {vote}", fill="#DADADA", font=("Arial", 30), anchor="nw")
+                canvas.create_text(725, 230+(50*(x-round(len(teams)/2))), text=f"{team}: {vote}", fill="#DADADA", font=("Arial", 30), anchor="nw")
         if votesFor>=len(teams)/2:
             vote="for"
         else:
             vote="against"
-        canvas.create_text(10, 700, text=f"The majority voted {vote} the rule change.", fill="#DADADA", font=("Arial", 50), anchor="nw")
+        canvas.create_text(10, 650, text=f"The majority voted {vote} the rule change.", fill="#DADADA", font=("Arial", 50), anchor="nw")
         with sqlite3.connect(GAME.database) as c:
             if vote=="for":
                 c.execute("UPDATE Regulations SET True=? WHERE Regulation=?",(GAME.proposed,GAME.regulation,))
