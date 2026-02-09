@@ -11210,7 +11210,7 @@ class Game:
                 canvas.image=logo
                 canvas.create_image(1250, 30, anchor=tk.NW, image=logo)
                 
-    def DisplayGridLoop(self,position,teams):
+    def DisplayGridLoop(self,position):
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         try:
@@ -11236,15 +11236,13 @@ class Game:
             winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
         GAME.ChangeScreen("Blank Screen")
         canvas.create_text(80, 250, text=f"The {GAME.season} Grid", fill="white", font=("Arial", 150), anchor="nw")
-        teams = ["McLaren","Ferrari","Red Bull","Mercedes","Aston Martin",
-                 "Alpine","Haas","Racing Bulls","Williams","Kick Sauber"]
         GAME.newTeams=[]
         with sqlite3.connect(GAME.database) as F1:
             f = F1.execute("SELECT Name FROM Teams").fetchall()
         time=round(71500/(len(f)+1))
         delay_ms=time
         for idx, _ in enumerate(f, start=0):
-            root.after(delay_ms, lambda i=idx: GAME.DisplayGridLoop(len(f)-i, teams))
+            root.after(delay_ms, lambda i=idx: GAME.DisplayGridLoop(len(f)-i))
             delay_ms+=time
         root.after(delay_ms, lambda: GAME.ChangeScreen("Blank Screen"))
     def WelcomeToSeason(self):
@@ -11874,8 +11872,8 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "F1 Movie 3","F1 Movie 4","F1 Movie 5","F1 Movie 6","F1 Movie 7","F1 Movie 8","F1 Movie 9","F1 Movie 10","Safety Car Menu","Red Flag Menu","Choose a Team 2021","Latifi Crash",
         "Hamilton Wins","Verstappen Wins","Canada 2011 Victory","Canada 2011 Defeat","Choose a Team 2000","Schumacher Victory","Hakkinen Victory","Senna Celebration",
         "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Old Box","Select Save File","Calendar","Standings",
-        "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Haas Upgrade","Audi Upgrade","Alpine Upgrade",
-        "Cadillac Upgrade","Data Background",]
+        "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Aston Martin Upgrade","Haas Upgrade","Audi Upgrade"
+        ,"Alpine Upgrade","Cadillac Upgrade","Data Background",]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
