@@ -843,12 +843,11 @@ class Game:
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         money=int(GAME.Sanitise(c.execute('''SELECT Money FROM Teams WHERE Name=?''',(team,)).fetchall()[0]))
-        target=round(50000000/GAME.races)
         if money>=1000008:
             if GAME.race==GAME.races:
                 research=random.randint(round(money/2),money)
-            elif money>=target*3:
-                research=target*(money//(target*3))
+            elif money>=150000000/GAME.races:
+                research=money//3
             else:
                 research=random.randint(round(money/3),money/2)
             money-=research
@@ -11896,8 +11895,8 @@ for x in range(len(driverHeads)):
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","BMW","Amazon","Ford","Tesla","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
        "Alfa Romeo"]
-xDif=[90,82,88,95,110,100,92,100,95,90,105,102,100,85,95,97,95,98,95]
-yDif=[115,90,100,115,108,108,90,70,122,80,103,52,145,105,80,100,85,50,88]
+xDif=[90,82,88,95,110,95,92,100,95,90,105,102,100,85,95,97,95,98,95]
+yDif=[115,90,100,115,108,87,90,70,122,80,103,52,145,105,80,100,85,50,88]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 GAME.suits=[tk.PhotoImage(file=path)]
 logos=[]
