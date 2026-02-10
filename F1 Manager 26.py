@@ -3702,11 +3702,9 @@ class Game:
                                     GAME.lap.insert(GAME.positions[x-driversRemoved], lap)
                             if teamOrders==0 or GAME.replay>0:
                                 control=GAME.control[driverID]+GAME.control[aheadID]
-                                crash=0
-                                for y in range(200-control):
-                                    if random.randint(1,(150-GAME.risk)*500)==1:
-                                        crash=1
-                                if crash==1:
+                                if control<=GAME.risk:
+                                    control=GAME.risk+1
+                                if random.randint(1,10*(control-GAME.risk))==1:
                                     if overtake==1:
                                         crasher=ahead
                                         crashedInto=driver
@@ -5128,11 +5126,9 @@ class Game:
                                 distance=GAME.distance[x-1-driversRemoved]-(random.randint(100,200)/100)
                                 GAME.distance.insert(x-driversRemoved,distance)
                             control=GAME.control[driverID]+GAME.control[aheadID]
-                            crash=0
-                            for y in range(200-control):
-                                if random.randint(1,(150-GAME.risk)*500)==1:
-                                    crash=1
-                            if crash==1:
+                            if control<=GAME.risk:
+                                control=GAME.risk+1
+                            if random.randint(1,10*(control-GAME.risk))==1:
                                 if overtake==1:
                                     crasher=ahead
                                     crashedInto=driver
@@ -10506,7 +10502,7 @@ class Game:
                 research=research*(rating**3)*random.randint(2,3)
                 if engine=="Honda":
                     research=round(research*1.5)
-                research+=int(GAME.Sanitise(c.execute('''SELECT Research FROM Cars WHERE Team=?''',(GAME.team,)).fetchall()[0]))
+                research+=int(GAME.Sanitise(c.execute('''SELECT Research FROM Engines WHERE Name=?''',(engine,)).fetchall()[0]))
                 c.execute('''UPDATE Engines SET Research=? WHERE Name=?''',(research, engine,))
                 c.execute('''UPDATE Teams SET Money=? WHERE Name=?''',(GAME.money, GAME.team,))
             GAME.Menu()
