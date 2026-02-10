@@ -1089,7 +1089,7 @@ class Game:
                 team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(random.randint(2,3),)).fetchall()[0])
             else:
                 if GAME.race>GAME.races-3:
-                    f=c.execute("SELECT Team FROM Drivers WHERE Age>35 AND NewTeam='0' AND ContractEnd=? AND Team!=? AND Legend=0",(GAME.season,GAME.team,)).fetchall()
+                    f=c.execute("SELECT Team FROM Drivers WHERE Age>35 AND NewTeam='0' AND ContractEnd=? AND Team!=? AND Team!='Dead' AND Team!='Free Agent' AND Legend=0",(GAME.season,GAME.team,)).fetchall()
                     if len(f)>0:
                         retirement=1
                         team=GAME.Sanitise(random.choice(f))
@@ -3704,7 +3704,7 @@ class Game:
                                 control=GAME.control[driverID]+GAME.control[aheadID]
                                 if control<=GAME.risk:
                                     control=GAME.risk+1
-                                if random.randint(1,10*(control-GAME.risk))==1:
+                                if random.randint(1,control-GAME.risk)==1:
                                     if overtake==1:
                                         crasher=ahead
                                         crashedInto=driver
@@ -4961,6 +4961,8 @@ class Game:
                     else:
                         image=icons[6]
                     canvas.create_image(600+(x*430), 700, anchor=tk.NW, image=image)
+                if GAME.penalties[indexes[x]]>0:
+                    canvas.create_text(620+(x*430), 600, text=f"{GAME.penalties[indexes[x]]}s", fill="red", font=("Arial", 22), anchor="nw")
         if GAME.pause==0:
             GAME.Button("Pause",670,630)
         else:
@@ -5128,7 +5130,7 @@ class Game:
                             control=GAME.control[driverID]+GAME.control[aheadID]
                             if control<=GAME.risk:
                                 control=GAME.risk+1
-                            if random.randint(1,10*(control-GAME.risk))==1:
+                            if random.randint(1,control-GAME.risk)==1:
                                 if overtake==1:
                                     crasher=ahead
                                     crashedInto=driver
@@ -7842,7 +7844,6 @@ class Game:
                 c.execute("UPDATE Teams SET Points=0, PressConferences=0")
                 c.execute("UPDATE Drivers SET Points=0, Position=0")
                 c.execute("UPDATE Cars SET Car1Engine=1, Car1EngineDurability=100, Car2Engine=1, Car2EngineDurability=100")
-                c.execute("UPDATE Engines SET Research=1")
 
                 #Engines
                 nextEngine=GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])
@@ -8216,8 +8217,6 @@ class Game:
             else:
                 GAME.done=0
             GAME.PreSeason()
-        elif GAME.race==1:
-            GAME.Reserves()
         elif GAME.race<=GAME.races:
             GAME.ActionRound()
         elif GAME.race==GAME.races+1:
@@ -8375,6 +8374,9 @@ class Game:
                 root.after(400, lambda: GAME.ReplayScreen())
             elif event.x>=1295 and event.x<=1345 and event.y>=710 and event.y<=760:
                 GAME.Settings()
+            else:
+                GAME.ChangeScreen("Race Screen")
+                GAME.RaceMenu()
         elif GAME.screen=="Welcome screen":
             if event.x>=54 and event.x<=250 and event.y>=718 and event.y<=765:
                 GAME.ChangeScreen("Get Name")
