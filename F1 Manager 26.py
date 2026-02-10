@@ -845,11 +845,11 @@ class Game:
         money=int(GAME.Sanitise(c.execute('''SELECT Money FROM Teams WHERE Name=?''',(team,)).fetchall()[0]))
         if money>=1000008:
             if GAME.race==GAME.races:
-                research=random.randint(round(money/2),money)
+                research=random.randint(money//2,money)
             elif money>=150000000/GAME.races:
-                research=money//3
+                research=money//4
             else:
-                research=random.randint(round(money/3),money/2)
+                research=random.randint(money//8,money//4)
             money-=research
             rating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Team=? AND Role="Technical Director"''',(team,)).fetchall()[0]))
             research=research*(rating**3)*random.randint(2,3)
@@ -1708,7 +1708,7 @@ class Game:
             text=f"-${money}"
         else:
             text=f"${money}"
-        canvas.create_text(1190, 700, text=text, fill="white", font=("Arial", 30), anchor="nw")
+        canvas.create_text(1190, 700, text=text, fill="#DADADA", font=("Arial", 30), anchor="nw")
     def BoardRoomLogo(self):
         if GAME.team in steam:
             appearance=GAME.team
@@ -2595,6 +2595,8 @@ class Game:
                 if GAME.rain<GAME.maxRain:
                     GAME.rain=random.randint(int(GAME.rain*100),int(GAME.maxRain*100))/100
                 GAME.water+=GAME.rain
+                if GAME.water>GAME.maxWater:
+                    GAME.water=GAME.maxWater
     def Move(self):
         if GAME.replay==2 and GAME.lap[GAME.positions[0]]>54:
             GAME.pause=3
@@ -3701,11 +3703,10 @@ class Game:
                             if teamOrders==0 or GAME.replay>0:
                                 control=GAME.control[driverID]+GAME.control[aheadID]
                                 crash=0
-                                if control<200:
-                                    for y in range(200-control):
-                                        if random.randint(1,(150-GAME.risk)*700)==1:
-                                            crash=1
-                                if crash==1 and random.randint(1,2)==2:
+                                for y in range(200-control):
+                                    if random.randint(1,(150-GAME.risk)*500)==1:
+                                        crash=1
+                                if crash==1:
                                     if overtake==1:
                                         crasher=ahead
                                         crashedInto=driver
@@ -4032,7 +4033,7 @@ class Game:
                                     if GAME.replay==0:
                                         if GAME.street==1 or random.randint(1,4)==4:
                                             GAME.safety=3
-                                            if random.randint(1,150)==150 and GAME.season>2026:
+                                            if random.randint(1,200)==200 and GAME.season>2026:
                                                     #Dead
                                                     GAME.AddToLog(f"{driver} has died.")
                                                     GAME.dead.append(driver)
@@ -4333,18 +4334,21 @@ class Game:
                             GAME.Button(instructions[i+3],5+(x*1225),610+(i*60))
                         else:
                             GAME.Button(instructions[i],5+(x*1225),610+(i*60))
-                    if GAME.replay==6:
+                    if GAME.replay==5:
+                        tyre=tyres[0]
+                        canvas.create_image((x*1225)-30, 525, anchor=tk.NW, image=tyre)
+                        tyre=tyres[2]
+                        canvas.create_image(140+(x*1225), 525, anchor=tk.NW, image=tyre)
+                    elif GAME.replay==6:
                         tyre=tyres[4]
                         canvas.create_image(140+(x*1225), 525, anchor=tk.NW, image=tyre)
             GAME.Button("Back",5,30)
             GAME.Button("Tyre Data",1230,30)
         else:
             GAME.pause=0
-    def Box(self,driverNumber):
+    def Box(self,driverNumber,tyre):
         GAME.pittingDriver=driverNumber
-        if GAME.replay==5:
-            GAME.OldBox()
-        elif GAME.replay==6:
+        if tyre!=0:
             if GAME.pittingDriver==1:
                 index=GAME.car1ID
             else:
@@ -4352,7 +4356,7 @@ class Game:
             GAME.pitLap.pop(index)
             GAME.pitLap.insert(index,GAME.lap[index])
             GAME.pitTyre.pop(index)
-            GAME.pitTyre.insert(index,"Wet")
+            GAME.pitTyre.insert(index,tyre)
             GAME.pause=1
             GAME.RefreshScreen()
             GAME.NextMove()
@@ -4365,18 +4369,6 @@ class Game:
                     text=f"{GAME.expectedTyreLife[x]} Laps"
                 canvas.create_text(100+(x*280), 560, text=text, fill="white", font=("Arial", 30), anchor="nw")
             GAME.Button("Back",5,730)
-    def OldBox(self):
-        if GAME.screen=="Old box":
-            GAME.ChangeScreen("Old Box")
-        else:
-            GAME.ChangeScreen("Old box")
-        for x in range(3):
-            if x==2:
-                text=f"{GAME.expectedTyreLife[3]} Laps"
-            else:
-                text=f"{GAME.expectedTyreLife[x*2]} Laps"
-            canvas.create_text(210+(x*440), 610, text=text, fill="white", font=("Arial", 30), anchor="nw")
-        GAME.Button("Back",5,730)
     def TyreData(self):
         GAME.ChangeScreen("Tyre Data")
         GAME.Button("Back",5,730)
@@ -4410,6 +4402,8 @@ class Game:
                 GAME.water+=GAME.rain
             elif GAME.water>0:
                 GAME.water=round(random.randint(round(GAME.water*500),round(GAME.water*1000))/1000,3)
+            if GAME.water>GAME.maxWater:
+                GAME.water=GAME.maxWater
         GAME.startLap=lap
         GAME.lap.clear()
         GAME.time.clear()
@@ -5135,11 +5129,10 @@ class Game:
                                 GAME.distance.insert(x-driversRemoved,distance)
                             control=GAME.control[driverID]+GAME.control[aheadID]
                             crash=0
-                            if control<200:
-                                for y in range(200-control):
-                                    if random.randint(1,(150-GAME.risk)*700)==1:
-                                        crash=1
-                            if crash==1 and random.randint(1,2)==2:
+                            for y in range(200-control):
+                                if random.randint(1,(150-GAME.risk)*500)==1:
+                                    crash=1
+                            if crash==1:
                                 if overtake==1:
                                     crasher=ahead
                                     crashedInto=driver
@@ -5690,6 +5683,8 @@ class Game:
                     experience+=1
                 if experience>110:
                     experience=110
+                if control>99:
+                    control=99
                 cursor.execute('''UPDATE Drivers SET Rating=?, Overtaking=?, Defending=?, Pace=?, Experience=?, Control=?, DevelopmentRate=? WHERE Name=?''',(rating, overtaking, defending, pace, experience, control, rate, name,))
         #Engines
         if GAME.race<GAME.races:
@@ -8329,9 +8324,6 @@ class Game:
             screen="Contract Name"
         elif screen=="New Tyres":
             screen="Choose Tyres"
-        elif screen=="Old box":
-            screen="Old Box"
-            root.after(500, lambda: GAME.OldBox())
         elif screen=="calendar":
             screen="Calendar"
         elif screen=="Upgrade":
@@ -8766,7 +8758,20 @@ class Game:
                     instruction="Maintain Position"
             if instruction!=0:
                 if instruction=="Box":
-                    GAME.Box(driver)
+                    if GAME.replay==5:
+                        if event.x<=105:
+                            tyre="Soft"
+                        elif event.x<=205:
+                            tyre="Hard"
+                        elif event.x<=1330:
+                            tyre="Soft"
+                        else:
+                            tyre="Hard"
+                    elif GAME.replay==6:
+                        tyre="Wet"
+                    else:
+                        tyre=0
+                    GAME.Box(driver,tyre)
                 else:
                     if driver==1:
                         if instruction in GAME.car1Instructions:
@@ -10353,30 +10358,6 @@ class Game:
                     sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
                     winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
                 GAME.Settings()
-        elif GAME.screen=="Old Box":
-            if event.y>=205 and event.y<=655:
-                tyre=0
-                if event.x>=80 and event.x<=480:
-                    tyre="Soft"
-                elif event.x>=510 and event.x<=920:
-                    tyre="Hard"
-                elif event.x>=950 and event.x<=1360:
-                    tyre="Wet"
-                if tyre!=0:
-                    if GAME.pittingDriver==1:
-                        index=GAME.car1ID
-                    else:
-                        index=GAME.car2ID
-                    GAME.pitLap.pop(index)
-                    GAME.pitLap.insert(index,GAME.lap[index])
-                    GAME.pitTyre.pop(index)
-                    GAME.pitTyre.insert(index,tyre)
-                    GAME.pause=1
-                    GAME.RefreshScreen()
-                    GAME.NextMove()
-            elif event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
-                #Back
-                GAME.Instructions()
         elif GAME.screen=="Select Save File":
             if event.x>=265 and event.x<=1160 and event.y>=260 and event.y<=600 and GAME.loaded==1:
                 GAME.database=f"F1 Manager 26 Save Data {GAME.database}.db"
@@ -11872,7 +11853,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Mazda Display","Lamborghini Display","Volkswagen Display","Volvo Display","JLR Display","Gazoo Racing Display","Lotus Display","Replay Screen","F1 Movie 1","F1 Movie 2",
         "F1 Movie 3","F1 Movie 4","F1 Movie 5","F1 Movie 6","F1 Movie 7","F1 Movie 8","F1 Movie 9","F1 Movie 10","Safety Car Menu","Red Flag Menu","Choose a Team 2021","Latifi Crash",
         "Hamilton Wins","Verstappen Wins","Canada 2011 Victory","Canada 2011 Defeat","Choose a Team 2000","Schumacher Victory","Hakkinen Victory","Senna Celebration",
-        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Old Box","Select Save File","Calendar","Standings",
+        "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Select Save File","Calendar","Standings",
         "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Aston Martin Upgrade","Haas Upgrade","Audi Upgrade"
         ,"Alpine Upgrade","Cadillac Upgrade","Data Background",]
 images=[]
