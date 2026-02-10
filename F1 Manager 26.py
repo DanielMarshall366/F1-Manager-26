@@ -10795,7 +10795,7 @@ class Game:
         GAME.ChangeScreen("Get Team Name")
         GAME.team=GAME.Sanitise(simpledialog.askstring(" ", "Limit: 20 characters"))
         teams=["mclaren","ferrari","red bull","mercedes","aston martin","alpine","haas","racing bulls","williams","audi","honda","cadillac","renault","gazoo racing","ford","create new team",
-               "legend","hp","oracle","petronas","aramco","bwt","visa & cash app","atlassian","revolut","Gazoo Racing","placeholder","team principal","dead"]
+               "legend","hp","oracle","petronas","aramco","bwt","visa & cash app","atlassian","revolut","Gazoo Racing","placeholder","team principal","dead","player"]
         valid=GAME.Validate(GAME.team)
         if valid==1:
             with sqlite3.connect(GAME.database) as c:
@@ -10817,7 +10817,7 @@ class Game:
         with sqlite3.connect(GAME.database) as c:
             c.execute("UPDATE Player SET Team=?",(GAME.team,))
             pos=len(c.execute("SELECT Name FROM Teams").fetchall())+1
-            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.team, 0, GAME.team, pos, 12, 5000000, 1000000, GAME.name, GAME.country, 50, 0, 0))
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.team, 0, "Player", pos, 12, 5000000, 1000000, GAME.name, GAME.country, 50, 0, 0))
             f=c.execute("SELECT Name FROM Drivers WHERE Team='Free Agent' AND Age>17 AND Condition='Well'").fetchall()
             if len(f)<2:
                 for x in range(2-len(f)):
@@ -11166,6 +11166,8 @@ class Game:
                     Y-=15
                 elif driver=="Sergio Perez":
                     X-=7
+                elif driver=="Gabriel Bortoleto":
+                    Y-=7
                 if driver in driverHeads:
                     head=driver
                 else:
@@ -11340,7 +11342,7 @@ class Game:
             buyer=0
             if random.randint(1,4)>=2 and GAME.season!=2026:
                     #Team Acquired
-                    f=c.execute('''SELECT Name FROM Teams WHERE Name!="Ferrari" AND Name!="McLaren" AND Name!="Mercedes" AND Name!=?''',(GAME.team,)).fetchall()
+                    f=c.execute('''SELECT Name FROM Teams WHERE Name!="Ferrari" AND Name!="McLaren" AND Name!="Mercedes" AND Name!=? AND OriginalName!="Player"''',(GAME.team,)).fetchall()
                     team=random.choice(f)
                     if GAME.Sanitise(team)=="Cadillac" and GAME.season<2030:
                         f.remove(team)
@@ -11681,7 +11683,7 @@ class Game:
         for x in range(2):
             c.execute('''UPDATE Drivers SET Team=?, Role=?, Salary=? WHERE Name=?''',(GAME.team,x+1,2000000,GAME.driversChosen[x],))
         c.execute('''UPDATE Sponsors SET Team=? WHERE Name=?''',(GAME.team,GAME.sponsor,))
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.team, 0, GAME.team, 12, 0, 5000000, 1000000, GAME.name, GAME.country, 50, GAME.sponsor, 0))
+        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.team, 0, "Player", 12, 0, 5000000, 1000000, GAME.name, GAME.country, 50, GAME.sponsor, 0))
         #Staff Data
         F1.commit()
         F1.close()
@@ -11896,7 +11898,7 @@ steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","BMW","Amazon","Ford","Tesla","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
        "Alfa Romeo"]
 xDif=[90,82,88,95,110,95,92,100,95,90,105,102,100,85,95,97,95,98,95]
-yDif=[115,90,100,115,108,87,90,70,122,80,103,52,145,105,80,100,85,50,88]
+yDif=[115,90,95,108,105,87,90,70,122,80,108,52,145,105,80,100,85,50,88]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 GAME.suits=[tk.PhotoImage(file=path)]
 logos=[]
