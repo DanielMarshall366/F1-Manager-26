@@ -1083,6 +1083,7 @@ class Game:
             GAME.ChangeScreen("Press Conference")
             F1=sqlite3.connect(GAME.database)
             c=F1.cursor()
+            c.execute("UPDATE Player SET Actions=1")
             message=[]
             retirement=0
             if objective=="Upgrade":
@@ -3700,11 +3701,11 @@ class Game:
                                     lap=GAME.lap[GAME.positions[x-1-driversRemoved]]
                                     GAME.lap.pop(GAME.positions[x-driversRemoved])
                                     GAME.lap.insert(GAME.positions[x-driversRemoved], lap)
-                            if teamOrders==0 or GAME.replay>0:
+                            if teamOrders==0 and GAME.replay>0:
                                 control=GAME.control[driverID]+GAME.control[aheadID]
                                 if control<=GAME.risk:
                                     control=GAME.risk+1
-                                if random.randint(1,control-GAME.risk)==1:
+                                if random.randint(1,(2*control)-GAME.risk)==1:
                                     if overtake==1:
                                         crasher=ahead
                                         crashedInto=driver
@@ -8219,6 +8220,8 @@ class Game:
             else:
                 GAME.done=0
             GAME.PreSeason()
+        elif GAME.race==1:
+            GAME.Reserves()
         elif GAME.race<=GAME.races:
             GAME.ActionRound()
         elif GAME.race==GAME.races+1:
@@ -8376,9 +8379,6 @@ class Game:
                 root.after(400, lambda: GAME.ReplayScreen())
             elif event.x>=1295 and event.x<=1345 and event.y>=710 and event.y<=760:
                 GAME.Settings()
-            else:
-                GAME.ChangeScreen("Race Screen")
-                GAME.RaceMenu()
         elif GAME.screen=="Welcome screen":
             if event.x>=54 and event.x<=250 and event.y>=718 and event.y<=765:
                 GAME.ChangeScreen("Get Name")
@@ -9013,7 +9013,7 @@ class Game:
                         for y in range(5):
                             GAME.CalendarDisplay(x,y,GAME.Sanitise(f[(x*5)+y]))
                     for z in range(len(f)%5):
-                        GAME.CalendarDisplay(4,z,GAME.Sanitise(f[((len(f)//5)*5)+z]))
+                        GAME.CalendarDisplay(len(f)//5,z,GAME.Sanitise(f[((len(f)//5)*5)+z]))
                 canvas.create_text(250, 600, text=f"Next Race: {GAME.Sanitise(f[GAME.race-1])}", fill="#C4C4C4", font=("Arial", 50), anchor="nw")
             elif event.x>=870 and event.x<=1070 and event.y>=580 and event.y<=630:
                 #Achievements
@@ -10374,7 +10374,7 @@ class Game:
         GAME.CarRanking()
         GAME.ChangeScreen("Car Data")
         GAME.DisplayLogo()
-        canvas.create_text(40, 5, text="Car Ranking", fill="white", font=("Arial", 100), anchor="nw")
+        canvas.create_text(40, 5, text="Aero Ranking", fill="white", font=("Arial", 100), anchor="nw")
         with sqlite3.connect(GAME.database) as c:
             f=c.execute("SELECT Name FROM Teams").fetchall()
             for x in range(len(f)):
@@ -11748,7 +11748,7 @@ class Game:
                 delay+=500
         for z in range(GAME.races%5):
             track=calendar[((GAME.races//5)*5)+z]
-            root.after(delay, lambda a=4, b=z, t=track: GAME.CalendarDisplay(a, b, t))
+            root.after(delay, lambda a=len(f)//5, b=z, t=track: GAME.CalendarDisplay(a, b, t))
             delay+=500
         root.after(delay, lambda: GAME.Button("Next",1200,695))
     def CalendarDisplay(self,a,b,track):
