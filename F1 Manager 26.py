@@ -5130,7 +5130,7 @@ class Game:
                             control=GAME.control[driverID]+GAME.control[aheadID]
                             if control<=GAME.risk:
                                 control=GAME.risk+1
-                            if random.randint(1,control-GAME.risk)==1:
+                            if random.randint(1,(control-GAME.risk)*3)==1:
                                 if overtake==1:
                                     crasher=ahead
                                     crashedInto=driver
@@ -5431,7 +5431,6 @@ class Game:
         else:
             GAME.Podium()
     def Podium(self):
-        GAME.CalculateTime()
         GAME.ChangeScreen("Podium")
         GAME.Button("Results",1230,5)
         for i in range(3):
@@ -5460,6 +5459,9 @@ class Game:
                                 path = os.path.join(os.path.dirname(__file__), "Music", f"{GAME.raceCountry} National Anthem.wav")
                                 if not os.path.isfile(path):
                                     path = os.path.join(os.path.dirname(__file__), "Music", "Podium Theme.wav")
+                                GAME.ChangeScreen(f"{GAME.raceCountry} Flag")
+                                GAME.Button("Results",1230,5)
+                                GAME.screen="Podium"
                             else:
                                 path = os.path.join(os.path.dirname(__file__), "Music", "Podium Theme.wav")
                         winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
@@ -11852,8 +11854,9 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "F1 Movie 3","F1 Movie 4","F1 Movie 5","F1 Movie 6","F1 Movie 7","F1 Movie 8","F1 Movie 9","F1 Movie 10","Safety Car Menu","Red Flag Menu","Choose a Team 2021","Latifi Crash",
         "Hamilton Wins","Verstappen Wins","Canada 2011 Victory","Canada 2011 Defeat","Choose a Team 2000","Schumacher Victory","Hakkinen Victory","Senna Celebration",
         "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Select Save File","Calendar","Standings",
-        "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Aston Martin Upgrade","Haas Upgrade","Audi Upgrade"
-        ,"Alpine Upgrade","Cadillac Upgrade","Data Background",]
+        "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Aston Martin Upgrade","Haas Upgrade","Audi Upgrade",
+        "Alpine Upgrade","Cadillac Upgrade","Data Background","United Kingdom Flag","United States of America Flag","Brazil Flag","Italy Flag","Japan Flag","Germany Flag",
+        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
