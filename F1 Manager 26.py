@@ -442,6 +442,7 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Istanbul Park", "Turkey", 5.338, 58, 55, 20, 25, "Medium", 40, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Nürburgring", "Germany", 5.148, 60, 95, 23, 20, "High", 45, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Hockenheim", "Germany", 4.574, 67, 68, 23, 20, "Medium", 65, 0, 0, 4)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Portimão", "Portugal", 4.653, 66, 60, 40, 18, "High", 50, 0, 0, 3)''')
         
         #Player
         c.execute('''INSERT into Player (Name, Country, Team, newTeam, Season, Race, RegulationChange, Points, Wins, Championships, NextYearEngine, Actions, Financial, Management, Warnings, TyreWear, MovingTo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.name, GAME.country, GAME.team, GAME.newTeam, 2026, -1, 2029, 0, 0, 0, 0, 3, 5, 3, 0, 0, 0))
@@ -11927,7 +11928,8 @@ for x in range(len(Buttons)):
     path = os.path.join(os.path.dirname(__file__), "Buttons", (Buttons[x]+" Button.png"))
     buttons.append(tk.PhotoImage(file=path))
 tracks=["Australia","China","Japan","Bahrain","Saudi Arabia","Miami","Imola","Monaco","Spain","Canada","Austria","United Kingdom","Belgium","Hungary","Netherlands","Italy",
-        "Azerbaijan","Singapore","United States of America","Mexico","Brazil","Las Vegas","Qatar","Abu Dhabi","Madrid","Turkey","Nurburgring","Hockenheim","1984 Monaco","2008 Brazil"]
+        "Azerbaijan","Singapore","United States of America","Mexico","Brazil","Las Vegas","Qatar","Abu Dhabi","Madrid","Turkey","Nurburgring","Hockenheim","1984 Monaco","2008 Brazil",
+        "Portugal"]
 layouts=[]
 path=os.path.join(os.path.dirname(__file__), "Race Images", "Lights.png")
 raceImages=[tk.PhotoImage(file=path)]
