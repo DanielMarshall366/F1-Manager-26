@@ -199,6 +199,7 @@ class Game:
         self.driver=1
         self.database="F1 Manager 26 Save Data 1.db"
         self.loaded=0
+        self.battery=[]
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -3238,7 +3239,7 @@ class Game:
                                 if GAME.teams[index]!=GAME.team and GAME.lap[index]>GAME.startLap and GAME.time[index]<0.5 and x>0 and GAME.ERS[index]>=60 and random.randint(1,2)==2 and GAME.water<1:
                                     GAME.ERSdeployment[index]=4
                                 if GAME.ERSdeployment[index]==1:
-                                    ERS=GAME.ERS[index]+random.randint(30,50)
+                                    ERS=GAME.ERS[index]+random.randint(6,15)+(4*GAME.battery[index])
                                     if ERS>100:
                                         ERS=100
                                     if GAME.teams[index]!=GAME.team:
@@ -3247,7 +3248,7 @@ class Game:
                                         elif ERS>60:
                                             GAME.ERSdeployment[index]=2
                                 elif GAME.ERSdeployment[index]==2:
-                                    ERS=GAME.ERS[index]+random.randint(-2,1)
+                                    ERS=GAME.ERS[index]+random.randint(-4,0)+(GAME.battery[index]//3)
                                     if ERS>100:
                                         ERS=100
                                     elif ERS<0:
@@ -3256,7 +3257,7 @@ class Game:
                                             GAME.ERSdeployment.pop(index)
                                             GAME.ERSdeployment.insert(index, 1)
                                 elif GAME.ERSdeployment[index]==3:
-                                    ERS=GAME.ERS[index]-random.randint(5,20)
+                                    ERS=GAME.ERS[index]-random.randint(15,35)+GAME.battery[index]
                                     if ERS<0:
                                         ERS=0
                                     if ERS<50 and GAME.teams[index]!=GAME.team:
@@ -3962,7 +3963,7 @@ class Game:
                                         GAME.damage.insert(index, damage)
                             #Overtake Mode
                             if GAME.ers==1 and GAME.ERSdeployment[driverID]==4:
-                                ERS=GAME.ERS[driverID]-random.randint(51,60)
+                                ERS=GAME.ERS[driverID]+random.randint(-5,5)-(10*(13-GAME.battery[driverID]))
                                 if ERS<0:
                                     ERS=0
                                 GAME.ERS[driverID]=ERS
@@ -5909,6 +5910,7 @@ class Game:
         self.teamOrders=1
         self.pit=0
         self.fuel=[]
+        self.battery=[]
         if GAME.replay==2:
             GAME.team="APX GP"
             GAME.car1="Sonny Hayes"
@@ -6832,6 +6834,7 @@ class Game:
         self.qualifying=0
         self.cooling=[]
         self.strategy=[]
+        self.battery=[]
         self.rainStopped=0
         GAME.ChangeScreen("Practice")
         GAME.DisplayLayout(race)
@@ -7169,6 +7172,7 @@ class Game:
                 GAME.repairBill.append(0)
                 GAME.penalties.append(0)
                 GAME.lapPittedTo.append(1)
+                GAME.battery.append(8)
                 #Strategy
                 if team==GAME.team:
                     GAME.tyre.append("Placeholder")
