@@ -5479,7 +5479,6 @@ class Game:
         GAME.pointsScored=[]
         for x in range(len(GAME.drivers)):
             GAME.pointsScored.append(0)
-        canvas.create_text(50, 5, text=GAME.track, fill="white", font=("Arial", 50), anchor="nw")
         with sqlite3.connect(GAME.database) as conn:
             cursor = conn.cursor()
             pointsSystem=int(GAME.Sanitise(cursor.execute("SELECT True FROM Regulations WHERE Regulation='Old Points System'").fetchall()))
@@ -5502,16 +5501,43 @@ class Game:
                         points=points*2
                     GAME.pointsScored.pop(index)
                     GAME.pointsScored.insert(index,points)
+                team=GAME.teams[index]
+                if team=="McLaren":
+                    colour="#FFA100"
+                elif team=="Mercedes":
+                    colour="#1AE2CE"
+                elif team=="Red Bull":
+                    colour="#2400B2"
+                elif "Aston Martin" in team:
+                    colour="#49C18D"
+                elif "Alpine" in team:
+                    colour="#FF58FF"
+                elif "Williams" in team:
+                    colour="#5196FF"
+                elif "Ferrari" in team:
+                    colour="#EE1818"
+                elif "Renault" in team:
+                    colour="yellow"
+                elif "Audi" in team:
+                    colour="#AFB8C1"
+                elif "Haas" in team:
+                    colour="#D70000"
+                elif "Cadillac" in team:
+                    colour="#E6E6E6"
+                else:
+                    colour="white"
                 if x<9:
-                    canvas.create_text(50, 80+(x*28), text=f"{x+1}. {GAME.drivers[index]}", fill="white", font=("Arial", 20), anchor="nw")
+                    if x==0:
+                        canvas.create_text(50, 5, text=GAME.track, fill=colour, font=("Arial", 50), anchor="nw")
+                    canvas.create_text(50, 80+(x*28), text=f"{x+1}. {GAME.drivers[index]}", fill=colour, font=("Arial", 20), anchor="nw")
                 else:
-                    canvas.create_text(45, 80+(x*28), text=f"{x+1}. {GAME.drivers[index]}", fill="white", font=("Arial", 20), anchor="nw")
+                    canvas.create_text(45, 80+(x*28), text=f"{x+1}. {GAME.drivers[index]}", fill=colour, font=("Arial", 20), anchor="nw")
                 if points==1:
-                    canvas.create_text(700, 80+(x*28), text="1 Point", fill="white", font=("Arial", 20), anchor="nw")
+                    canvas.create_text(700, 80+(x*28), text="1 Point", fill=colour, font=("Arial", 20), anchor="nw")
                 elif points>9:
-                    canvas.create_text(690, 80+(x*28), text=f"{points} Points", fill="white", font=("Arial", 20), anchor="nw")
+                    canvas.create_text(690, 80+(x*28), text=f"{points} Points", fill=colour, font=("Arial", 20), anchor="nw")
                 else:
-                    canvas.create_text(700, 80+(x*28), text=f"{points} Points", fill="white", font=("Arial", 20), anchor="nw")
+                    canvas.create_text(700, 80+(x*28), text=f"{points} Points", fill=colour, font=("Arial", 20), anchor="nw")
         GAME.DisplayDriver(GAME.drivers[GAME.positions[0]],950,500)
         GAME.Button("Next",1230,5)
     def SaveRace(self):
@@ -10996,7 +11022,7 @@ class Game:
                     if team=="McLaren":
                         colour="#FFA100"
                     elif team=="Mercedes":
-                        colour="#E5E5E5"
+                        colour="#1AE2CE"
                     elif team=="Red Bull":
                         colour="#2400B2"
                     elif "Aston Martin" in team:
@@ -11015,6 +11041,8 @@ class Game:
                         colour="#AFB8C1"
                     elif "Haas" in team:
                         colour="#D70000"
+                    elif "Cadillac" in team:
+                        colour="#E6E6E6"
                     else:
                         colour="#DADADA"
                     canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
