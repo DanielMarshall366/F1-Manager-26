@@ -351,11 +351,11 @@ class Game:
         c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 1)''')
 
         #Engines
-        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Research) VALUES ("Ferrari", "Ferrari", 9, 7, 1)''')
-        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Research) VALUES ("Mercedes", "Mercedes", 10, 8, 1)''')
-        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Research) VALUES ("Red Bull", "Red Bull", 8, 8, 1)''')
-        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Research) VALUES ("Audi", "Audi", 8, 7, 1)''')
-        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Research) VALUES ("Honda", "Aston Martin", 9, 8, 1)''')
+        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ferrari", "Ferrari", 9, 10, 8, 1)''')
+        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Mercedes", "Mercedes", 10, 8, 8, 1)''')
+        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Red Bull", "Red Bull", 8, 8, 9, 1)''')
+        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Audi", "Audi", 8, 7, 6, 1)''')
+        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "Aston Martin", 7, 8, 5, 1)''')
 
         #Cars
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("McLaren", "Mercedes", 68, 47, 38, 47, 41, 50, 1, 100, 1, 100, 1, 1, 11)''')
@@ -9662,7 +9662,7 @@ class Game:
                                 canvas.create_text(445, 630, text="1 Season", fill="black", font=("Arial", 30), anchor="nw")
                             else:
                                 canvas.create_text(445, 630, text=f"{GAME.contractLength} Seasons", fill="black", font=("Arial", 30), anchor="nw")
-                            canvas.create_text(800, 300, text=role, fill="black", font=("Arial", 25), anchor="nw")
+                            canvas.create_text(795, 300, text=role, fill="black", font=("Arial", 25), anchor="nw")
                             GAME.DisplayDriver(name,450,250)
                     else:
                         GAME.EndScouting()
@@ -10433,8 +10433,9 @@ class Game:
             i=len(f)
             for x in range(i):
                 engine=GAME.Sanitise(f[x])
-                score=int(GAME.Sanitise(c.execute("SELECT Power FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*1.5
-                score+=int(GAME.Sanitise(c.execute("SELECT Reliability FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))
+                score=int(GAME.Sanitise(c.execute("SELECT Power FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*5
+                score+=int(GAME.Sanitise(c.execute("SELECT Reliability FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*3
+                score+=int(GAME.Sanitise(c.execute("SELECT Battery FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*4
                 scores.append(score)
             for x in range(i):
                 highest=0
@@ -10738,34 +10739,38 @@ class Game:
         while True:
             database=f"F1 Manager 26 Save Data {GAME.database}.db"
             try:
-                F1=sqlite3.connect(database)
-                race=GAME.Sanitise(F1.execute("SELECT Race FROM Player").fetchall())
-                F1.commit()
-                F1.close()
+                c=sqlite3.connect(database)
+                race=GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall())
                 if len(race)==0:
-                    os.remove(database)
-                    F1=sqlite3.connect(database)
                     break
                 elif int(race)<0:
-                    os.remove(database)
-                    F1=sqlite3.connect(database)
                     break
                 else:
                     GAME.database+=1
             except:
-                F1.commit()
-                F1.close()
-                os.remove(database)
-                F1=sqlite3.connect(database)
                 break
+        try:
+            c.execute("DROP TABLE Teams")
+            c.execute("DROP TABLE Drivers")
+            c.execute("DROP TABLE Staff")
+            c.execute("DROP TABLE Regulations")
+            c.execute("DROP TABLE Engines")
+            c.execute("DROP TABLE Cars")
+            c.execute("DROP TABLE Sponsors")
+            c.execute("DROP TABLE Calendar")
+            c.execute("DROP TABLE Tracks")
+            c.execute("DROP TABLE Player")
+            c.execute("DROP TABLE History")
+            c.execute("DROP TABLE Buyers")
+            c.execute("DROP TABLE TeamPrincipals")
+        except:
+            pass
         GAME.database=f"F1 Manager 26 Save Data {GAME.database}.db"
-        F1=sqlite3.connect(GAME.database)
-        c=F1.cursor()
         c.execute('''CREATE TABLE Teams(Name str, Appearance str,OriginalName st, Position int, Points int, Money int, Income int, TeamPrincipal str, Country str, Reputation int, Sponsor str, PreviousPosition int, PressConferences int)''')
         c.execute('''CREATE TABLE Drivers(Name str, Appearance str, Team str, Role str, Country str, Position int, Points int, Salary int, Condition str, Rating int, Overtaking int, Defending int, Pace int, Experience int, Control int, Reaction int, Calmness int, Age int, Marketability int, DevelopmentRate int, ContractEnd int, NewTeam str, NewSalary int, NewRole str, Championships int, Wins int, Legend int)''')
         c.execute('''CREATE TABLE Staff(Name str, Team str, Role str, Rating int, Salary int, Morale int, Country str, NewTeam str, NewSalary int, NewRole str)''')
         c.execute('''CREATE TABLE Regulations(Regulation str, True int)''')
-        c.execute('''CREATE TABLE Engines(Name str, Manufacturer str, Power int, Reliability int, Research int)''')
+        c.execute('''CREATE TABLE Engines(Name str, Manufacturer str, Power int, Reliability int, Battery int, Research int)''')
         c.execute('''CREATE TABLE Cars(Team str, Engine str, DragReduction int, LowSpeed int, MediumSpeed int, HighSpeed int, Cooling int, TyrePreservation int, car1Engine int, car1EngineDurability int, car2Engine int, car2EngineDurability int, Research int, Ranking int, Driveability int)''')
         c.execute('''CREATE TABLE Sponsors(Name str, Team str, Pay int)''')
         c.execute('''CREATE TABLE Calendar(ID int, Track str)''')
@@ -10774,8 +10779,8 @@ class Game:
         c.execute('''CREATE TABLE History(Year int, Driver str, Constructor str)''')
         c.execute('''CREATE TABLE Buyers(Name str, Country str)''')
         c.execute('''CREATE TABLE TeamPrincipals(Name str, Team str)''')
-        F1.commit()
-        F1.close()
+        c.commit()
+        c.close()
         GAME.ChangeScreen("Welcome screen")
     def CreateTeam(self):
         GAME.ChangeScreen("Get Team Name")
@@ -11311,7 +11316,7 @@ class Game:
             c=F1.cursor()
             c.execute("UPDATE Teams SET Reputation=20 WHERE Reputation<20")
             if GAME.season==2028:
-                c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Research) VALUES ("General Motors", "Cadillac", 0, 0, 1)''')
+                c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("General Motors", "Cadillac", 0, 0, 0, 1)''')
             elif GAME.season==2029:
                 GAME.news.append("BREAKING NEWS! Cadillac are now producing their own General Motors engines.")
                 c.execute("UPDATE Cars SET Engine='General Motors' WHERE Team='Cadillac'")
@@ -11570,7 +11575,7 @@ class Game:
                             else:
                                 engine=team
                             if len(c.execute("SELECT Name FROM Engines WHERE Name=?",(engine,)).fetchall())==0:
-                                c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Research) VALUES (?, ?, 0, 0, 1)''',(engine,team,))
+                                c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES (?, ?, 0, 0, 0, 1)''',(engine,team,))
                 elif len(c.execute("SELECT Name FROM Engines WHERE Research>1").fetchall())==0:
                     engines=c.execute("SELECT Name FROM Engines WHERE Manufacturer!='None' AND Power>0").fetchall()
                     for x in range(len(engines)):
@@ -11753,7 +11758,7 @@ class Game:
                 delay+=500
         for z in range(GAME.races%5):
             track=calendar[((GAME.races//5)*5)+z]
-            root.after(delay, lambda a=len(f)//5, b=z, t=track: GAME.CalendarDisplay(a, b, t))
+            root.after(delay, lambda a=GAME.races//5, b=z, t=track: GAME.CalendarDisplay(a, b, t))
             delay+=500
         root.after(delay, lambda: GAME.Button("Next",1200,695))
     def CalendarDisplay(self,a,b,track):
