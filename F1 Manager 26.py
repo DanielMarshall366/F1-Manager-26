@@ -2449,8 +2449,9 @@ class Game:
             #Contract Clauses
             if GAME.race==13:
                 with sqlite3.connect(GAME.database) as c:
+                    if GAME.season<2028:
+                        c.execute("UPDATE Drivers SET ContractEnd=? WHERE Name='Max Verstappen' AND Team='Red Bull' AND Role='1' AND Position>? AND NewTeam='0'",(GAME.season,2028-GAME.season,))
                     if GAME.season==2026:
-                        c.execute("UPDATE Drivers SET ContractEnd=2026 WHERE Name='Max Verstappen' AND Position>3 AND NewTeam='0'")
                         ferrariPos=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name='Ferrari'").fetchall()[0]))
                         if ferrariPos>3 or (ferrariPos==3 and random.randint(1,5)<3):
                             c.execute("UPDATE Drivers SET ContractEnd=2026 WHERE Name='Charles Leclerc' AND Position>3 AND NewTeam='0'")
@@ -4891,6 +4892,8 @@ class Game:
             track="2008 Brazil"
         elif GAME.replay==6:
             track="1984 Monaco"
+        elif GAME.replay==2 or GAME.replay==9:
+            track="2021 Abu Dhabi"
         elif GAME.track=="Nürburgring":
             track="Nurburgring"
         elif GAME.track=="Imola" or GAME.track=="Miami" or GAME.track=="Las Vegas" or GAME.track=="Madrid" or GAME.track=="Hockenheim":
@@ -11966,7 +11969,7 @@ for x in range(len(Buttons)):
     buttons.append(tk.PhotoImage(file=path))
 tracks=["Australia","China","Japan","Bahrain","Saudi Arabia","Miami","Imola","Monaco","Spain","Canada","Austria","United Kingdom","Belgium","Hungary","Netherlands","Italy",
         "Azerbaijan","Singapore","United States of America","Mexico","Brazil","Las Vegas","Qatar","Abu Dhabi","Madrid","Turkey","Nurburgring","Hockenheim","1984 Monaco","2008 Brazil",
-        "Portugal"]
+        "Portugal","2021 Abu Dhabi"]
 layouts=[]
 path=os.path.join(os.path.dirname(__file__), "Race Images", "Lights.png")
 raceImages=[tk.PhotoImage(file=path)]
