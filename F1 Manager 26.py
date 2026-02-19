@@ -291,6 +291,9 @@ class Game:
                 driver['Tier']
             ))
 
+        if GAME.team!="Mercedes":
+            c.execute("UPDATE Drivers SET ContractEnd=2027 WHERE Name='George Russell'")
+
         #Staff
         
         #Technical Directors
@@ -2459,7 +2462,7 @@ class Game:
                         c.execute("UPDATE Drivers SET COntractEnd=2026 WHERE Name='Oscar Piastri' AND Position>? AND Position>3",(landoPos+2,))
                         if GAME.team!="Mercedes":
                             kimiPos=int(GAME.Sanitise(c.execute("SELECT Position FROM Drivers WHERE Name='Kimi Antonelli'").fetchall()[0]))
-                            c.execute("UPDATE Drivers SET ContractEnd=2027 WHERE Name='George Russell' AND NewTeam='0' AND Position<?",(kimiPos,))
+                            c.execute("UPDATE Drivers SET ContractEnd=2026 WHERE Name='George Russell' AND NewTeam='0' AND Position>?",(kimiPos,))
                     if GAME.team!="Aston Martin" and len(c.execute("SELECT Name FROM Drivers WHERE NewTeam='Aston Martin' AND NewRole='1'").fetchall())==0:
                         c.execute("UPDATE Drivers SET ContractEnd=?, NewTeam='Aston Martin', NewRole='1' WHERE Name='Lance Stroll' AND NewTeam='0' AND Team='Aston Martin' AND Role='1'",(GAME.season+1,))
                     
