@@ -838,6 +838,8 @@ class Game:
         c.execute('''SELECT Rating FROM Staff WHERE Team=? AND Role="Technical Director"''',(team,))
         rating=int(GAME.Sanitise(c.fetchall()[0]))
         research=research*(rating**3)*random.randint(2,3)
+        if len(c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(team,)).fetchall())>0:
+            research=round(research*1.5)
         c.execute('''SELECT Research FROM Cars WHERE Team=?''',(team,))
         research+=int(GAME.Sanitise(c.fetchall()[0]))
         c.execute('''UPDATE Cars SET Research=? WHERE Team=?''',(research, team,))
@@ -10521,6 +10523,8 @@ class Game:
             with sqlite3.connect(GAME.database) as c:
                 rating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Team=? AND Role="Technical Director"''',(GAME.team,)).fetchall()[0]))
                 research=research*(rating**3)*random.randint(2,3)
+                if len(c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(GAME.team,)).fetchall())>0:
+                    research=round(research*1.5)
                 research+=int(GAME.Sanitise(c.execute('''SELECT Research FROM Cars WHERE Team=?''',(GAME.team,)).fetchall()[0]))
                 c.execute('''UPDATE Cars SET Research=? WHERE Team=?''',(research, GAME.team,))
                 c.execute('''UPDATE Teams SET Money=? WHERE Name=?''',(GAME.money, GAME.team,))
