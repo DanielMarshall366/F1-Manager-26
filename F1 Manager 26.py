@@ -2317,7 +2317,8 @@ class Game:
                     GAME.Income()
             with sqlite3.connect(GAME.database) as c:
                 if GAME.race==2 and GAME.season==2026:
-                    c.execute("UPDATE Cars SET car1Engine=1 WHERE Team='Cadillac'")
+                    engine=int(GAME.Sanitise(c.execute("SELECT car1Engine FROM Cars WHERE Team='Cadillace'").fetchall()[0]))-5
+                    c.execute("UPDATE Cars SET car1Engine=? WHERE Team='Cadillac'",(engine,))
                 if len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())>0:
                     c.execute("UPDATE Drivers SET NewTeam='Red Bull' WHERE NewTeam='Racing Bulls' AND (NewRole='Junior' OR NewRole='Reserve')")
                     c.execute("UPDATE Drivers SET Team='Red Bull' WHERE Team='Racing Bulls' AND (Role='Junior' OR Role='Reserve')")
