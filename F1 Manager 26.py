@@ -371,7 +371,7 @@ class Game:
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Racing Bulls", "Red Bull", 35, 25, 20, 24, 23, 29, 1, 100, 1, 100, 1, 6, 16)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Williams", "Mercedes", 56, 39, 31, 39, 33, 41, 1, 100, 1, 100, 1, 5, 12)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Audi", "Audi", 44, 30, 24, 24, 25, 32, 1, 100, 1, 100, 1, 10, 15)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Cadillac", "Ferrari", 30, 18, 14, 18, 13, 16, 1, 100, 1, 100, 1, 11, 15)''')
+        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Cadillac", "Ferrari", 30, 18, 14, 18, 13, 16, 6, 100, 1, 100, 1, 11, 15)''')
         if GAME.newTeam==1:
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES (?, ?, 22, 15, 12, 15, 13, 16, 1, 100, 1, 100, 0, 11, 12)''',(GAME.team, GAME.engine))
 
@@ -2316,6 +2316,8 @@ class Game:
                 if GAME.race%2==1 or GAME.race%4==0:
                     GAME.Income()
             with sqlite3.connect(GAME.database) as c:
+                if GAME.race==2 and GAME.season==2026:
+                    c.execute("UPDATE Cars SET car1Engine=1 WHERE Team='Cadillac'")
                 if len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())>0:
                     c.execute("UPDATE Drivers SET NewTeam='Red Bull' WHERE NewTeam='Racing Bulls' AND (NewRole='Junior' OR NewRole='Reserve')")
                     c.execute("UPDATE Drivers SET Team='Red Bull' WHERE Team='Racing Bulls' AND (Role='Junior' OR Role='Reserve')")
@@ -7027,7 +7029,10 @@ class Game:
                     y+=50
                     canvas.create_text(150, y, text=f"{name} has a {places} place grid penalty for", fill="white", font=("Arial", 30), anchor="nw")
                     y+=50
-                    canvas.create_text(150, y, text=f"taking a new engine, they will be starting the race in {place}{suffix}.", fill="white", font=("Arial", 30), anchor="nw")
+                    if GAME.race==1 and GAME.season==2026:
+                        canvas.create_text(150, y, text=f"a 2024 incident, they will be starting the race in {place}{suffix}.", fill="white", font=("Arial", 30), anchor="nw")
+                    else:
+                        canvas.create_text(150, y, text=f"taking a new engine, they will be starting the race in {place}{suffix}.", fill="white", font=("Arial", 30), anchor="nw")
         root.after(5000, lambda: GAME.RacePreparation())
     def RacePreparation(self):
         #Soft
