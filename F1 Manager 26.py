@@ -2925,8 +2925,6 @@ class Game:
                                         GAME.tyreAggression.insert(index,3)
                                 else:
                                     stops=GAME.stops[index]
-                                    if GAME.track=="Monte Carlo" and stops>0:
-                                        stops-=1
                                     if GAME.tyre[index]=="Soft":
                                         wear=GAME.tyreWear[0]
                                     elif GAME.tyre[index]=="Medium":
@@ -3023,16 +3021,6 @@ class Game:
                                     elif GAME.tyreAggression[index]!=3:
                                         GAME.tyreAggression.pop(index)
                                         GAME.tyreAggression.insert(index, 3)
-                            if GAME.track=="Monte Carlo" and GAME.stops[index]<2 and GAME.tyre[index]!="Soft" and GAME.tyreAggression[index]<5:
-                                if GAME.tyreAggression[index]==4:
-                                    GAME.tyreAggression.pop(index)
-                                    GAME.tyreAggression.insert(index,5)
-                                elif GAME.tyreAggression==3:
-                                    GAME.tyreAggression.pop(index)
-                                    GAME.tyreAggression.insert(index,4)
-                                else:
-                                    GAME.tyreAggression.pop(index)
-                                    GAME.tyreAggression.insert(index,3)
                     GAME.distance.pop(index)
                     GAME.distance.insert(index,distance)
                 if GAME.lap_[index]!=GAME.lap[index]:
@@ -3502,7 +3490,7 @@ class Game:
                     GAME.tyreRemaining[driverIndex] = 100
                     GAME.stops[driverIndex] += 1
                     lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
-                    if (GAME.track=="Monte Carlo" and GAME.strategy[driverIndex]==1 and GAME.stops[driverIndex]==1) or GAME.strategy[driverIndex]>GAME.stops[driverIndex]:
+                    if GAME.strategy[driverIndex]>GAME.stops[driverIndex]:
                         if lapsLeft<GAME.expectedTyreLife[0]:
                             pitTyre="Soft"
                         elif lapsLeft<GAME.expectedTyreLife[1] and random.randint(1,3)>1:
@@ -5428,7 +5416,7 @@ class Game:
         if GAME.wet==0:
             disqualified=[]
             for x in range(len(GAME.positions)):
-                if GAME.tyreCompoundsUsed[GAME.positions[x]]<2 or (GAME.track=="Monte Carlo" and GAME.stops[GAME.positions[x]]<2):
+                if GAME.tyreCompoundsUsed[GAME.positions[x]]<2:
                     disqualified.append(x)
             if len(disqualified)>0:
                 GAME.ChangeScreen("Breaking News")
@@ -7167,8 +7155,6 @@ class Game:
             length=GAME.expectedTyreLife[1]+GAME.expectedTyreLife[2]
             if GAME.wet==1:
                 standardStrategy=0
-            elif GAME.track=="Monte Carlo":
-                standardStrategy=2
             else:
                 if length>=GAME.laps-3:
                     standardStrategy=1
@@ -7244,7 +7230,7 @@ class Game:
                             GAME.tyre.append("Wet")
                         else:
                             GAME.tyre.append("Intermediate")
-                    elif GAME.track=="Monte Carlo" and random.randint(1,12)==12 and GAME.positions.index(x)>9:
+                    elif GAME.track=="Monte Carlo" and random.randint(1,50)==50 and GAME.positions.index(x)>9:
                         GAME.strategy.append(1)
                         GAME.pitLap.append(1)
                         GAME.tyre.append("Soft")
@@ -7393,11 +7379,6 @@ class Game:
             GAME.weatherMessage=["Abu Dhabi 2021"]
         elif GAME.replay==2:
             GAME.weatherMessage=["F1 THE MOVIE"]
-        if GAME.wet==0:
-            if len(GAME.weatherMessage)==0 and GAME.track=="Monte Carlo":
-                GAME.weatherMessage.append("WARNING! Remember that drivers must take 2 pit stops in this race.")
-            elif GAME.track=="Monte Carlo" and GAME.weatherMessage[len(GAME.weatherMessage)-1]!="WARNING! Remember that drivers must take 2 pit stops in this race.":
-                GAME.weatherMessage.append("WARNING! Remember that drivers must take 2 pit stops in this race.")
         if len(GAME.weatherMessage)==1:
             canvas.create_text(20, 10, text=GAME.weatherMessage[0], fill="black", font=("Arial", 40), anchor="nw")
         else:
