@@ -904,6 +904,27 @@
           "ContractEnd": 2026, 
           "Championships": 0,
           "Wins": 0
+        },
+	{
+          "Name": "Theo Pourchaire",
+          "Team": "Mercedes", 
+          "Role": "Reserve", 
+          "Country": "France",
+          "Salary": 1000000,       
+          "Rating": 77,
+	  "Overtaking": 85,
+	  "Defending": 80,
+	  "Pace": 85, 
+          "Experience": 50, 
+          "Control": 80,
+          "Reaction": 83,       
+          "Calmness": 80,
+	  "Age": 22,
+	  "Marketability": 80,
+          "DevelopmentRate": 85, 
+          "ContractEnd": 2026, 
+          "Championships": 0,
+          "Wins": 0       
         }
       ],
       "Legends" : [
