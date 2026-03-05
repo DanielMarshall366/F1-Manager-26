@@ -325,26 +325,26 @@ class Game:
         #Race Engineers
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("William Joseph", "McLaren", "Race Engineer 2", 86, 2000000, 95, "United Kingdom", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Tom Stallard", "McLaren", "Race Engineer 1", 85, 2000000, 95, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Bryan Bozzi", "Ferrari", "Race Engineer 1", 78, 2000000, 90, "Italy", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Riccardo Adami", "Ferrari", "Race Engineer 2", 70, 2000000, 90, "Italy", 0, 0, 0))
+        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Bryan Bozzi", "Ferrari", "Race Engineer 1", 85, 2000000, 90, "Italy", 0, 0, 0))
+        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Cédric Grosjean", "Ferrari", "Race Engineer 2", 95, 2000000, 90, "France", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Gianpiero Lambiase", "Red Bull", "Race Engineer 1", 91, 2000000, 75, "Italy", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Richard Wood", "Red Bull", "Race Engineer 2", 85, 2000000, 70, "United Kingdom", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Marcus Dudley", "Mercedes", "Race Engineer 1", 90, 1800000, 70, "United Kingdom", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Peter Bonnington", "Mercedes", "Race Engineer 2", 92, 2000000, 70, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Chris Cronin", "Aston Martin", "Race Engineer 2", 84, 1500000, 85, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Ben Michell", "Aston Martin", "Race Engineer 1", 85, 1500000, 65, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("John Howard", "Cadillac", "Race Engineer 1", 84, 1500000, 70, "United Kingdom", 0, 0, 0))
+        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Andrew Vizard", "Aston Martin", "Race Engineer 2", 85, 1500000, 85, "United Kingdom", 0, 0, 0))
+        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Gary Gannon", "Aston Martin", "Race Engineer 1", 85, 1500000, 65, "United Kingdom", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Josh Peckett", "Alpine", "Race Engineer 1", 84, 1500000, 70, "United Kingdom", 0, 0, 0))
+        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Stuart Barlow", "Alpine", "Race Engineer 2", 84, 1500000, 70, "United Kingdom", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Laura Mueller", "Haas", "Race Engineer 1", 85, 1500000, 85, "Germany", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Ronan OHare", "Haas", "Race Engineer 2", 85, 1500000, 84, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Ernesto Desiderio", "Racing Bulls", "Race Engineer 1", 84, 1500000, 70, "Italy", 0, 0, 0))
+        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Alexandre Iliopoulos", "Racing Bulls", "Race Engineer 1", 84, 1500000, 70, "Italy", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Pierre Hamelin", "Racing Bulls", "Race Engineer 2", 83, 1500000, 70, "United Kingdom", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("James Urwin", "Williams", "Race Engineer 1", 78, 1000000, 80, "United Kingdom", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Gaetan Jego", "Williams", "Race Engineer 2", 76, 1000000, 85, "France", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Steven Petrik", "Audi", "Race Engineer 1", 80, 1000000, 85, "Switzerland", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Jose Manuel Lopez", "Audi", "Race Engineer 2", 80, 1000000, 85, "United Kingdom", 0, 0, 0))
+        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("John Howard", "Cadillac", "Race Engineer 1", 84, 1500000, 70, "United Kingdom", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Carlo Pasetti", "Cadillac", "Race Engineer 2", 84, 1500000, 70, "Italy", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Stuart Barlow", "Alpine", "Race Engineer 2", 84, 1500000, 70, "United Kingdom", 0, 0, 0))
         
         #Regulations
         c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Double Points On Last Race", 0)''')
@@ -365,7 +365,7 @@ class Game:
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Ferrari", "Ferrari", 67, 67, 67, 67, 45, 60, 1, 100, 1, 100, 1, 2, 13)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Red Bull", "Red Bull", 65, 65, 65, 65, 45, 60, 1, 100, 1, 100, 1, 3, 10)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Mercedes", "Mercedes", 70, 70, 70, 70, 50, 60, 1, 100, 1, 100, 1, 1, 15)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Aston Martin", "Honda", 30, 30, 30, 30, 25, 34, 1, 100, 1, 100, 1, 11, 14)''')
+        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Aston Martin", "Honda", 30, 30, 30, 30, 25, 34, 1, 100, 1, 100, 1, 7, 14)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Alpine", "Mercedes", 48, 48, 48, 48, 35, 40, 1, 100, 1, 100, 1, 6, 12)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Haas", "Ferrari", 50, 50, 50, 50, 38, 45, 1, 100, 1, 100, 1, 5, 15)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Racing Bulls", "Red Bull", 47, 47, 47, 47, 35, 40, 1, 100, 1, 100, 1, 7, 16)''')
@@ -11200,6 +11200,7 @@ class Game:
         GAME.ChangeScreen("Welcome To Team")
         with sqlite3.connect(GAME.database) as c:
             GAME.engine=GAME.Sanitise(c.execute("SELECT Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0])
+            GAME.sponsor=GAME.Sanitise(c.execute("SELECT Sponsor FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
         X=400
         if len(GAME.team)>10:
             X-100
@@ -11899,7 +11900,7 @@ driverHeads=["Max Verstappen","Lando Norris","Charles Leclerc","Oscar Piastri","
              "Ayumu Iwasa","Stoffel Vandoorne","Paul Aron","Ryo Hirakawa","Doriane Pin","Abbi Pulling","Juan Manuel Fangio","Michael Schumacher","Ayrton Senna","Alain Prost",
              "Jackie Stewart","Niki Lauda","Sergio Perez","Alex Dunne","Kevin Magnussen","Logan Sargeant","Sebastian Vettel","Daniel Ricciardo","Kimi Raikkonen","Jenson Button",
              "Nigel Mansell","Nicholas Latifi","Mika Hakkinen","David Coulthard","Luke Browning","Leonardo Fornaroli","Rubens Barrichello","Jim Clark","Young Hamilton",
-             "Felipe Massa","Heikki Kovalainen","Johnny Cecotto","Colton Herta","Freddie Slater","Kush Maini"]
+             "Felipe Massa","Heikki Kovalainen","Johnny Cecotto","Colton Herta","Freddie Slater","Kush Maini","Theo Pourchaire"]
 for x in range(3):
     driverHeads.append(f"Man {x+1}")
     if x<2:
