@@ -199,7 +199,7 @@ class Game:
         self.database="F1 Manager 26 Save Data 1.db"
         self.loaded=0
         self.battery=[]
-        self.fastest=[-1,0]
+        self.fastest=[-1,0,10]
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -2858,7 +2858,7 @@ class Game:
                             speed+=(GAME.ERSdeployment[index]*20)
                     if GAME.water>=1:
                         speed=(speed+GAME.water*GAME.experience[index])/2
-                    speed-=round(GAME.fuel[index]/5)
+                    speed-=round(GAME.fuel[index]/3)
                     if GAME.teams[index]==GAME.team and ((GAME.cars[index]==1 and "Drive in Clean Air" in GAME.car1Instructions) or (GAME.cars[index]==2 and "Drive in Clean Air" in GAME.car2Instructions)) and x!=0 and GAME.time[index]<=2:
                         speed-=25
                     speed+=1
@@ -2868,8 +2868,8 @@ class Game:
                         speed=round(speed/2)
                     distance+=speed
                     #Fastest Lap
-                    if speed>GAME.fastest[1] and (x==0 or GAME.time[index]>=0.9):
-                        GAME.fastest=[index,speed]
+                    if speed>GAME.fastest[1] and (x==0 or GAME.time[index]>=0.9) and GAME.water<=GAME.fastest[2]:
+                        GAME.fastest=[index,speed,GAME.water]
                         GAME.AddToLog(f"{GAME.drivers[index]} has set the fastest lap of the race so far.")
                 if GAME.fuel[index]<=0:
                     #Run out of fuel
@@ -4826,7 +4826,7 @@ class Game:
             team=GAME.teams[GAME.positions[x]]
             time=GAME.time[GAME.positions[x]]
             if GAME.positions[x]==GAME.fastest[0]:
-                colour="#D200FF"
+                colour="#B400FF"
             else:
                 colour="white"
             if GAME.safety==0:
@@ -5540,6 +5540,8 @@ class Game:
                     canvas.create_text(50, 80+(x*28), text=f"{x+1}. {GAME.drivers[index]}", fill=colour, font=("Arial", 20), anchor="nw")
                 else:
                     canvas.create_text(45, 80+(x*28), text=f"{x+1}. {GAME.drivers[index]}", fill=colour, font=("Arial", 20), anchor="nw")
+                if fastestLapPoint==1 and GAME.positions[x]==GAME.fastest[0] and points>0:
+                    colour="#B400FF"
                 if points==1:
                     canvas.create_text(700, 80+(x*28), text="1 Point", fill=colour, font=("Arial", 20), anchor="nw")
                 elif points>9:
@@ -5944,7 +5946,7 @@ class Game:
         self.pit=0
         self.fuel=[]
         self.battery=[]
-        self.fastest=[-1,0]
+        self.fastest=[-1,0,10]
         if GAME.replay==2:
             GAME.team="APX GP"
             GAME.car1="Sonny Hayes"
@@ -6869,7 +6871,7 @@ class Game:
         self.strategy=[]
         self.battery=[]
         self.rainStopped=0
-        self.fastest=[-1,0]
+        self.fastest=[-1,0,10]
         GAME.ChangeScreen("Practice")
         GAME.DisplayLayout(race)
         canvas.create_text(20, 125, text=race, fill="white", font=("Arial", 50), anchor="nw")
@@ -7485,12 +7487,13 @@ class Game:
                 racesLeft=GAME.races-GAME.race+1
                 pointsSystem=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Old Points System'").fetchall()))
                 double=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Double Points On Last Race'").fetchall()))
+                fastestLapPoint=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Fastest Lap Point'").fetchall()))
                 if pointsSystem==0:
-                    constructorsPoints=43*(racesLeft+double)
-                    driversPoints=25*(racesLeft+double)
+                    constructorsPoints=(43+fastestLapPoint)*(racesLeft+double)
+                    driversPoints=(25+fastestLapPoint)*(racesLeft+double)
                 else:
-                    constructorsPoints=18*(racesLeft+double)
-                    driversPoints=10*(racesLeft+double)
+                    constructorsPoints=(18+fastestLapPoint)*(racesLeft+double)
+                    driversPoints=(10+fastestLapPoint)*(racesLeft+double)
             else:
                 constructorsPoints=0
                 driversPoints=0
@@ -7910,11 +7913,16 @@ class Game:
                             power=int(GAME.Sanitise(c.execute("SELECT Power FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))
                             if power<10:
                                 power+=1
-                                c.execute("UPDATE Engines SET Power=? WHERE Name=?",(power,engine,))
                             reliability=int(GAME.Sanitise(c.execute("SELECT Reliability FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))
                             if reliability<10:
                                 reliability+=1
-                                c.execute("UPDATE Engines SET Reliability=? WHERE Name=?",(reliability,engine,))
+                            battery=int(GAME.Sanitise(c.execute("SELECT Battery FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))
+                            battery+=random.randint(-1,2)
+                            if battery<1:
+                                battery=1
+                            elif battery>10:
+                                battery=10
+                            c.execute("UPDATE Engines SET Power=?, Reliability=?, Battery=? WHERE Name=?",(power,reliability,battery,engine,))
                 #Tyres
                 c.execute("UPDATE Player SET TyreWear=?",(random.randint(-1,1),))
         GAME.WinterHiring()
