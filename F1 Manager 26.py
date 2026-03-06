@@ -5503,7 +5503,7 @@ class Game:
                 except:
                     points=0
                 if points>0:
-                    if fastestLapPoint==1 and GAME.positions[x]==GAME.fastest[x]:
+                    if fastestLapPoint==1 and GAME.positions[x]==GAME.fastest[0]:
                         points+=1
                     if double==1:
                         points=points*2
