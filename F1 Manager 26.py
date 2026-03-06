@@ -879,9 +879,8 @@ class Game:
         drivers=[]
         for x in range(len(f)):
             driver=GAME.Sanitise(f[x])
-            if Team==GAME.team or GAME.season>2025:
-                c.execute('''SELECT Team FROM Drivers WHERE Name=?''',(driver,))
-                team=GAME.Sanitise(c.fetchall()[0])
+            team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Name=?''',(driver,)).fetchall()[0])
+            if team!=Team:
                 age=1
                 if GAME.scouting=="Junior Driver":
                     if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Age<18",(driver,)).fetchall())==0:
@@ -1854,30 +1853,28 @@ class Game:
             if len(f)<3:
                 gap="Junior"
             elif len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole='Junior'",(team,)).fetchall())<3:
-                f=c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="Junior"''',(team,)).fetchall()
+                f=c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="Junior" AND NewTeam="0"''',(team,)).fetchall()
                 driver=GAME.Sanitise(random.choice(f))
                 c.execute('''SELECT NewTeam FROM Drivers WHERE Name=?''',(driver,))
-                newTeam=GAME.Sanitise(c.fetchall()[0])
-                if newTeam=="0":
-                    contractEnd=int(GAME.Sanitise(c.execute('''SELECT ContractEnd FROM Drivers WHERE Name=?''',(driver,)).fetchall()[0]))
-                    if random.randint(1,2)==2 and contractEnd==GAME.season:
-                        #Rehired
-                        c.execute('''SELECT Salary FROM Drivers WHERE Name=?''',(driver,))
-                        currentSalary=int(GAME.Sanitise(c.fetchall()[0]))
-                        c.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(driver,))
-                        rating=int(GAME.Sanitise(c.fetchall()[0]))
-                        minimumSalary=rating*25000
-                        if minimumSalary<currentSalary:
-                            minimumSalary=currentSalary
-                        newSalary=random.randint(minimumSalary,round(minimumSalary*1.1))
-                        length=random.randint(1,3)
-                        GAME.news.append(f"BREAKING NEWS! {team} has extended their contract with")
-                        if length==1:
-                            GAME.news.append(f"{driver} as a Junior driver for another season.")
-                        else:
-                            GAME.news.append(f"{driver} as a Junior driver for another "+str(length)+" seasons.")
-                        c.execute('''UPDATE Drivers SET ContractEnd=?, NewSalary=?, NewTeam=?, NewRole="Junior" WHERE Name=?''',(GAME.season+length,newSalary,team,driver,))
-                        gap="Rehired"
+                contractEnd=int(GAME.Sanitise(c.execute('''SELECT ContractEnd FROM Drivers WHERE Name=?''',(driver,)).fetchall()[0]))
+                if random.randint(1,2)==2 and contractEnd==GAME.season:
+                    #Rehired
+                    c.execute('''SELECT Salary FROM Drivers WHERE Name=?''',(driver,))
+                    currentSalary=int(GAME.Sanitise(c.fetchall()[0]))
+                    c.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(driver,))
+                    rating=int(GAME.Sanitise(c.fetchall()[0]))
+                    minimumSalary=rating*25000
+                    if minimumSalary<currentSalary:
+                        minimumSalary=currentSalary
+                    newSalary=random.randint(minimumSalary,round(minimumSalary*1.1))
+                    length=random.randint(1,3)
+                    GAME.news.append(f"BREAKING NEWS! {team} has extended their contract with")
+                    if length==1:
+                        GAME.news.append(f"{driver} as a Junior driver for another season.")
+                    else:
+                        GAME.news.append(f"{driver} as a Junior driver for another "+str(length)+" seasons.")
+                    c.execute('''UPDATE Drivers SET ContractEnd=?, NewSalary=?, NewTeam=?, NewRole="Junior" WHERE Name=?''',(GAME.season+length,newSalary,team,driver,))
+                    gap="Rehired"
 
         if gap==0:
             #Technical Director
@@ -2116,10 +2113,12 @@ class Game:
                     c.execute('''SELECT Name FROM Drivers WHERE (Team=? AND Role="Junior") OR (NewTeam=? AND NewRole="Junior")''',(team,team,))
                     if len(c.fetchall())<3:
                         gap="Junior"
+                        GAME.scouting="Junior Driver"
                         drivers=GAME.DriverSuitability(team)
+                        GAME.scouting=0
                         removed=0
                         for x in range(len(drivers)):
-                            c.execute('''SELECT Name FROM Drivers WHERE Name=? AND Team!=? AND NewTeam="0" AND Age<21 AND Role="Free Agent"''',(drivers[x-removed],team,))
+                            c.execute('''SELECT Name FROM Drivers WHERE Name=? AND Team!=? AND NewTeam="0" AND Age<17 AND Role="Free Agent" AND ContractEnd=?''',(drivers[x-removed],team,GAME.season,))
                             if len(c.fetchall())==0:
                                 drivers.pop(x-removed)
                                 removed+=1
@@ -2163,7 +2162,7 @@ class Game:
                         GAME.Upgrade(team)
                         F1=sqlite3.connect(GAME.database)
                         c=F1.cursor()
-                if gap!=0 and hiredDriver!="Arvid Lindblad":
+                if gap!=0:
                     minimumSalary=rating*3500
                     c.execute('''SELECT Salary FROM Drivers WHERE Name=?''',(hiredDriver,))
                     currentSalary=int(GAME.Sanitise(c.fetchall()[0]))
@@ -2172,11 +2171,11 @@ class Game:
                     length=random.randint(1,4)
                     salary=random.randint(minimumSalary,round(minimumSalary*1.1))
                     if length==1:
-                        GAME.news.append("BREAKING NEWS! "+team+" has hired "+hiredDriver)
-                        GAME.news.append("as a Junior Driver for the "+str(GAME.season+1)+" season.")
+                        GAME.news.append(f"BREAKING NEWS! {team} has hired {hiredDriver}")
+                        GAME.news.append(f"as a {gap} Driver for the {GAME.season+1} season.")
                     else:
-                        GAME.news.append("BREAKING NEWS! "+team+" has hired "+hiredDriver)
-                        GAME.news.append("as a Junior Driver for the next "+str(length)+" seasons.")
+                        GAME.news.append(f"BREAKING NEWS! {team} has hired {hiredDriver}")
+                        GAME.news.append(f"as a {gap} Driver for the next {length} seasons.")
                     c.execute('''UPDATE Drivers SET NewTeam=?, NewSalary=?, NewRole=?, ContractEnd=? WHERE Name=?''',(team,salary,gap,GAME.season+length,hiredDriver,))
                     if GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(hiredDriver,)).fetchall()[0])==GAME.team:
                         oldRole=GAME.Sanitise(c.execute("SELECT Role FROM Drivers WHERE Name=?",(hiredDriver,)).fetchall()[0])
@@ -2296,6 +2295,7 @@ class Game:
     def ActionRound(self):
         GAME.CarRanking()
         GAME.news=[]
+        GAME.scouting=0
         if GAME.actions==3:
             if GAME.races==27 or GAME.races==28:
                 if GAME.race%2==1 and GAME.race!=9 and GAME.race!=19:
