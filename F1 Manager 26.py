@@ -7974,6 +7974,11 @@ class Game:
                     message="getting rid of ERS in order to have more pure racing."
                 else:
                     message="bringing back the old ERS system."
+            elif regulation=="Fastest Lap Point":
+                if state==0:
+                    message="bring back the fastest lap point for more interesting race."
+                elif state==1:
+                    message="removing the fastest lap point for simpler racing."
         GAME.ChangeScreen("Rule Vote")
         canvas.create_text(10, 150, text="The FIA is proposing", fill="#DADADA", font=("Arial", 20), anchor="nw")
         canvas.create_text(10, 180, text=message, fill="#DADADA", font=("Arial", 20), anchor="nw")
