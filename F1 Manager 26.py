@@ -71,7 +71,6 @@ class Game:
         self.lap_=[]
         self.time=[]
         self.distance=[]
-        self.fastestLap=[-1,1000]
         self.currentLapTime=[]
         self.tyreCompoundsUsed=[]
         self.damage=[]
@@ -200,6 +199,7 @@ class Game:
         self.database="F1 Manager 26 Save Data 1.db"
         self.loaded=0
         self.battery=[]
+        self.fastest=[-1,0]
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -352,6 +352,7 @@ class Game:
         c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Reduced Winner Windtunnel Time", 0)''')
         c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Old Points System", 0)''')
         c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 1)''')
+        c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Fastest Lap Point", 0)''')
 
         #Engines
         c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Mercedes", "Mercedes", 9, 8, 7, 1)''')
@@ -2866,6 +2867,10 @@ class Game:
                     if GAME.replay==4 and GAME.tyre[index]!="Wet" and GAME.tyre[index]!="Intermediate" and GAME.water>=1:
                         speed=round(speed/2)
                     distance+=speed
+                    #Fastest Lap
+                    if speed>GAME.fastest[1] and (x==0 or GAME.time[index]>=0.9):
+                        GAME.fastest=[index,speed]
+                        GAME.AddToLog(f"{GAME.drivers[index]} has set the fastest lap of the race so far.")
                 if GAME.fuel[index]<=0:
                     #Run out of fuel
                     GAME.AddToLog(GAME.drivers[index]+" has run out of fuel.")
@@ -3717,7 +3722,7 @@ class Game:
                                             elif random.randint(1,2)==1:
                                                 GAME.Voice(0,"Crash")
                                             else:
-                                                GAME.Voice(crasher,out)
+                                                GAME.Voice(crasher,"Out")
                                         driversOut=random.randint(1,2)
                                         drivers=[crasher,crashedInto]
                                         GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a severe crash.")
@@ -3972,7 +3977,7 @@ class Game:
                 mistake=0
                 GAME.CalculateTime()
                 for x in range(len(GAME.positions)):
-                    if mistake==0:
+                    if mistake==0 and not (GAME.replay==6 and GAME.positions[x]==11):
                         try:
                             if (GAME.tyre[driverID]=="Soft" or GAME.tyre[driverID]=="Medium" or GAME.tyre[driverID]=="Hard") and GAME.water>=1.4 and random.randint(1,20)==20:
                                 mistake=1
@@ -4022,7 +4027,7 @@ class Game:
                                         elif random.randint(1,2)==1:
                                             GAME.Voice(0,"Crash")
                                         else:
-                                            GAME.Voice(crasher,out)
+                                            GAME.Voice(crasher,"Out")
                                     GAME.AddToLog(f"{driver} crashed into the wall and is out of the race.")
                                     GAME.repairBill[driverID]+=random.randint(2000000,5000000)
                                     if GAME.replay==0:
@@ -4820,14 +4825,18 @@ class Game:
             driver=GAME.drivers[GAME.positions[x]]
             team=GAME.teams[GAME.positions[x]]
             time=GAME.time[GAME.positions[x]]
+            if GAME.positions[x]==GAME.fastest[0]:
+                colour="#D200FF"
+            else:
+                colour="white"
             if GAME.safety==0:
                 Y=0
             else:
                 Y=200
             if x<9:
-                canvas.create_text(10, (x*24)+Y, text=f"{x+1}.{driver} {team}", fill="white", font=("Arial", 15), anchor="nw")
+                canvas.create_text(10, (x*24)+Y, text=f"{x+1}.{driver} {team}", fill=colour, font=("Arial", 15), anchor="nw")
             else:
-                canvas.create_text(5, (x*24)+Y, text=f"{x+1}.{driver} {team}", fill="white", font=("Arial", 15), anchor="nw")
+                canvas.create_text(5, (x*24)+Y, text=f"{x+1}.{driver} {team}", fill=colour, font=("Arial", 15), anchor="nw")
             if GAME.safety<3:
                 if x==0:
                     if GAME.replay==9:
@@ -4844,13 +4853,13 @@ class Game:
                             else:
                                 lap=59
                     if GAME.safety==2:
-                        canvas.create_text(380, 200+(x*24), text="-", fill="white", font=("Arial", 15), anchor="nw")
+                        canvas.create_text(380, 200+(x*24), text="-", fill=colour, font=("Arial", 15), anchor="nw")
                     elif lap>GAME.laps:
-                        canvas.create_text(380, x*24, text="Finished", fill="white", font=("Arial", 15), anchor="nw")
+                        canvas.create_text(380, x*24, text="Finished", fill=colour, font=("Arial", 15), anchor="nw")
                     else:
-                        canvas.create_text(380, x*24, text=f"Lap {lap}/{GAME.laps}", fill="white", font=("Arial", 15), anchor="nw")
+                        canvas.create_text(380, x*24, text=f"Lap {lap}/{GAME.laps}", fill=colour, font=("Arial", 15), anchor="nw")
                 else:
-                    canvas.create_text(380, (x*24)+Y, text=f"+{time}s", fill="white", font=("Arial", 15), anchor="nw")
+                    canvas.create_text(380, (x*24)+Y, text=f"+{time}s", fill=colour, font=("Arial", 15), anchor="nw")
                 tyre=GAME.tyre[GAME.positions[x]]
                 canvas.create_text(475, (x*24)+Y, text=tyre[0], fill=colours[Tyres.index(tyre)], font=("Arial", 15), anchor="nw")
     def StartRace(self):
@@ -5145,7 +5154,7 @@ class Game:
                                         elif random.randint(1,2)==1:
                                             GAME.Voice(0,"Crash")
                                         else:
-                                            GAME.Voice(crasher,out)
+                                            GAME.Voice(crasher,"Out")
                                     driversOut=random.randint(1,2)
                                     drivers=[crasher,crashedInto]
                                     GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a severe crash.")
@@ -5478,6 +5487,7 @@ class Game:
         with sqlite3.connect(GAME.database) as conn:
             cursor = conn.cursor()
             pointsSystem=int(GAME.Sanitise(cursor.execute("SELECT True FROM Regulations WHERE Regulation='Old Points System'").fetchall()))
+            fastestLapPoint=int(GAME.Sanitise(cursor.execute("SELECT  True FROM Regulations WHERE Regulation='Fastest Lap Point'").fetchall()))
             double=0
             if GAME.race==GAME.races:
                 if len(cursor.execute("SELECT Regulation FROM Regulations WHERE Regulation='Double Points On Last Race' AND True=1").fetchall())>0:
@@ -5493,6 +5503,8 @@ class Game:
                 except:
                     points=0
                 if points>0:
+                    if fastestLapPoint==1 and GAME.positions[x]==GAME.fastest[x]:
+                        points+=1
                     if double==1:
                         points=points*2
                     GAME.pointsScored.pop(index)
@@ -5890,7 +5902,6 @@ class Game:
         self.lap_=[]
         self.time=[]
         self.distance=[]
-        self.fastestLap=[-1,1000]
         self.currentLapTime=[]
         self.tyreCompoundsUsed=[]
         self.damage=[]
@@ -5933,6 +5944,7 @@ class Game:
         self.pit=0
         self.fuel=[]
         self.battery=[]
+        self.fastest=[-1,0]
         if GAME.replay==2:
             GAME.team="APX GP"
             GAME.car1="Sonny Hayes"
@@ -6812,7 +6824,6 @@ class Game:
         self.lap_=[]
         self.time=[]
         self.distance=[]
-        self.fastestLap=[-1,1000]
         self.currentLapTime=[]
         self.tyreCompoundsUsed=[]
         self.damage=[]
@@ -6858,6 +6869,7 @@ class Game:
         self.strategy=[]
         self.battery=[]
         self.rainStopped=0
+        self.fastest=[-1,0]
         GAME.ChangeScreen("Practice")
         GAME.DisplayLayout(race)
         canvas.create_text(20, 125, text=race, fill="white", font=("Arial", 50), anchor="nw")
