@@ -11169,8 +11169,12 @@ class Game:
                     if GAME.replay==5 or GAME.replay==4:
                         team="Marlboro Ferrari"
             if team in steam:
-                index=steam.index(team)
-                suit=GAME.suits[index]
+                if os.path.isfile(os.path.join(os.path.dirname(__file__), "Suits", (f"{team} Suit.png"))):
+                    index=steam.index(team)
+                    suit=GAME.suits[index]
+                else:
+                    suit=GAME.suits[0]
+                    index=0
             else:
                 try:
                     appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
@@ -11178,9 +11182,14 @@ class Game:
                     appearance="0"
                 if appearance=="0":
                     suit=GAME.suits[0]
+                    index=0
                 elif appearance in steam:
-                    index=steam.index(appearance)
-                    suit=GAME.suits[index]
+                    if os.path.isfile(os.path.join(os.path.dirname(__file__), "Suits", (f"{appearance} Suit.png"))):
+                        index=steam.index(appearance)
+                        suit=GAME.suits[index]
+                    else:
+                        suit=GAME.suits[0]
+                        index=0
                 else:
                     try:
                         suit=sponsorSuits[sponsors.index(appearance)]
