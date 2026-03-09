@@ -12044,6 +12044,11 @@ canvas = tk.Canvas(root, width=images[0].width(), height=images[0].height())
 canvas.pack()
 imageOnCanvas = canvas.create_image(0, 0, anchor=tk.NW, image=images[0])
 if missingFiles==1:
-    GAME.ChangeScreen("Missing Required Files")
+    if images[Images.index("Missing Required Files")]==0:
+        canvas.delete('all')
+        GAME.screen="Missing Required Files"
+        canvas.create_text(400, 300, text="Missing Required Files", fill="red", font=("Arial", 50), anchor="nw")
+    else:
+        GAME.ChangeScreen("Missing Required Files")
 canvas.bind("<Button-1>", GAME.OnClick)
 root.mainloop()
