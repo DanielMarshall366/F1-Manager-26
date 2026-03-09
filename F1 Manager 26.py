@@ -4231,7 +4231,7 @@ class Game:
             else:
                 GAME.ChangeScreen("Canada 2011 Defeat")
                 SoundPath = os.path.join(os.path.dirname(__file__), "Music", "Better Luck Next Time.wav")
-            if GAME.music==1 and os.path.isfile(soundPath):
+            if GAME.music==1 and os.path.isfile(SoundPath):
                 winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
             time=10000
         elif GAME.replay==4:
@@ -4259,7 +4259,7 @@ class Game:
                 SoundPath = os.path.join(os.path.dirname(__file__), "Music", "United Kingdom National Anthem.wav")
             else:
                 SoundPath = os.path.join(os.path.dirname(__file__), "Music", "Brazil National Anthem.wav")
-            if GAME.music==1 and os.path.isfile(soundPath):
+            if GAME.music==1 and os.path.isfile(SoundPath):
                 winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
             time=10000
         elif GAME.replay==5:
@@ -4292,7 +4292,7 @@ class Game:
         root.after(time, lambda: GAME.ChangeScreen("Title Screen"))
         if GAME.music==1:
             SoundPath = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
-            if os.path.isfile(soundPath):
+            if os.path.isfile(SoundPath):
                 root.after(time, lambda: winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC))
     def Instructions(self):
         drivers=[]
@@ -8993,7 +8993,7 @@ class Game:
                 GAME.ChangeScreen("Title Screen")
                 if GAME.music==1:
                     SoundPath = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
-                    if os.path.isfile(soundPath):
+                    if os.path.isfile(SoundPath):
                         winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
         elif (GAME.screen=="Standings" or GAME.screen=="Data" or GAME.screen=="Team Data" or GAME.screen=="Car Data" or GAME.screen=="Achievements"
               or GAME.screen=="History" or GAME.screen=="Upgrade" or GAME.screen=="Select Research Type" or GAME.screen=="Scouting"
