@@ -5549,325 +5549,328 @@ class Game:
         GAME.DisplayDriver(GAME.drivers[GAME.positions[0]],950,500)
         GAME.Button("Next",1230,5)
     def SaveRace(self):
-        GAME.actions=3
-        if GAME.music==1:
-            GAME.StopMusic()
-        #Injuries
-        if len(GAME.injured)>0:
-            for x in range(len(GAME.injured)):
-                with sqlite3.connect(GAME.database) as conn:
-                    cursor = conn.cursor()
-                    cursor.execute('''UPDATE Drivers SET Condition="Injured" WHERE Name=?''',(GAME.injured[x],))
-        teams=[]
-        teamPoints=[]
-        with sqlite3.connect(GAME.database) as conn:
-            cursor = conn.cursor()
-            f=cursor.execute('''SELECT Name FROM Teams''').fetchall()
-            cursor.execute("UPDATE Player SET Actions=3")
-            if len(cursor.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
-                cursor.execute("UPDATE Drivers SET Team='Red Bull' WHERE Team='Racing Bulls' AND Role='Reserve'")
-        for x in range(len(f)):
-            team=GAME.Sanitise(f[x])
-            teams.append(team)
+        if os.path.isfile(GAME.database):
+            GAME.actions=3
+            if GAME.music==1:
+                GAME.StopMusic()
+            #Injuries
+            if len(GAME.injured)>0:
+                for x in range(len(GAME.injured)):
+                    with sqlite3.connect(GAME.database) as conn:
+                        cursor = conn.cursor()
+                        cursor.execute('''UPDATE Drivers SET Condition="Injured" WHERE Name=?''',(GAME.injured[x],))
+            teams=[]
+            teamPoints=[]
             with sqlite3.connect(GAME.database) as conn:
                 cursor = conn.cursor()
-                teamPoints.append(int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Name=?''',(team,)).fetchall()[0])))
-        for x in range(len(GAME.drivers)):
-            if x<len(GAME.positions):
-                index=GAME.positions[x]
+                f=cursor.execute('''SELECT Name FROM Teams''').fetchall()
+                cursor.execute("UPDATE Player SET Actions=3")
+                if len(cursor.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
+                    cursor.execute("UPDATE Drivers SET Team='Red Bull' WHERE Team='Racing Bulls' AND Role='Reserve'")
+            for x in range(len(f)):
+                team=GAME.Sanitise(f[x])
+                teams.append(team)
                 with sqlite3.connect(GAME.database) as conn:
                     cursor = conn.cursor()
-                    if GAME.pointsScored[index]!=0:
-                        points=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))
-                        points+=GAME.pointsScored[index]
-                        cursor.execute('''UPDATE Drivers SET Points=? WHERE Name=?''',(points, GAME.drivers[index],))
-                        team=GAME.Sanitise(cursor.execute('''SELECT Team FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0])
-                        if team==GAME.team:
-                            P=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Player''').fetchall()[0]))+GAME.pointsScored[index]
-                            cursor.execute('''UPDATE Player SET Points=?''',(P,))
-                        teamIndex=teams.index(team)
-                        points=teamPoints[teamIndex]+GAME.pointsScored[index]
-                        teamPoints.pop(teamIndex)
-                        teamPoints.insert(teamIndex,points)
-                    position=int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))
-                    if position==0:
-                        position=len(cursor.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall())+1
-                        cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position, GAME.drivers[index],))
-            else:
-                d=[]
-                for y in range(len(GAME.drivers)):
-                    if y not in GAME.positions and y not in d:
-                        d.append(y)
+                    teamPoints.append(int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Name=?''',(team,)).fetchall()[0])))
+            for x in range(len(GAME.drivers)):
+                if x<len(GAME.positions):
+                    index=GAME.positions[x]
+                    with sqlite3.connect(GAME.database) as conn:
+                        cursor = conn.cursor()
+                        if GAME.pointsScored[index]!=0:
+                            points=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))
+                            points+=GAME.pointsScored[index]
+                            cursor.execute('''UPDATE Drivers SET Points=? WHERE Name=?''',(points, GAME.drivers[index],))
+                            team=GAME.Sanitise(cursor.execute('''SELECT Team FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0])
+                            if team==GAME.team:
+                                P=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Player''').fetchall()[0]))+GAME.pointsScored[index]
+                                cursor.execute('''UPDATE Player SET Points=?''',(P,))
+                            teamIndex=teams.index(team)
+                            points=teamPoints[teamIndex]+GAME.pointsScored[index]
+                            teamPoints.pop(teamIndex)
+                            teamPoints.insert(teamIndex,points)
+                        position=int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))
+                        if position==0:
+                            position=len(cursor.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall())+1
+                            cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position, GAME.drivers[index],))
+                else:
+                    d=[]
+                    for y in range(len(GAME.drivers)):
+                        if y not in GAME.positions and y not in d:
+                            d.append(y)
+                            with sqlite3.connect(GAME.database) as conn:
+                                cursor = conn.cursor()
+                                if int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))==0:
+                                    position=len(cursor.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall())+1
+                                    cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position, GAME.drivers[y],))
+            #Deaths
+            if len(GAME.dead)>0:
+                for driver in GAME.dead:
+                    with sqlite3.connect(GAME.database) as c:
+                        team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                    if team==GAME.team:
+                        GAME.YourDriverDied(driver)
+                    else:
+                        GAME.Replace(driver)
+                    with sqlite3.connect(GAME.database) as c:
+                        c.execute("UPDATE Drivers SET Team='Dead', Role='Dead', Condition='Dead', NewTeam='Dead' WHERE Name=?",(driver,))
+            with sqlite3.connect(GAME.database) as conn:
+                cursor = conn.cursor()
+                f=cursor.execute("SELECT Name FROM Drivers WHERE (Role='1' OR Role='2') AND Position=0").fetchall()
+                for x in range(len(f)):
+                    position=len(cursor.execute("SELECT Name FROM Drivers WHERE Position!=0").fetchall())+1
+                    cursor.execute("UPDATE Drivers SET Position=? WHERE Name=?",(position,GAME.Sanitise(f[x]),))
+            for x in range(len(teams)):
+                with sqlite3.connect(GAME.database) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute('''UPDATE Teams SET Points=? WHERE Name=?''',(teamPoints[x],teams[x]))
+            for i in range(20):
+                for x in range(10):
+                    if len(GAME.positions)>x:
+                        #Drivers Standings
                         with sqlite3.connect(GAME.database) as conn:
                             cursor = conn.cursor()
-                            if int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))==0:
-                                position=len(cursor.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall())+1
-                                cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position, GAME.drivers[y],))
-        #Deaths
-        if len(GAME.dead)>0:
-            for driver in GAME.dead:
-                with sqlite3.connect(GAME.database) as c:
-                    team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
-                if team==GAME.team:
-                    GAME.YourDriverDied(driver)
-                else:
-                    GAME.Replace(driver)
-                with sqlite3.connect(GAME.database) as c:
-                    c.execute("UPDATE Drivers SET Team='Dead', Role='Dead', Condition='Dead', NewTeam='Dead' WHERE Name=?",(driver,))
-        with sqlite3.connect(GAME.database) as conn:
-            cursor = conn.cursor()
-            f=cursor.execute("SELECT Name FROM Drivers WHERE (Role='1' OR Role='2') AND Position=0").fetchall()
+                            position=int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Drivers WHERE Name=?''',(GAME.drivers[GAME.positions[x]],)).fetchall()[0]))
+                            if position!=1:
+                                points=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Name=?''',(GAME.drivers[GAME.positions[x]],)).fetchall()[0]))
+                                aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Position=?''',(position-1,)).fetchall()[0]))
+                                if points>aheadPoints:
+                                    while points>aheadPoints and position!=1:
+                                        position-=1
+                                        ahead=GAME.Sanitise(cursor.execute('''SELECT Name FROM Drivers WHERE Position=?''',(position,)).fetchall()[0])
+                                        cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position, GAME.drivers[GAME.positions[x]],))
+                                        cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position+1, ahead,))
+                                        if position!=1:
+                                            aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Position=?''',(position-1,)).fetchall()[0]))
+                        with sqlite3.connect(GAME.database) as conn:
+                            cursor = conn.cursor()
+                            #Constructors Standings
+                            position=int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Teams WHERE Name=?''',(GAME.teams[GAME.positions[x]],)).fetchall()[0]))
+                            if position!=1:
+                                points=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Name=?''',(GAME.teams[GAME.positions[x]],)).fetchall()[0]))
+                                aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Position=?''',(position-1,)).fetchall()[0]))
+                                if points>aheadPoints:
+                                    while points>aheadPoints and position!=1:
+                                        position-=1
+                                        ahead=GAME.Sanitise(cursor.execute('''SELECT Name FROM Teams WHERE Position=?''',(position,)).fetchall()[0])
+                                        cursor.execute('''UPDATE Teams SET Position=? WHERE Name=?''',(position, GAME.teams[GAME.positions[x]],))
+                                        cursor.execute('''UPDATE Teams SET Position=? WHERE Name=?''',(position+1, ahead,))
+                                        if position!=1:
+                                            aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Position=?''',(position-1,)).fetchall()[0]))
+            #Development
+            with sqlite3.connect(GAME.database) as conn:
+                cursor = conn.cursor()
+                f=cursor.execute('''SELECT Name FROM Drivers WHERE Condition!="Retired" AND Legend=0''').fetchall()
             for x in range(len(f)):
-                position=len(cursor.execute("SELECT Name FROM Drivers WHERE Position!=0").fetchall())+1
-                cursor.execute("UPDATE Drivers SET Position=? WHERE Name=?",(position,GAME.Sanitise(f[x]),))
-        for x in range(len(teams)):
-            with sqlite3.connect(GAME.database) as conn:
-                cursor = conn.cursor()
-                cursor.execute('''UPDATE Teams SET Points=? WHERE Name=?''',(teamPoints[x],teams[x]))
-        for i in range(20):
-            for x in range(10):
-                if len(GAME.positions)>x:
-                    #Drivers Standings
-                    with sqlite3.connect(GAME.database) as conn:
-                        cursor = conn.cursor()
-                        position=int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Drivers WHERE Name=?''',(GAME.drivers[GAME.positions[x]],)).fetchall()[0]))
-                        if position!=1:
-                            points=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Name=?''',(GAME.drivers[GAME.positions[x]],)).fetchall()[0]))
-                            aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Position=?''',(position-1,)).fetchall()[0]))
-                            if points>aheadPoints:
-                                while points>aheadPoints and position!=1:
-                                    position-=1
-                                    ahead=GAME.Sanitise(cursor.execute('''SELECT Name FROM Drivers WHERE Position=?''',(position,)).fetchall()[0])
-                                    cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position, GAME.drivers[GAME.positions[x]],))
-                                    cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position+1, ahead,))
-                                    if position!=1:
-                                        aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Position=?''',(position-1,)).fetchall()[0]))
-                    with sqlite3.connect(GAME.database) as conn:
-                        cursor = conn.cursor()
-                        #Constructors Standings
-                        position=int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Teams WHERE Name=?''',(GAME.teams[GAME.positions[x]],)).fetchall()[0]))
-                        if position!=1:
-                            points=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Name=?''',(GAME.teams[GAME.positions[x]],)).fetchall()[0]))
-                            aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Position=?''',(position-1,)).fetchall()[0]))
-                            if points>aheadPoints:
-                                while points>aheadPoints and position!=1:
-                                    position-=1
-                                    ahead=GAME.Sanitise(cursor.execute('''SELECT Name FROM Teams WHERE Position=?''',(position,)).fetchall()[0])
-                                    cursor.execute('''UPDATE Teams SET Position=? WHERE Name=?''',(position, GAME.teams[GAME.positions[x]],))
-                                    cursor.execute('''UPDATE Teams SET Position=? WHERE Name=?''',(position+1, ahead,))
-                                    if position!=1:
-                                        aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Position=?''',(position-1,)).fetchall()[0]))
-        #Development
-        with sqlite3.connect(GAME.database) as conn:
-            cursor = conn.cursor()
-            f=cursor.execute('''SELECT Name FROM Drivers WHERE Condition!="Retired" AND Legend=0''').fetchall()
-        for x in range(len(f)):
-            name=GAME.Sanitise(f[x])
-            with sqlite3.connect(GAME.database) as conn:
-                cursor = conn.cursor()
-                team=GAME.Sanitise(cursor.execute("SELECT Team FROM Drivers WHERE Name=?",(name,)))
-                rate=int(GAME.Sanitise(cursor.execute('''SELECT DevelopmentRate FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                developed=0
-                overtaking=int(GAME.Sanitise(cursor.execute('''SELECT Overtaking FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                defending=int(GAME.Sanitise(cursor.execute('''SELECT Defending FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                pace=int(GAME.Sanitise(cursor.execute('''SELECT Pace FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                experience=int(GAME.Sanitise(cursor.execute('''SELECT Experience FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                control=int(GAME.Sanitise(cursor.execute('''SELECT Control FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                reaction=int(GAME.Sanitise(cursor.execute('''SELECT Reaction FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                rating=int(GAME.Sanitise(cursor.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                role=GAME.Sanitise(cursor.execute("SELECT Role FROM Drivers WHERE Name=?",(name,)))
-                if rate>0:
-                    if team!="Free Agent":
-                        if role=="Junior":
-                            rate=rate*2
-                        elif role=="Reserve":
-                            rate=round(rate*1.5)
-                        #Overtaking
-                        if random.randint(1,450)<=rate:
-                            overtaking+=1
-                            if random.randint(1,5)==5:
-                                experience+=1
-                        #Defending
-                        if random.randint(1,450)<=rate:
-                            defending+=1
-                            if random.randint(1,5)==5:
-                                experience+=1
-                        #Pace
-                        if random.randint(1,450)<=rate:
-                            pace+=1
-                            if random.randint(1,5)==5:
-                                experience+=1
-                        #Control
-                        if random.randint(1,450)<=rate:
-                            control+=1
-                            if random.randint(1,5)==5:
-                                experience+=1
-                        rating=round((overtaking+defending+pace+control+experience+reaction)/6)
-                elif rate<0:
-                    if random.randint(-50,-1)>rate:
-                        pace-=2
-                        if random.randint(1,5)<=2:
-                            rating-=1
-                    if random.randint(1,2)==2:
-                        experience+=1
-                        if experience>110:
-                            experience=110
-                            if random.randint(1,2)==2:
-                                pace+=1
-                                if random.randint(1,3)==3:
-                                    rating+=1
-                if random.randint(1,5)==5:
-                    experience+=1
-                if experience>110:
-                    experience=110
-                if control>99:
-                    control=99
-                cursor.execute('''UPDATE Drivers SET Rating=?, Overtaking=?, Defending=?, Pace=?, Experience=?, Control=?, DevelopmentRate=? WHERE Name=?''',(rating, overtaking, defending, pace, experience, control, rate, name,))
-        #Engines
-        if GAME.race<GAME.races:
-            for x in range(len(GAME.engineDurability)):
-                team=GAME.teams[x]
-                car=GAME.cars[x]
-                if GAME.faults[x]==0:
-                    durability=GAME.engineDurability[x]-random.randint(round(270/GAME.races)-2,round(270/GAME.races)+2)
-                elif GAME.faults[x]=="Minor":
-                    durability=GAME.engineDurability[x]-random.randint(round(320/GAME.races)-2,round(320/GAME.races)+2)
-                elif GAME.faults[x]=="Major":
-                    durability=GAME.engineDurability[x]-random.randint(round(380/GAME.races)-10,round(380/GAME.races)+10)
-                else:
-                    durability=0
-                if durability<0:
-                    durability=0
+                name=GAME.Sanitise(f[x])
                 with sqlite3.connect(GAME.database) as conn:
                     cursor = conn.cursor()
-                    if (team!=GAME.team and durability<35) or durability==0:
-                        #Swap engine
-                        if car==1:
-                            engine=int(GAME.Sanitise(cursor.execute('''SELECT car1Engine FROM Cars WHERE Team=?''',(team,)).fetchall()[0]))+1
-                            cursor.execute('''UPDATE Cars SET car1Engine=?, car1EngineDurability=100 WHERE Team=?''',(engine,team,))
-                        else:
-                            engine=int(GAME.Sanitise(cursor.execute('''SELECT car2Engine FROM Cars WHERE Team=?''',(team,)).fetchall()[0]))+1
-                            cursor.execute('''UPDATE Cars SET car2Engine=?, car2EngineDurability=100 WHERE Team=?''',(engine,team,))
-                        if engine>4:
-                            money=int(GAME.Sanitise(cursor.execute('''SELECT Money FROM Teams WHERE Name=?''',(team,)).fetchall()[0]))-10000000
-                            cursor.execute('''UPDATE Teams SET Money=? WHERE Name=?''',(money,team,))
-                            if team==GAME.team:
-                                GAME.money-=10000000
-                    elif car==1:
-                        cursor.execute('''UPDATE Cars SET car1EngineDurability=? WHERE Team=?''',(durability,team,))
+                    team=GAME.Sanitise(cursor.execute("SELECT Team FROM Drivers WHERE Name=?",(name,)))
+                    rate=int(GAME.Sanitise(cursor.execute('''SELECT DevelopmentRate FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                    developed=0
+                    overtaking=int(GAME.Sanitise(cursor.execute('''SELECT Overtaking FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                    defending=int(GAME.Sanitise(cursor.execute('''SELECT Defending FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                    pace=int(GAME.Sanitise(cursor.execute('''SELECT Pace FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                    experience=int(GAME.Sanitise(cursor.execute('''SELECT Experience FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                    control=int(GAME.Sanitise(cursor.execute('''SELECT Control FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                    reaction=int(GAME.Sanitise(cursor.execute('''SELECT Reaction FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                    rating=int(GAME.Sanitise(cursor.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                    role=GAME.Sanitise(cursor.execute("SELECT Role FROM Drivers WHERE Name=?",(name,)))
+                    if rate>0:
+                        if team!="Free Agent":
+                            if role=="Junior":
+                                rate=rate*2
+                            elif role=="Reserve":
+                                rate=round(rate*1.5)
+                            #Overtaking
+                            if random.randint(1,450)<=rate:
+                                overtaking+=1
+                                if random.randint(1,5)==5:
+                                    experience+=1
+                            #Defending
+                            if random.randint(1,450)<=rate:
+                                defending+=1
+                                if random.randint(1,5)==5:
+                                    experience+=1
+                            #Pace
+                            if random.randint(1,450)<=rate:
+                                pace+=1
+                                if random.randint(1,5)==5:
+                                    experience+=1
+                            #Control
+                            if random.randint(1,450)<=rate:
+                                control+=1
+                                if random.randint(1,5)==5:
+                                    experience+=1
+                            rating=round((overtaking+defending+pace+control+experience+reaction)/6)
+                    elif rate<0:
+                        if random.randint(-50,-1)>rate:
+                            pace-=2
+                            if random.randint(1,5)<=2:
+                                rating-=1
+                        if random.randint(1,2)==2:
+                            experience+=1
+                            if experience>110:
+                                experience=110
+                                if random.randint(1,2)==2:
+                                    pace+=1
+                                    if random.randint(1,3)==3:
+                                        rating+=1
+                    if random.randint(1,5)==5:
+                        experience+=1
+                    if experience>110:
+                        experience=110
+                    if control>99:
+                        control=99
+                    cursor.execute('''UPDATE Drivers SET Rating=?, Overtaking=?, Defending=?, Pace=?, Experience=?, Control=?, DevelopmentRate=? WHERE Name=?''',(rating, overtaking, defending, pace, experience, control, rate, name,))
+            #Engines
+            if GAME.race<GAME.races:
+                for x in range(len(GAME.engineDurability)):
+                    team=GAME.teams[x]
+                    car=GAME.cars[x]
+                    if GAME.faults[x]==0:
+                        durability=GAME.engineDurability[x]-random.randint(round(270/GAME.races)-2,round(270/GAME.races)+2)
+                    elif GAME.faults[x]=="Minor":
+                        durability=GAME.engineDurability[x]-random.randint(round(320/GAME.races)-2,round(320/GAME.races)+2)
+                    elif GAME.faults[x]=="Major":
+                        durability=GAME.engineDurability[x]-random.randint(round(380/GAME.races)-10,round(380/GAME.races)+10)
                     else:
-                        cursor.execute('''UPDATE Cars SET car2EngineDurability=? WHERE Team=?''',(durability,team,))
+                        durability=0
+                    if durability<0:
+                        durability=0
+                    with sqlite3.connect(GAME.database) as conn:
+                        cursor = conn.cursor()
+                        if (team!=GAME.team and durability<35) or durability==0:
+                            #Swap engine
+                            if car==1:
+                                engine=int(GAME.Sanitise(cursor.execute('''SELECT car1Engine FROM Cars WHERE Team=?''',(team,)).fetchall()[0]))+1
+                                cursor.execute('''UPDATE Cars SET car1Engine=?, car1EngineDurability=100 WHERE Team=?''',(engine,team,))
+                            else:
+                                engine=int(GAME.Sanitise(cursor.execute('''SELECT car2Engine FROM Cars WHERE Team=?''',(team,)).fetchall()[0]))+1
+                                cursor.execute('''UPDATE Cars SET car2Engine=?, car2EngineDurability=100 WHERE Team=?''',(engine,team,))
+                            if engine>4:
+                                money=int(GAME.Sanitise(cursor.execute('''SELECT Money FROM Teams WHERE Name=?''',(team,)).fetchall()[0]))-10000000
+                                cursor.execute('''UPDATE Teams SET Money=? WHERE Name=?''',(money,team,))
+                                if team==GAME.team:
+                                    GAME.money-=10000000
+                        elif car==1:
+                            cursor.execute('''UPDATE Cars SET car1EngineDurability=? WHERE Team=?''',(durability,team,))
+                        else:
+                            cursor.execute('''UPDATE Cars SET car2EngineDurability=? WHERE Team=?''',(durability,team,))
+                            
+            #Repairs
+            for x in range(len(GAME.repairBill)):
+                if GAME.repairBill[x]>0:
+                    team=GAME.teams[x]
+                    with sqlite3.connect(GAME.database) as c:
+                        money=int(GAME.Sanitise(c.execute("SELECT Money FROM Teams WHERE Name=?",(team,)).fetchall()[0]))-GAME.repairBill[x]
+                        c.execute("UPDATE Teams SET Money=? WHERE Name=?",(money,team,))
+                    if team==GAME.team:
+                        GAME.money=money
                         
-        #Repairs
-        for x in range(len(GAME.repairBill)):
-            if GAME.repairBill[x]>0:
-                team=GAME.teams[x]
-                with sqlite3.connect(GAME.database) as c:
-                    money=int(GAME.Sanitise(c.execute("SELECT Money FROM Teams WHERE Name=?",(team,)).fetchall()[0]))-GAME.repairBill[x]
-                    c.execute("UPDATE Teams SET Money=? WHERE Name=?",(money,team,))
-                if team==GAME.team:
-                    GAME.money=money
-                    
-        GAME.race+=1
-        with sqlite3.connect(GAME.database) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''UPDATE Player SET Race=?''',(GAME.race,))
-            wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Drivers WHERE Name=?",(GAME.drivers[GAME.positions[0]],)).fetchall()))+1
-            cursor.execute('''UPDATE Drivers SET Wins=? WHERE Name=?''',(wins,GAME.drivers[GAME.positions[0]],))
-            if GAME.teams[GAME.positions[0]]==GAME.team:
-                wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Player").fetchall()))+1
-                cursor.execute('''UPDATE Player SET Wins=?''',(wins,))
-            #Expectations
-            if len(GAME.expected)==2:
-                positions=[]
-                for x in range(len(GAME.positions)):
-                    if GAME.teams[x]==GAME.expected[0]:
-                        positions.append(x+1)
-                success=0
-                reputation=int(GAME.Sanitise(cursor.execute('''SELECT Reputation FROM Teams WHERE Name=?''',(GAME.expected[0],)).fetchall()[0]))
-                if GAME.expected[1]=="Double Podium":
-                    if len(positions)==2:
-                        if positions[0]<=3 and positions[1]<=3:
-                            success=1
-                            reputation+=random.randint(35,50)
-                elif GAME.expected[1]=="Podium":
-                    if len(positions)==2:
-                        if positions[0]<=3 or positions[1]<=3:
-                            success=1
-                            reputation+=random.randint(20,30)
-                    elif len(positions)==1:
-                        if positions[0]<=3:
-                            success=1
-                            reputation+=random.randint(20,30)
-                elif GAME.expected[1]=="Top 5":
-                    if len(positions)==2:
-                        if positions[0]<=5 or positions[1]<=5:
-                            success=1
-                            reputation+=random.randint(15,20)
-                    elif len(positions)==1:
-                        if positions[0]<=5:
-                            success=1
-                            reputation+=random.randint(15,20)
-                elif GAME.expected[1]=="Double Points":
-                    if len(positions)==2:
-                        if int(GAME.Sanitise(cursor.execute('''SELECT True FROM Regulations WHERE Regulation="Old Points System"''').fetchall()[0]))==0:
-                            if positions[0]<=10 and positions[1]<=10:
+            GAME.race+=1
+            with sqlite3.connect(GAME.database) as conn:
+                cursor = conn.cursor()
+                cursor.execute('''UPDATE Player SET Race=?''',(GAME.race,))
+                wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Drivers WHERE Name=?",(GAME.drivers[GAME.positions[0]],)).fetchall()))+1
+                cursor.execute('''UPDATE Drivers SET Wins=? WHERE Name=?''',(wins,GAME.drivers[GAME.positions[0]],))
+                if GAME.teams[GAME.positions[0]]==GAME.team:
+                    wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Player").fetchall()))+1
+                    cursor.execute('''UPDATE Player SET Wins=?''',(wins,))
+                #Expectations
+                if len(GAME.expected)==2:
+                    positions=[]
+                    for x in range(len(GAME.positions)):
+                        if GAME.teams[x]==GAME.expected[0]:
+                            positions.append(x+1)
+                    success=0
+                    reputation=int(GAME.Sanitise(cursor.execute('''SELECT Reputation FROM Teams WHERE Name=?''',(GAME.expected[0],)).fetchall()[0]))
+                    if GAME.expected[1]=="Double Podium":
+                        if len(positions)==2:
+                            if positions[0]<=3 and positions[1]<=3:
+                                success=1
+                                reputation+=random.randint(35,50)
+                    elif GAME.expected[1]=="Podium":
+                        if len(positions)==2:
+                            if positions[0]<=3 or positions[1]<=3:
+                                success=1
+                                reputation+=random.randint(20,30)
+                        elif len(positions)==1:
+                            if positions[0]<=3:
+                                success=1
+                                reputation+=random.randint(20,30)
+                    elif GAME.expected[1]=="Top 5":
+                        if len(positions)==2:
+                            if positions[0]<=5 or positions[1]<=5:
+                                success=1
+                                reputation+=random.randint(15,20)
+                        elif len(positions)==1:
+                            if positions[0]<=5:
+                                success=1
+                                reputation+=random.randint(15,20)
+                    elif GAME.expected[1]=="Double Points":
+                        if len(positions)==2:
+                            if int(GAME.Sanitise(cursor.execute('''SELECT True FROM Regulations WHERE Regulation="Old Points System"''').fetchall()[0]))==0:
+                                if positions[0]<=10 and positions[1]<=10:
+                                    success=1
+                                    reputation+=random.randint(10,20)
+                            elif positions[0]<=8 and positions[1]<=8:
                                 success=1
                                 reputation+=random.randint(10,20)
-                        elif positions[0]<=8 and positions[1]<=8:
-                            success=1
-                            reputation+=random.randint(10,20)
-                elif GAME.expected[1]=="Points":
-                    if int(GAME.Sanitise(cursor.execute('''SELECT True FROM Regulations WHERE Regulation="Old Points System"''').fetchall()[0]))==0:
-                        if len(positions)==2:
-                            if positions[0]<=10 or positions[1]<=10:
-                                success=1
-                                reputation+=random.randint(5,10)
-                        elif len(positions)==1:
-                            if positions[0]<=10:
-                                success=1
-                                reputation+=random.randint(5,10)
+                    elif GAME.expected[1]=="Points":
+                        if int(GAME.Sanitise(cursor.execute('''SELECT True FROM Regulations WHERE Regulation="Old Points System"''').fetchall()[0]))==0:
+                            if len(positions)==2:
+                                if positions[0]<=10 or positions[1]<=10:
+                                    success=1
+                                    reputation+=random.randint(5,10)
+                            elif len(positions)==1:
+                                if positions[0]<=10:
+                                    success=1
+                                    reputation+=random.randint(5,10)
+                        else:
+                            if len(positions)==2:
+                                if positions[0]<=8 or positions[1]<=8:
+                                    success=1
+                                    reputation+=random.randint(5,10)
+                            elif len(positions)==1:
+                                if positions[0]<=8:
+                                    success=1
+                                    reputation+=random.randint(5,10)
                     else:
                         if len(positions)==2:
-                            if positions[0]<=8 or positions[1]<=8:
+                            if positions[0]<=15 or positions[1]<=15:
                                 success=1
-                                reputation+=random.randint(5,10)
+                                reputation+=random.randint(1,5)
                         elif len(positions)==1:
-                            if positions[0]<=8:
+                            if positions[0]<=15:
                                 success=1
-                                reputation+=random.randint(5,10)
-                else:
-                    if len(positions)==2:
-                        if positions[0]<=15 or positions[1]<=15:
-                            success=1
-                            reputation+=random.randint(1,5)
-                    elif len(positions)==1:
-                        if positions[0]<=15:
-                            success=1
-                            reputation+=random.randint(1,5)
-                if success==0:
-                    reputation-=random.randint(1,40)
-                    if reputation<1:
+                                reputation+=random.randint(1,5)
+                    if success==0:
+                        reputation-=random.randint(1,40)
+                        if reputation<1:
+                            reputation=1
+                    if reputation>100:
+                        reputation=100
+                    elif reputation<1:
                         reputation=1
-                if reputation>100:
-                    reputation=100
-                elif reputation<1:
-                    reputation=1
-                cursor.execute('''UPDATE Teams SET Reputation=? WHERE Name=?''',(reputation,GAME.expected[0],))
-                GAME.expectations=[]
-                GAME.expected=[]
-        with sqlite3.connect(GAME.database) as c:
-            position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
-            if position==1:
-                f=c.execute("SELECT Name FROM Teams WHERE Name!=?",(GAME.team,)).fetchall()
-                for x in range(len(f)):
-                    team=GAME.Sanitise(f[x])
-                    dragReduction=int(GAME.Sanitise(c.execute("SELECT DragReduction FROM Cars WHERE Team=?",(team,)).fetchall()[0]))
-                    if dragReduction<70:
-                        dragReduction+=1
-                        c.execute("UPDATE Cars SET DragReduction=? WHERE Team=?",(dragReduction,team,))
-        GAME.drivers.clear()
-        GAME.ChangeScreen("Save Screen")
+                    cursor.execute('''UPDATE Teams SET Reputation=? WHERE Name=?''',(reputation,GAME.expected[0],))
+                    GAME.expectations=[]
+                    GAME.expected=[]
+            with sqlite3.connect(GAME.database) as c:
+                position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
+                if position==1:
+                    f=c.execute("SELECT Name FROM Teams WHERE Name!=?",(GAME.team,)).fetchall()
+                    for x in range(len(f)):
+                        team=GAME.Sanitise(f[x])
+                        dragReduction=int(GAME.Sanitise(c.execute("SELECT DragReduction FROM Cars WHERE Team=?",(team,)).fetchall()[0]))
+                        if dragReduction<70:
+                            dragReduction+=1
+                            c.execute("UPDATE Cars SET DragReduction=? WHERE Team=?",(dragReduction,team,))
+            GAME.drivers.clear()
+            GAME.SaveScreen()
+        else:
+            GAME.ChangeScreen("Missing Required Files")
     def DisplayLayout(self,track):
         if track!="Imola" and track!="Miami" and track!="Las Vegas" and track!="Madrid":
             with sqlite3.connect(GAME.database) as c:
@@ -8568,7 +8571,7 @@ class Game:
                 with sqlite3.connect(GAME.database) as F1:
                     F1.execute("UPDATE Player SET Race=1")
                 GAME.Income()
-                GAME.ChangeScreen("Save Screen")
+                GAME.SaveScreen()
         elif GAME.screen=="Save Screen":
             if event.y>=630 and event.y<=720:
                 if event.x>=370 and event.x<=705:
@@ -10426,6 +10429,11 @@ class Game:
         elif GAME.screen=="Calendar":
             if event.x>=5 and event.x<=205 and event.y>=720 and event.y<=770:
                 GAME.Menu()
+    def SaveScreen(self):
+        if os.path.isfile(GAME.database):
+            GAME.ChangeScreen("Save Screen")
+        else:
+            GAME.ChangeScreen("Missing Required Files")
     def CarData(self):
         GAME.CarRanking()
         GAME.ChangeScreen("Car Data")
