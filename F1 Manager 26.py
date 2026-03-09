@@ -12040,9 +12040,12 @@ for x in range(len(Icons)):
         icons.append(tk.PhotoImage(file=path))
     else:
         missingFiles=1
-canvas = tk.Canvas(root, width=images[0].width(), height=images[0].height())
+canvas = tk.Canvas(root, width=1440, height=810)
 canvas.pack()
-imageOnCanvas = canvas.create_image(0, 0, anchor=tk.NW, image=images[0])
+try:
+    imageOnCanvas = canvas.create_image(0, 0, anchor=tk.NW, image=images[0])
+except:
+    pass
 if missingFiles==1:
     if images[Images.index("Missing Required Files")]==0:
         canvas.delete('all')
