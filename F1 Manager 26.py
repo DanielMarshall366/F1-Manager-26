@@ -1633,61 +1633,64 @@ class Game:
             c.execute("UPDATE Player SET Financial=?, Management=?",(financial,management,))
         root.after(10000, lambda: GAME.Menu())
     def Menu(self):
-        GAME.swappable=0
-        if GAME.actions==0:
-            GAME.action=1
-        GAME.ChangeScreen("Board Room")
-        GAME.Button("Standings",400,510)
-        GAME.Button("Data",950,650)
-        with sqlite3.connect(GAME.database) as c:
-            if int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))==GAME.season+1:
-                nextEngine=GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])
-                manufacturedEngine=c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(GAME.team,)).fetchall()
-                if len(manufacturedEngine)==0:
-                    manufacturedEngine=0
+        if os.path.isfile(GAME.database):
+            GAME.swappable=0
+            if GAME.actions==0:
+                GAME.action=1
+            GAME.ChangeScreen("Board Room")
+            GAME.Button("Standings",400,510)
+            GAME.Button("Data",950,650)
+            with sqlite3.connect(GAME.database) as c:
+                if int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))==GAME.season+1:
+                    nextEngine=GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])
+                    manufacturedEngine=c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(GAME.team,)).fetchall()
+                    if len(manufacturedEngine)==0:
+                        manufacturedEngine=0
+                    else:
+                        manufacturedEngine=GAME.Sanitise(manufacturedEngine[0])
+                    if (manufacturedEngine!=0 and(nextEngine=="0" or nextEngine==manufacturedEngine)) or nextEngine=="Honda" or GAME.action==0:
+                        GAME.Button("Research",870,580)
+                if GAME.team=="Red Bull":
+                    if len(c.execute("SELECT Name FROM Teams WHERE Name='Racing Bulls'").fetchall())==1 or len(c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team='Red Bull'").fetchall())>0:
+                        GAME.swappable=1
+                elif GAME.team=="Racing Bulls":
+                    if len(c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND (Team='Red Bull' OR Team='Racing Bulls')").fetchall())>0:
+                        GAME.swappable=1
+                elif GAME.team=="Alpine":
+                    if len(c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team='Alpine'").fetchall())>0:
+                        GAME.swappable=1
+                if GAME.action==0:
+                    if GAME.money>0:
+                        GAME.Button("Upgrade Car",820,510)
+                    GAME.Button("Scouting",350,580)
+                    GAME.actions=1
+                    c.execute("UPDATE Player SET Actions=1")
                 else:
-                    manufacturedEngine=GAME.Sanitise(manufacturedEngine[0])
-                if (manufacturedEngine!=0 and(nextEngine=="0" or nextEngine==manufacturedEngine)) or nextEngine=="Honda" or GAME.action==0:
-                    GAME.Button("Research",870,580)
-            if GAME.team=="Red Bull":
-                if len(c.execute("SELECT Name FROM Teams WHERE Name='Racing Bulls'").fetchall())==1 or len(c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team='Red Bull'").fetchall())>0:
-                    GAME.swappable=1
-            elif GAME.team=="Racing Bulls":
-                if len(c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND (Team='Red Bull' OR Team='Racing Bulls')").fetchall())>0:
-                    GAME.swappable=1
-            elif GAME.team=="Alpine":
-                if len(c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team='Alpine'").fetchall())>0:
-                    GAME.swappable=1
-            if GAME.action==0:
-                if GAME.money>0:
-                    GAME.Button("Upgrade Car",820,510)
-                GAME.Button("Scouting",350,580)
-                GAME.actions=1
-                c.execute("UPDATE Player SET Actions=1")
-            else:
-                GAME.Button("View Contracts",350,580)
-                unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
-                if unableToRace>0 and len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(GAME.team,)).fetchall())<unableToRace:
-                    GAME.Button("Hire Reserve",300,650)
-                    if GAME.swappable==1:
-                        GAME.swappable=0
-                GAME.actions=0
-                c.execute("UPDATE Player SET Actions=0")
-            if GAME.swappable==1:
-                GAME.Button("Swap Drivers",300,650)
-            #Board Finances
-            if GAME.money<2000000:
-                financial=int(GAME.Sanitise(c.execute("SELECT Financial FROM Player").fetchall()[0]))
-                if GAME.money<=0:
-                    financial=1
-                else:
-                    if financial>2:
-                        financial=3
-                c.execute("UPDATE Player SET Financial=?",(financial,))
-        GAME.Button("Next Race",620,412)
-        GAME.Button("Quit",5,730)
-        GAME.DisplayMoney()
-        GAME.BoardRoomLogo()
+                    GAME.Button("View Contracts",350,580)
+                    unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
+                    if unableToRace>0 and len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(GAME.team,)).fetchall())<unableToRace:
+                        GAME.Button("Hire Reserve",300,650)
+                        if GAME.swappable==1:
+                            GAME.swappable=0
+                    GAME.actions=0
+                    c.execute("UPDATE Player SET Actions=0")
+                if GAME.swappable==1:
+                    GAME.Button("Swap Drivers",300,650)
+                #Board Finances
+                if GAME.money<2000000:
+                    financial=int(GAME.Sanitise(c.execute("SELECT Financial FROM Player").fetchall()[0]))
+                    if GAME.money<=0:
+                        financial=1
+                    else:
+                        if financial>2:
+                            financial=3
+                    c.execute("UPDATE Player SET Financial=?",(financial,))
+            GAME.Button("Next Race",620,412)
+            GAME.Button("Quit",5,730)
+            GAME.DisplayMoney()
+            GAME.BoardRoomLogo()
+        else:
+            GAME.ChangeScreen("Missing Required Files")
     def DisplayMoney(self):
         if GAME.money<0:
             negative=1
@@ -11986,23 +11989,38 @@ for x in range(len(steam)-1):
     path = os.path.join(os.path.dirname(__file__), "Logos", (team+" Logo.png"))
     if os.path.isfile(path):
         logos.append(tk.PhotoImage(file=path))
+    else:
+        missingFiles=1
 steam.append("Sonny Hayes")
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Sonny Hayes.png"))
-GAME.suits.append(tk.PhotoImage(file=path))
+if os.path.isfile(path):
+    GAME.suits.append(tk.PhotoImage(file=path))
+else:
+    missingFiles=1
 steam.append("Joshua Pearce")
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Joshua Pearce.png"))
-GAME.suits.append(tk.PhotoImage(file=path))
+if os.path.isfile(path):
+    GAME.suits.append(tk.PhotoImage(file=path))
+else:
+    missingFiles=1
 sponsors=["HP","Oracle","Petronas","Aramco","BWT","MoneyGram","Visa & Cash App","Atlassian","Adidas","Microsoft","Tesco","EA","Games Workshop","Disney","Opera GX","Coca Cola",
           "NVIDIA","Google","Netflix","IBM","McDonald","Uber","Virgin","Vodafone","Mastercard","Visa","Revolut","Apple","Gazoo Racing","Marlboro"]
 sponsorLogos=[]
 sponsorSuits=[]
 for x in range(len(sponsors)):
-    path = os.path.join(os.path.dirname(__file__), "Suits", (sponsors[x]+" Suit.png"))
-    if not os.path.isfile(path):
-        path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
-    sponsorSuits.append(tk.PhotoImage(file=path))
+    if sponsors[x]=="Visa & Cash App":
+        sponsorSuits.append(0)
+    else:
+        path = os.path.join(os.path.dirname(__file__), "Suits", (sponsors[x]+" Suit.png"))
+        if os.path.isfile(path):
+            sponsorSuits.append(tk.PhotoImage(file=path))
+        else:
+            missingFiles=1
     path = os.path.join(os.path.dirname(__file__), "Logos", (sponsors[x]+" Logo.png"))
-    sponsorLogos.append(tk.PhotoImage(file=path))
+    if os.path.isfile(path):
+        sponsorLogos.append(tk.PhotoImage(file=path))
+    else:
+        missingFiles=1
 Buttons=["Next","Quit","Qualifying","Prepare for Race","Tyre Aggression","Fuel Aggression","ERS Deployment","Pause","Play","Helmet","Box","Back","Team Orders","Stop Team Orders",
          "Drive in Clean Air","Use Racing Line","Maintain Position","Overtake","Tyre Data","Results","Upgrade Car","Research","Standings","Data","Scouting","Team Data","Car Data",
          "Calendar","Achievements","History","Switch Engine 1","Switch Engine 2","Next Race","Upgrade Attribute","Upgrade","Aerodynamic Regulations","Engine Regulations",
