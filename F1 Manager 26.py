@@ -5127,79 +5127,122 @@ class Game:
                                 GAME.distance.pop(x-driversRemoved)
                                 distance=GAME.distance[x-1-driversRemoved]-(random.randint(100,200)/100)
                                 GAME.distance.insert(x-driversRemoved,distance)
-                            control=GAME.control[driverID]+GAME.control[aheadID]
-                            if control<=GAME.risk:
-                                control=GAME.risk+1
-                            if random.randint(1,(control-GAME.risk)*3)==1:
-                                if overtake==1:
-                                    crasher=ahead
-                                    crashedInto=driver
-                                else:
-                                    crasher=driver
-                                    crashedInto=ahead
-                                severity=random.randint(GAME.risk,150)
-                                if severity>=135:
-                                    #Severe
-                                    if GAME.playing==0 and GAME.sound==1:
-                                        if crasher=="Isack Hadjar":
-                                            GAME.Voice(0,"Destroyed The Car")
-                                        elif random.randint(1,2)==1:
-                                            GAME.Voice(0,"Crash")
-                                        else:
-                                            GAME.Voice(crasher,"Out")
-                                    driversOut=random.randint(1,2)
-                                    drivers=[crasher,crashedInto]
-                                    GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a severe crash.")
-                                    for y in range(driversOut):
-                                        driverOut=random.choice(drivers)
-                                        num=random.randint(1,100+GAME.risk)
-                                        if num>=150:
-                                            #Injured or dead
-                                            if random.randint(1,5)==5 and GAME.season>2026:
-                                                #Dead
-                                                GAME.AddToLog(driverOut+" has died.")
-                                                GAME.dead.append(driverOut)
-                                                GAME.safety=3
+                            if GAME.replay==0:
+                                control=GAME.control[driverID]+GAME.control[aheadID]
+                                if control<=GAME.risk:
+                                    control=GAME.risk+1
+                                if random.randint(1,(control-GAME.risk)*3)==1:
+                                    if overtake==1:
+                                        crasher=ahead
+                                        crashedInto=driver
+                                    else:
+                                        crasher=driver
+                                        crashedInto=ahead
+                                    severity=random.randint(GAME.risk,150)
+                                    if severity>=135:
+                                        #Severe
+                                        if GAME.playing==0 and GAME.sound==1:
+                                            if crasher=="Isack Hadjar":
+                                                GAME.Voice(0,"Destroyed The Car")
+                                            elif random.randint(1,2)==1:
+                                                GAME.Voice(0,"Crash")
                                             else:
+                                                GAME.Voice(crasher,"Out")
+                                        driversOut=random.randint(1,2)
+                                        drivers=[crasher,crashedInto]
+                                        GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a severe crash.")
+                                        for y in range(driversOut):
+                                            driverOut=random.choice(drivers)
+                                            num=random.randint(1,100+GAME.risk)
+                                            if num>=150:
+                                                #Injured or dead
+                                                if random.randint(1,5)==5 and GAME.season>2026:
+                                                    #Dead
+                                                    GAME.AddToLog(driverOut+" has died.")
+                                                    GAME.dead.append(driverOut)
+                                                    GAME.safety=3
+                                                else:
+                                                    #Injured
+                                                    GAME.AddToLog(driverOut+" is injured and out of the race.")
+                                                    GAME.injured.append(driverOut)
+                                                    GAME.safety=3
+                                            elif num>=130:
                                                 #Injured
                                                 GAME.AddToLog(driverOut+" is injured and out of the race.")
                                                 GAME.injured.append(driverOut)
+                                                if random.randint(1,5)==5 and GAME.Street==0 and GAME.safet<2:
+                                                    GAME.safety=2
+                                                else:
+                                                    GAME.safety=3
+                                            elif GAME.street==1:
+                                                GAME.AddToLog(driverOut+" is out of the race.")
                                                 GAME.safety=3
-                                        elif num>=130:
-                                            #Injured
-                                            GAME.AddToLog(driverOut+" is injured and out of the race.")
-                                            GAME.injured.append(driverOut)
-                                            if random.randint(1,5)==5 and GAME.Street==0 and GAME.safet<2:
-                                                GAME.safety=2
                                             else:
-                                                GAME.safety=3
-                                        elif GAME.street==1:
-                                            GAME.AddToLog(driverOut+" is out of the race.")
-                                            GAME.safety=3
-                                        else:
-                                            if GAME.safety<2:
-                                                GAME.safety=2
+                                                if GAME.safety<2:
+                                                    GAME.safety=2
+                                                else:
+                                                    GAME.safety=3
+                                                GAME.AddToLog(driverOut+" is out of the race.")
+                                            GAME.engineDurability.pop(GAME.drivers.index(driverOut))
+                                            GAME.engineDurability.insert(GAME.drivers.index(driverOut), 0)
+                                            repairBill=GAME.repairBill[GAME.drivers.index(driverOut)]+random.randint(2000000,5000000)
+                                            GAME.repairBill.pop(GAME.drivers.index(driverOut))
+                                            GAME.repairBill.insert(GAME.drivers.index(driverOut), repairBill)
+                                            GAME.positions.remove(GAME.drivers.index(driverOut))
+                                            driversRemoved+=1
+                                            if driverOut==driver:
+                                                out=1
+                                        if driversOut==1:
+                                            index=GAME.drivers.index(drivers[0])
+                                            if GAME.frontWings[index]==1:
+                                                GAME.AddToLog(drivers[0]+" has major front wing and chassis damage.")
+                                                GAME.frontWings.pop(index)
+                                                GAME.frontWings.insert(index, 0)
                                             else:
-                                                GAME.safety=3
-                                            GAME.AddToLog(driverOut+" is out of the race.")
-                                        GAME.engineDurability.pop(GAME.drivers.index(driverOut))
-                                        GAME.engineDurability.insert(GAME.drivers.index(driverOut), 0)
-                                        repairBill=GAME.repairBill[GAME.drivers.index(driverOut)]+random.randint(2000000,5000000)
-                                        GAME.repairBill.pop(GAME.drivers.index(driverOut))
-                                        GAME.repairBill.insert(GAME.drivers.index(driverOut), repairBill)
-                                        GAME.positions.remove(GAME.drivers.index(driverOut))
-                                        driversRemoved+=1
-                                        if driverOut==driver:
-                                            out=1
-                                    if driversOut==1:
-                                        index=GAME.drivers.index(drivers[0])
+                                                GAME.AddToLog(drivers[0]+" has major damage to their car.")
+                                            damage=random.randint(40,70)
+                                            repairBill=GAME.repairBill[index]+(damage*random.randint(10000,100000))
+                                            GAME.repairBill.pop(index)
+                                            GAME.repairBill.insert(index, repairBill)
+                                            damage+=GAME.damage[index]
+                                            GAME.damage.pop(index)
+                                            engineDurability=round(GAME.engineDurability[index]/2)
+                                            GAME.engineDurability.pop(index)
+                                            GAME.engineDurability.insert(index, engineDurability)
+                                            if damage>=100:
+                                                GAME.AddToLog("They are out of the race.")
+                                                driversRemoved+=1
+                                                GAME.positions.remove(index)
+                                                if drivers[0]==driver:
+                                                    out=1
+                                                if GAME.safety<=1 and random.randint(1,2)==2:
+                                                    GAME.safety=2
+                                                else:
+                                                    GAME.safety=3
+                                            elif drivers[0]==crasher:
+                                                #Penalty
+                                                penalty=GAME.penalties[index]+10
+                                                GAME.penalties.pop(index)
+                                                GAME.penalties.insert(index, penalty)
+                                                GAME.AddToLog(crasher+" has a 10 second penalty.")
+                                            GAME.damage.insert(index, damage)
+                                    elif severity>=100:
+                                        #Damaging
+                                        if GAME.playing==0 and GAME.sound==1:
+                                            if crasher=="Isack Hadjar":
+                                                GAME.Voice(0,"Destroyed The Car")
+                                            else:
+                                                GAME.Voice(0,"Crash")
+                                        GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a bad crash.")
+                                        #Crasher
+                                        index=GAME.drivers.index(crasher)
                                         if GAME.frontWings[index]==1:
-                                            GAME.AddToLog(drivers[0]+" has major front wing and chassis damage.")
+                                            GAME.AddToLog(crasher+" has front wing and chassis damage.")
                                             GAME.frontWings.pop(index)
                                             GAME.frontWings.insert(index, 0)
                                         else:
-                                            GAME.AddToLog(drivers[0]+" has major damage to their car.")
-                                        damage=random.randint(40,70)
+                                            GAME.AddToLog(crasher+" has damage to their car.")
+                                        damage=random.randint(20,60)
                                         repairBill=GAME.repairBill[index]+(damage*random.randint(10000,100000))
                                         GAME.repairBill.pop(index)
                                         GAME.repairBill.insert(index, repairBill)
@@ -5211,160 +5254,118 @@ class Game:
                                         if damage>=100:
                                             GAME.AddToLog("They are out of the race.")
                                             driversRemoved+=1
-                                            GAME.positions.remove(index)
-                                            if drivers[0]==driver:
+                                            if crasher==driver:
                                                 out=1
+                                            GAME.positions.remove(index)
                                             if GAME.safety<=1 and random.randint(1,2)==2:
                                                 GAME.safety=2
                                             else:
                                                 GAME.safety=3
-                                        elif drivers[0]==crasher:
+                                        else:
                                             #Penalty
-                                            penalty=GAME.penalties[index]+10
+                                            penalty=GAME.penalties[index]+5
                                             GAME.penalties.pop(index)
                                             GAME.penalties.insert(index, penalty)
-                                            GAME.AddToLog(crasher+" has a 10 second penalty.")
+                                            GAME.AddToLog(crasher+" has a 5 second penalty.")
                                         GAME.damage.insert(index, damage)
-                                elif severity>=100:
-                                    #Damaging
-                                    if GAME.playing==0 and GAME.sound==1:
-                                        if crasher=="Isack Hadjar":
-                                            GAME.Voice(0,"Destroyed The Car")
+                                        #Crashed Into
+                                        index=GAME.drivers.index(crashedInto)
+                                        if GAME.frontWings[index]==1:
+                                            GAME.AddToLog(crashedInto+" has front wing and chassis damage.")
+                                            GAME.frontWings.pop(index)
+                                            GAME.frontWings.insert(index, 0)
                                         else:
-                                            GAME.Voice(0,"Crash")
-                                    GAME.AddToLog(crasher+" crashed into "+crashedInto+", it was a bad crash.")
-                                    #Crasher
-                                    index=GAME.drivers.index(crasher)
-                                    if GAME.frontWings[index]==1:
-                                        GAME.AddToLog(crasher+" has front wing and chassis damage.")
-                                        GAME.frontWings.pop(index)
-                                        GAME.frontWings.insert(index, 0)
+                                            GAME.AddToLog(crashedInto+" has damage to their car.")
+                                        damage=random.randint(20,60)
+                                        repairBill=GAME.repairBill[index]+(damage*random.randint(10000,100000))
+                                        GAME.repairBill.pop(index)
+                                        GAME.repairBill.insert(index, repairBill)
+                                        damage+=GAME.damage[index]
+                                        GAME.damage.pop(index)
+                                        engineDurability=round(GAME.engineDurability[index]/2)
+                                        GAME.engineDurability.pop(index)
+                                        GAME.engineDurability.insert(index, engineDurability)
+                                        if damage>=100:
+                                            GAME.AddToLog("They are out of the race.")
+                                            driversRemoved+=1
+                                            if crashedInto==driver:
+                                                out=1
+                                            GAME.positions.remove(index)
+                                            if GAME.safety<=1 and random.randint(1,2)==2:
+                                                GAME.safety=2
+                                            else:
+                                                GAME.safety=3
+                                        GAME.damage.insert(index, damage)
                                     else:
-                                        GAME.AddToLog(crasher+" has damage to their car.")
-                                    damage=random.randint(20,60)
-                                    repairBill=GAME.repairBill[index]+(damage*random.randint(10000,100000))
-                                    GAME.repairBill.pop(index)
-                                    GAME.repairBill.insert(index, repairBill)
-                                    damage+=GAME.damage[index]
-                                    GAME.damage.pop(index)
-                                    engineDurability=round(GAME.engineDurability[index]/2)
-                                    GAME.engineDurability.pop(index)
-                                    GAME.engineDurability.insert(index, engineDurability)
-                                    if damage>=100:
-                                        GAME.AddToLog("They are out of the race.")
-                                        driversRemoved+=1
-                                        if crasher==driver:
-                                            out=1
-                                        GAME.positions.remove(index)
-                                        if GAME.safety<=1 and random.randint(1,2)==2:
-                                            GAME.safety=2
+                                        #Minor
+                                        if GAME.playing==0 and GAME.sound==1:
+                                            if crasher=="Isack Hadjar":
+                                                GAME.Voice(0,"Destroyed The Car")
+                                            else:
+                                                GAME.Voice(0,"Crash")
+                                        GAME.AddToLog(crasher+" crashed into "+crashedInto+".")
+                                        #Crasher
+                                        index=GAME.drivers.index(crasher)
+                                        damage=random.randint(10,30)
+                                        repairBill=GAME.repairBill[index]+(damage*random.randint(10000,100000))
+                                        GAME.repairBill.pop(index)
+                                        GAME.repairBill.insert(index, repairBill)
+                                        if GAME.frontWings[index]==1:
+                                            if damage>=20:
+                                                GAME.AddToLog(crasher+" has front wing damage.")
+                                            else:
+                                                GAME.AddToLog(crasher+" has minor front wing damage.")
+                                            GAME.frontWings.pop(index)
+                                            GAME.frontWings.insert(index, 0)
                                         else:
-                                            GAME.safety=3
-                                    else:
-                                        #Penalty
-                                        penalty=GAME.penalties[index]+5
-                                        GAME.penalties.pop(index)
-                                        GAME.penalties.insert(index, penalty)
-                                        GAME.AddToLog(crasher+" has a 5 second penalty.")
-                                    GAME.damage.insert(index, damage)
-                                    #Crashed Into
-                                    index=GAME.drivers.index(crashedInto)
-                                    if GAME.frontWings[index]==1:
-                                        GAME.AddToLog(crashedInto+" has front wing and chassis damage.")
-                                        GAME.frontWings.pop(index)
-                                        GAME.frontWings.insert(index, 0)
-                                    else:
-                                        GAME.AddToLog(crashedInto+" has damage to their car.")
-                                    damage=random.randint(20,60)
-                                    repairBill=GAME.repairBill[index]+(damage*random.randint(10000,100000))
-                                    GAME.repairBill.pop(index)
-                                    GAME.repairBill.insert(index, repairBill)
-                                    damage+=GAME.damage[index]
-                                    GAME.damage.pop(index)
-                                    engineDurability=round(GAME.engineDurability[index]/2)
-                                    GAME.engineDurability.pop(index)
-                                    GAME.engineDurability.insert(index, engineDurability)
-                                    if damage>=100:
-                                        GAME.AddToLog("They are out of the race.")
-                                        driversRemoved+=1
-                                        if crashedInto==driver:
-                                            out=1
-                                        GAME.positions.remove(index)
-                                        if GAME.safety<=1 and random.randint(1,2)==2:
-                                            GAME.safety=2
+                                            GAME.AddToLog(crasher+" has minor damage to their car.")
+                                        damage+=GAME.damage[index]
+                                        GAME.damage.pop(index)
+                                        engineDurability=round(GAME.engineDurability[index]/2)
+                                        GAME.engineDurability.pop(index)
+                                        GAME.engineDurability.insert(index, engineDurability)
+                                        if damage>=100:
+                                            GAME.AddToLog("They are out of the race.")
+                                            driversRemoved+=1
+                                            if crasher==driver:
+                                                out=1
+                                            GAME.positions.remove(index)
+                                            if GAME.safety<=1 and random.randint(1,2)==2:
+                                                GAME.safety=2
+                                            else:
+                                                GAME.safety=3
+                                        GAME.damage.insert(index, damage)
+                                        #CrashedInto
+                                        index=GAME.drivers.index(crashedInto)
+                                        damage=random.randint(10,30)
+                                        repairBill=GAME.repairBill[index]+(damage*random.randint(10000,100000))
+                                        GAME.repairBill.pop(index)
+                                        GAME.repairBill.insert(index, repairBill)
+                                        if GAME.frontWings[index]==1:
+                                            if damage>=20:
+                                                GAME.AddToLog(crashedInto+" has front wing damage.")
+                                            else:
+                                                GAME.AddToLog(crashedInto+" has minor front wing damage.")
+                                            GAME.frontWings.pop(index)
+                                            GAME.frontWings.insert(index, 0)
                                         else:
-                                            GAME.safety=3
-                                    GAME.damage.insert(index, damage)
-                                else:
-                                    #Minor
-                                    if GAME.playing==0 and GAME.sound==1:
-                                        if crasher=="Isack Hadjar":
-                                            GAME.Voice(0,"Destroyed The Car")
-                                        else:
-                                            GAME.Voice(0,"Crash")
-                                    GAME.AddToLog(crasher+" crashed into "+crashedInto+".")
-                                    #Crasher
-                                    index=GAME.drivers.index(crasher)
-                                    damage=random.randint(10,30)
-                                    repairBill=GAME.repairBill[index]+(damage*random.randint(10000,100000))
-                                    GAME.repairBill.pop(index)
-                                    GAME.repairBill.insert(index, repairBill)
-                                    if GAME.frontWings[index]==1:
-                                        if damage>=20:
-                                            GAME.AddToLog(crasher+" has front wing damage.")
-                                        else:
-                                            GAME.AddToLog(crasher+" has minor front wing damage.")
-                                        GAME.frontWings.pop(index)
-                                        GAME.frontWings.insert(index, 0)
-                                    else:
-                                        GAME.AddToLog(crasher+" has minor damage to their car.")
-                                    damage+=GAME.damage[index]
-                                    GAME.damage.pop(index)
-                                    engineDurability=round(GAME.engineDurability[index]/2)
-                                    GAME.engineDurability.pop(index)
-                                    GAME.engineDurability.insert(index, engineDurability)
-                                    if damage>=100:
-                                        GAME.AddToLog("They are out of the race.")
-                                        driversRemoved+=1
-                                        if crasher==driver:
-                                            out=1
-                                        GAME.positions.remove(index)
-                                        if GAME.safety<=1 and random.randint(1,2)==2:
-                                            GAME.safety=2
-                                        else:
-                                            GAME.safety=3
-                                    GAME.damage.insert(index, damage)
-                                    #CrashedInto
-                                    index=GAME.drivers.index(crashedInto)
-                                    damage=random.randint(10,30)
-                                    repairBill=GAME.repairBill[index]+(damage*random.randint(10000,100000))
-                                    GAME.repairBill.pop(index)
-                                    GAME.repairBill.insert(index, repairBill)
-                                    if GAME.frontWings[index]==1:
-                                        if damage>=20:
-                                            GAME.AddToLog(crashedInto+" has front wing damage.")
-                                        else:
-                                            GAME.AddToLog(crashedInto+" has minor front wing damage.")
-                                        GAME.frontWings.pop(index)
-                                        GAME.frontWings.insert(index, 0)
-                                    else:
-                                        GAME.AddToLog(crashedInto+" has minor damage to their car.")
-                                    damage+=GAME.damage[index]
-                                    GAME.damage.pop(index)
-                                    engineDurability=round(GAME.engineDurability[index]/2)
-                                    GAME.engineDurability.pop(index)
-                                    GAME.engineDurability.insert(index, engineDurability)
-                                    if damage>=100:
-                                        GAME.AddToLog("They are out of the race.")
-                                        driversRemoved+=1
-                                        if crashedInto==driver:
-                                            out=1
-                                        GAME.positions.remove(index)
-                                        if GAME.safety<=1 and random.randint(1,2)==2:
-                                            GAME.safety=2
-                                        else:
-                                            GAME.safety=3
-                                    GAME.damage.insert(index, damage)
+                                            GAME.AddToLog(crashedInto+" has minor damage to their car.")
+                                        damage+=GAME.damage[index]
+                                        GAME.damage.pop(index)
+                                        engineDurability=round(GAME.engineDurability[index]/2)
+                                        GAME.engineDurability.pop(index)
+                                        GAME.engineDurability.insert(index, engineDurability)
+                                        if damage>=100:
+                                            GAME.AddToLog("They are out of the race.")
+                                            driversRemoved+=1
+                                            if crashedInto==driver:
+                                                out=1
+                                            GAME.positions.remove(index)
+                                            if GAME.safety<=1 and random.randint(1,2)==2:
+                                                GAME.safety=2
+                                            else:
+                                                GAME.safety=3
+                                        GAME.damage.insert(index, damage)
                                     
         if GAME.safety==2:
             GAME.safetyLaps=random.randint(3,6)
