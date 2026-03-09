@@ -4105,7 +4105,8 @@ class Game:
                 if GAME.displayed==1:
                     if GAME.sound==1:
                         sound_path = os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 1.wav")
-                        winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                        if os.path.isfile(sound_path):
+                            winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                     root.after(500, lambda: GAME.ChangeScreen("F1 Movie 1"))
                     root.after(14100, lambda: GAME.ChangeScreen("F1 Movie 2"))
                     root.after(22100, lambda: GAME.ChangeScreen("F1 Movie 3"))
@@ -4113,12 +4114,14 @@ class Game:
                 elif GAME.displayed==2:
                     if GAME.sound==1:
                         sound_path = os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 2.wav")
-                        winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                        if os.path.isfile(sound_path):
+                            winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                     root.after(500, lambda: GAME.ChangeScreen("F1 Movie 4"))
                     root.after(10100, lambda: GAME.ChangeScreen("F1 Movie 5"))
                     if GAME.sound==1:
                         sound_path = os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 3.wav")
-                        root.after(16800, lambda: winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
+                        if os.path.isfile(sound_path):
+                            root.after(16800, lambda: winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
                     root.after(16650, lambda: GAME.ChangeScreen("F1 Movie 6"))
                     root.after(28150, lambda: GAME.MovieFinalLap())
                 GAME.displayed=0
@@ -4191,19 +4194,22 @@ class Game:
                 #Win
                 if GAME.sound==1:
                     sound_path = os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 4.wav")
-                    winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                    if os.path.isfile(sound_path):
+                        winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                 root.after(500, lambda: GAME.ChangeScreen("F1 Movie 7"))
                 root.after(6500, lambda: GAME.ChangeScreen("F1 Movie 8"))
                 root.after(17700, lambda: GAME.ChangeScreen("F1 Movie 9"))
                 if GAME.sound==1:
                     soundPath = os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 5.wav")
-                    root.after(17600, lambda: winsound.PlaySound(soundPath, winsound.SND_FILENAME | winsound.SND_ASYNC))
+                    if os.path.isfile(soundPath):
+                        root.after(17600, lambda: winsound.PlaySound(soundPath, winsound.SND_FILENAME | winsound.SND_ASYNC))
             else:
                 #Lose
                 GAME.ChangeScreen("F1 Movie 10")
                 if GAME.music==1:
                     path = os.path.join(os.path.dirname(__file__), "Music", "Better Luck Next Time.wav")
-                    winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
+                    if os.path.isfile(path):
+                        winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
             time=54000
         elif GAME.replay==9:
             winner=-1
@@ -4225,7 +4231,7 @@ class Game:
             else:
                 GAME.ChangeScreen("Canada 2011 Defeat")
                 SoundPath = os.path.join(os.path.dirname(__file__), "Music", "Better Luck Next Time.wav")
-            if GAME.music==1:
+            if GAME.music==1 and os.path.isfile(soundPath):
                 winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
             time=10000
         elif GAME.replay==4:
@@ -4253,7 +4259,7 @@ class Game:
                 SoundPath = os.path.join(os.path.dirname(__file__), "Music", "United Kingdom National Anthem.wav")
             else:
                 SoundPath = os.path.join(os.path.dirname(__file__), "Music", "Brazil National Anthem.wav")
-            if GAME.music==1:
+            if GAME.music==1 and os.path.isfile(soundPath):
                 winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
             time=10000
         elif GAME.replay==5:
@@ -4286,7 +4292,8 @@ class Game:
         root.after(time, lambda: GAME.ChangeScreen("Title Screen"))
         if GAME.music==1:
             SoundPath = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
-            root.after(time, lambda: winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC))
+            if os.path.isfile(soundPath):
+                root.after(time, lambda: winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC))
     def Instructions(self):
         drivers=[]
         d=0
@@ -4853,7 +4860,8 @@ class Game:
             GAME.Voice(0,"Race Start")
         if GAME.replay==2 and GAME.music==1:
             path = os.path.join(os.path.dirname(__file__), "Music", "F1 Movie Theme.wav")
-            root.after(3500, lambda: winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP))
+            if os.path.isfile(path):
+                root.after(3500, lambda: winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP))
         GAME.Leaderboard()
         GAME.RaceMenu()
         canvas.create_image(499, 193, anchor=tk.NW, image=raceImages[0])
@@ -5432,7 +5440,8 @@ class Game:
                 if GAME.music==1:
                     if driver=="Fernando Alonso":
                         path = os.path.join(os.path.dirname(__file__), "Music", "Fernando Alonso Song.wav")
-                        winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
+                        if os.path.isfile(path):
+                            winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
                     else:
                         country=0
                         team=GAME.teams[GAME.positions[0]]
@@ -5456,7 +5465,8 @@ class Game:
                                 GAME.screen="Podium"
                             else:
                                 path = os.path.join(os.path.dirname(__file__), "Music", "Podium Theme.wav")
-                        winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                        if os.path.isfile(path):
+                            winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                 x=520
             elif i==1:
                 x=120
@@ -5868,7 +5878,8 @@ class Game:
         if GAME.music==1:
             if GAME.replay==2:
                 sound_path = os.path.join(os.path.dirname(__file__), "Music", "Lose my mind.wav")
-                winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                if os.path.isfile(sound_path):
+                    winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
             else:
                 GAME.StopMusic()
         GAME.ChangeScreen("Replay Objective")
@@ -8563,7 +8574,8 @@ class Game:
                     #Quit
                     if GAME.music==1:
                         sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
-                        winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                        if os.path.isfile(sound_path):
+                            winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                     GAME.ChangeScreen("Title Screen")
         elif GAME.screen=="Practice":
             if event.x>=1200 and event.x<=1400 and event.y>=700 and event.y<=750 and GAME.qualifying==0:
@@ -8571,7 +8583,8 @@ class Game:
                 root.after(1200, lambda: GAME.Qualifying())
                 if GAME.music==1:     
                     sound_path = os.path.join(os.path.dirname(__file__), "Music", "The Chain F1.wav")
-                    winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                    if os.path.isfile(sound_path):
+                        winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
         elif GAME.screen=="Q3 Results":
             if event.x>=1235 and event.x<=1435 and event.y>=735 and event.y<=785 and GAME.qualifying==2:
                 if GAME.replay>0:
@@ -8980,7 +8993,8 @@ class Game:
                 GAME.ChangeScreen("Title Screen")
                 if GAME.music==1:
                     SoundPath = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
-                    winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                    if os.path.isfile(soundPath):
+                        winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
         elif (GAME.screen=="Standings" or GAME.screen=="Data" or GAME.screen=="Team Data" or GAME.screen=="Car Data" or GAME.screen=="Achievements"
               or GAME.screen=="History" or GAME.screen=="Upgrade" or GAME.screen=="Select Research Type" or GAME.screen=="Scouting"
               or GAME.screen=="View Contracts" or GAME.screen=="Junior & Reserve Drivers" or GAME.screen=="Driver List" or GAME.screen=="Staff List" or GAME.screen=="Contract Name"
@@ -9234,7 +9248,8 @@ class Game:
                             c.execute("UPDATE Cars SET Driveability=? WHERE Team=?",(driveability,GAME.team,))
                     if GAME.sound==1:
                         sound_path = os.path.join(os.path.dirname(__file__), "Sound Effects", "Upgrade Sound.wav")
-                        winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                        if os.path.isfile(sound_path):
+                            winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                     GAME.Menu()
             else:
                 modify=0
@@ -9866,7 +9881,8 @@ class Game:
                         c.execute('''UPDATE Staff SET NewTeam=?, NewRole=?, NewSalary=? WHERE Name=?''',(GAME.team, role, GAME.salary, GAME.options[GAME.displayedName],))
                 if GAME.sound==1:
                     path=os.path.join(os.path.dirname(__file__), "Sound Effects", "Sign Contract Sound.wav")
-                    winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                    if os.path.isfile(path):
+                        winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                 GAME.EndScouting()
         elif GAME.screen=="Starter Drivers":
             if event.x>=600 and event.x<=800 and event.y>=730 and event.y<=780:
@@ -10086,7 +10102,8 @@ class Game:
                         c.execute("UPDATE Staff SET NewTeam=?, NewRole=?, NewSalary=? WHERE Name=?",(GAME.team,GAME.role,GAME.salary,GAME.options[GAME.displayed],))
                 if GAME.sound==1:
                     path=os.path.join(os.path.dirname(__file__), "Sound Effects", "Sign Contract Sound.wav")
-                    winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                    if os.path.isfile(path):
+                        winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                 GAME.Menu()
         if GAME.screen=="Junior & Reserve Drivers":
             if event.x>=1000 and event.x<=1200 and event.y>=730 and event.y<=780:
@@ -10390,7 +10407,8 @@ class Game:
                     GAME.StopMusic()
                 else:
                     sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
-                    winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
+                    if os.path.isfile(sound_path):
+                        winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
                 GAME.Settings()
         elif GAME.screen=="Select Save File":
             if event.x>=265 and event.x<=1160 and event.y>=260 and event.y<=600 and GAME.loaded==1:
@@ -11262,7 +11280,8 @@ class Game:
     def DisplayGrid(self):
         if GAME.music==1:
             sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Theme.wav")
-            winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+            if os.path.isfile(sound_path):
+                winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
         GAME.ChangeScreen("Blank Screen")
         canvas.create_text(80, 250, text=f"The {GAME.season} Grid", fill="white", font=("Arial", 150), anchor="nw")
         GAME.newTeams=[]
@@ -11812,49 +11831,52 @@ class Game:
             colour="#DADADA"
         canvas.create_text(x, y, text=(f"{number}. {track}"), fill=colour, font=("Arial", 15), anchor="nw")
     def Voice(self, subject, line):
-        if not (((line=="Overtake" or line=="Lead") and GAME.replay==2) or GAME.pause==3 or GAME.replay==8 or GAME.replay==9 or GAME.replay==6):
-            GAME.playing=1
-            delay=0
-            if subject!=0:
-                name_path=os.path.join(os.path.dirname(__file__), "Names", subject+".wav")
-                if  os.path.isfile(name_path):
-                    if line!="Overtake":
-                        winsound.PlaySound(name_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+        try:
+            if not (((line=="Overtake" or line=="Lead") and GAME.replay==2) or GAME.pause==3 or GAME.replay==8 or GAME.replay==9 or GAME.replay==6):
+                GAME.playing=1
+                delay=0
+                if subject!=0:
+                    name_path=os.path.join(os.path.dirname(__file__), "Names", subject+".wav")
+                    if  os.path.isfile(name_path):
+                        if line!="Overtake":
+                            winsound.PlaySound(name_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                            with contextlib.closing(wave.open(name_path, 'r')) as f:
+                                frames=f.getnframes()
+                                rate=f.getframerate()
+                                duration=frames / float(rate)
+                                delay=round((duration - 0.1) * 1000)
+                    else:
+                        subject=-1
+                if subject!=-1 or line=="Champion":
+                    if line=="Overtake":
+                        if subject=="Lewis Hamilton":
+                            line=-1
+                            vo_path=os.path.join(os.path.dirname(__file__), "Voicelines","Through Goes Hamilton.wav")
+                        else:
+                            vo_path=os.path.join(os.path.dirname(__file__), "Voicelines",f"Overtake {random.randint(1,2)}.wav")
+                    else:
+                        vo_path=os.path.join(os.path.dirname(__file__), "Voicelines", line + ".wav")
+                    with contextlib.closing(wave.open(vo_path, 'r')) as f:
+                        frames=f.getnframes()
+                        rate=f.getframerate()
+                        duration=frames / float(rate)
+                        d=delay + round((duration-0.1)*1000)
+                    root.after(delay, lambda: winsound.PlaySound(vo_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
+                    if line=="Overtake" and os.path.isfile(name_path):
+                        root.after(d, lambda: winsound.PlaySound(name_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
                         with contextlib.closing(wave.open(name_path, 'r')) as f:
                             frames=f.getnframes()
                             rate=f.getframerate()
-                            duration=frames / float(rate)
-                            delay=round((duration - 0.1) * 1000)
-                else:
-                    subject=-1
-            if subject!=-1 or line=="Champion":
-                if line=="Overtake":
-                    if subject=="Lewis Hamilton":
-                        line=-1
-                        vo_path=os.path.join(os.path.dirname(__file__), "Voicelines","Through Goes Hamilton.wav")
+                            duration=frames/float(rate)
+                            delay=d+round(duration*1000)
+                        root.after(delay-50, lambda: GAME.StopMusic())
                     else:
-                        vo_path=os.path.join(os.path.dirname(__file__), "Voicelines",f"Overtake {random.randint(1,2)}.wav")
-                else:
-                    vo_path=os.path.join(os.path.dirname(__file__), "Voicelines", line + ".wav")
-                with contextlib.closing(wave.open(vo_path, 'r')) as f:
-                    frames=f.getnframes()
-                    rate=f.getframerate()
-                    duration=frames / float(rate)
-                    d=delay + round((duration-0.1)*1000)
-                root.after(delay, lambda: winsound.PlaySound(vo_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
-                if line=="Overtake" and os.path.isfile(name_path):
-                    root.after(d, lambda: winsound.PlaySound(name_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
-                    with contextlib.closing(wave.open(name_path, 'r')) as f:
-                        frames=f.getnframes()
-                        rate=f.getframerate()
-                        duration=frames/float(rate)
-                        delay=d+round(duration*1000)
-                    root.after(delay-50, lambda: GAME.StopMusic())
-                else:
-                    delay=d
-            root.after(delay, lambda: GAME.VoiceDone())
-            if line=="Champion":
-                root.after(delay, lambda: GAME.DriverCelebration(subject))
+                        delay=d
+                root.after(delay, lambda: GAME.VoiceDone())
+                if line=="Champion":
+                    root.after(delay, lambda: GAME.DriverCelebration(subject))
+        except:
+            pass
     def VoiceDone(self):
         GAME.playing=0
 GAME=Game()
@@ -11889,8 +11911,10 @@ root.configure(background='black')
 #Music
 if GAME.music==1:
     sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
-    winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
+    if os.path.isfile(sound_path):
+        winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
 #Images
+missingFiles=0
 Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 2","Choose a Team","Get Team Name","Choose Engine 1",
         "Choose Sponsor","Welcome To Team","Blank Screen","McLaren Display","Ferrari Display","Red Bull Display","Mercedes Display","Aston Martin Display","Alpine Display",
         "Haas Display","Racing Bulls Display","Williams Display","Generic Display","Save Screen","Practice","Breaking News","Q1 Eliminations","Q2 Eliminations",
@@ -11907,7 +11931,11 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
-    images.append(tk.PhotoImage(file=path))
+    if os.path.isfile(path):
+        images.append(tk.PhotoImage(file=path))
+    else:
+        images.append(0)
+        missingFiles=1
 driverHeads=["Max Verstappen","Lando Norris","Charles Leclerc","Oscar Piastri","Carlos Sainz","George Russell","Lewis Hamilton","Fernando Alonso","Pierre Gasly","Nico Hulkenberg",
              "Yuki Tsunoda","Lance Stroll","Esteban Ocon","Alexander Albon","Oliver Bearman","Liam Lawson","Jack Doohan","Gabriel Bortoleto","Isack Hadjar","Kimi Antonelli",
              "Franco Colapinto","Frederik Vesti","Jak Crawford","Victor Martins","Mick Schumacher","Valtteri Bottas","Zhou Guanyu","Antonio Giovinazzi","Arvid Lindblad","Pato Oward",
@@ -11922,7 +11950,10 @@ for x in range(3):
 heads=[]
 for x in range(len(driverHeads)):
     path = os.path.join(os.path.dirname(__file__), "Heads", (driverHeads[x]+" Head.png"))
-    heads.append(tk.PhotoImage(file=path))
+    if os.path.isfile(path):
+        heads.append(tk.PhotoImage(file=path))
+    else:
+        missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","BMW","Amazon","Ford","Tesla","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
        "Alfa Romeo"]
@@ -11972,7 +12003,10 @@ Buttons=["Next","Quit","Qualifying","Prepare for Race","Tyre Aggression","Fuel A
 buttons=[]
 for x in range(len(Buttons)):
     path = os.path.join(os.path.dirname(__file__), "Buttons", (Buttons[x]+" Button.png"))
-    buttons.append(tk.PhotoImage(file=path))
+    if os.path.isfile(path):
+        buttons.append(tk.PhotoImage(file=path))
+    else:
+        missingFiles=1
 tracks=["Australia","China","Japan","Bahrain","Saudi Arabia","Miami","Imola","Monaco","Spain","Canada","Austria","United Kingdom","Belgium","Hungary","Netherlands","Italy",
         "Azerbaijan","Singapore","United States of America","Mexico","Brazil","Las Vegas","Qatar","Abu Dhabi","Madrid","Turkey","Nurburgring","Hockenheim","1984 Monaco","2008 Brazil",
         "Portugal","2021 Abu Dhabi"]
@@ -11988,18 +12022,28 @@ for x in range(len(tracks)):
         path=os.path.join(os.path.dirname(__file__), "Race Images", (f"{tracks[x]} {y+1}.png"))
         if os.path.isfile(path):
             raceImages.append(tk.PhotoImage(file=path))
+        else:
+            missingFiles=1
 Tyres=["Soft","Medium","Hard","Intermediate","Wet"]
 tyres=[]
 for x in range(len(Tyres)):
     path = os.path.join(os.path.dirname(__file__), "Tyres", (Tyres[x]+" Tyre.png"))
-    tyres.append(tk.PhotoImage(file=path))
+    if os.path.isfile(path):
+        tyres.append(tk.PhotoImage(file=path))
+    else:
+        missingFiles=1
 Icons=["ERS Battery","Raindrop","Sunshine","Fuel Tank","Cloud","Minor Fault","Major Fault","Settings","Muted","Unmuted"]
 icons=[]
 for x in range(len(Icons)):
     path = os.path.join(os.path.dirname(__file__), "Icons", (Icons[x]+".png"))
-    icons.append(tk.PhotoImage(file=path))
+    if os.path.isfile(path):
+        icons.append(tk.PhotoImage(file=path))
+    else:
+        missingFiles=1
 canvas = tk.Canvas(root, width=images[0].width(), height=images[0].height())
 canvas.pack()
 imageOnCanvas = canvas.create_image(0, 0, anchor=tk.NW, image=images[0])
+if missingFiles==1:
+    GAME.ChangeScreen("Missing Required Files")
 canvas.bind("<Button-1>", GAME.OnClick)
 root.mainloop()
