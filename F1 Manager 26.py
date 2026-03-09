@@ -374,7 +374,7 @@ class Game:
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Audi", "Audi", 48, 48, 48, 48, 33, 40, 1, 100, 1, 100, 1, 9, 15)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Cadillac", "Ferrari", 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 1, 10, 15)''')
         if GAME.newTeam==1:
-            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES (?, ?, 22, 15, 12, 15, 13, 16, 1, 100, 1, 100, 0, 11, 12)''',(GAME.team, GAME.engine))
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES (?, ?, 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 0, 12, 12)''',(GAME.team, GAME.engine))
 
         #Sponsors
         c.execute('''INSERT into Sponsors (Name, Team, Pay) VALUES ("HP", "Ferrari", 70000)''')
@@ -584,22 +584,6 @@ class Game:
             if item[x]!=" ":
                 valid=1
         return valid
-    def RedBullDrivers(self):
-        if GAME.team!="Red Bull" and GAME.legends==0:
-            #2026 Red Bull Drivers
-            with sqlite3.connect(GAME.database) as c:
-                if GAME.driver2!="Isack Hadjar":
-                    driver="Isack Hadjar"
-                else:
-                    driver="Yuki Tsunoda"
-                c.execute("UPDATE Drivers SET ContractEnd=2026, NewTeam='Red Bull', NewRole='2' WHERE Name=?",(driver,))
-                if GAME.team!="Racing Bulls":
-                    if GAME.driver1!="Liam Lawson":
-                        driver="Liam Lawson"
-                    else:
-                        driver="Alex Dunne"
-                    c.execute("UPDATE Drivers SET ContractEnd=2026, NewTeam='Racing Bulls', NewRole='1' WHERE Name=?",(driver,))
-                    c.execute("UPDATE Drivers SET NewTeam='Racing Bulls', NewRole='2' WHERE Name='Arvid Lindblad'")
     def CalculateIncome(self, team):
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
@@ -8513,18 +8497,20 @@ class Game:
             elif GAME.team!="":
                 GAME.newTeam=0
                 GAME.BackgroundColour()
-                GAME.FillDatabase()
-                GAME.RedBullDrivers()
-                F1=sqlite3.connect(GAME.database)
-                c=F1.cursor()
-                c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
-                c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="1"''',(GAME.team,))
-                GAME.car1=GAME.Sanitise(c.fetchall()[0])
-                c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="2"''',(GAME.team,))
-                GAME.car2=GAME.Sanitise(c.fetchall()[0])
-                F1.commit()
-                F1.close()
-                GAME.WelcomeToTeam()
+                if os.path.isfile("F1 Manager 26 Driver Data.json") and os.path.isfile(GAME.database):
+                    GAME.FillDatabase()
+                    F1=sqlite3.connect(GAME.database)
+                    c=F1.cursor()
+                    c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
+                    c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="1"''',(GAME.team,))
+                    GAME.car1=GAME.Sanitise(c.fetchall()[0])
+                    c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="2"''',(GAME.team,))
+                    GAME.car2=GAME.Sanitise(c.fetchall()[0])
+                    F1.commit()
+                    F1.close()
+                    GAME.WelcomeToTeam()
+                else:
+                    GAME.ChangeScreen("Missing Required Files")
         elif GAME.screen=="Choose Engine 1":
             if event.y>=190 and event.y<=615:
                 if event.x>=30 and event.x<=465:
@@ -10845,8 +10831,11 @@ class Game:
             GAME.BackgroundColour()
             if GAME.season==2026:
                 GAME.newTeam=1
-                GAME.FillDatabase()
-                GAME.DriverMarket()
+                if os.path.isfile("F1 Manager 26 Driver Data.json") and os.path.isfile(GAME.database):
+                    GAME.FillDatabase()
+                    GAME.DriverMarket()
+                else:
+                    GAME.ChangeScreen("Missing Required Files")
             else:
                 GAME.ChangeScreen("Choose Engine 1")
     def CreateNewTeam(self):
@@ -10887,7 +10876,7 @@ class Game:
             c.execute('''INSERT into Staff (Name , Team , Role , Rating , Salary , Morale , Country , NewTeam , NewSalary , NewRole ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(raceEngineer2, GAME.team, "Race Engineer 2", 70, 500000, 0, random.choice(GAME.countries), 0, 0, 0))
             c.execute('''INSERT into Staff (Name , Team , Role , Rating , Salary , Morale , Country , NewTeam , NewSalary , NewRole ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(technicalDirector, GAME.team, "Technical Director", 70, 500000, 0, random.choice(GAME.countries), 0, 0, 0))
             c.execute('''INSERT into Staff (Name , Team , Role , Rating , Salary , Morale , Country , NewTeam , NewSalary , NewRole ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(sportingDirector, GAME.team, "Sporting Director", 70, 500000, 0, random.choice(GAME.countries), 0, 0, 0))
-            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES (?, ?, 22, 15, 12, 15, 13, 16, 1, 100, 1, 100, 0, 11, 11)''',(GAME.team, GAME.engine))
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES (?, ?, 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 0, 12, 12)''',(GAME.team, GAME.engine))
             GAME.race+=1
             c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
             c.execute("UPDATE Teams SET TeamPrincipal='None' WHERE Name=?",(GAME.oldTeam,))
@@ -11914,7 +11903,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Select Save File","Calendar","Standings",
         "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Aston Martin Upgrade","Haas Upgrade","Audi Upgrade",
         "Alpine Upgrade","Cadillac Upgrade","Data Background","United Kingdom Flag","United States of America Flag","Brazil Flag","Italy Flag","Japan Flag","Germany Flag",
-        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag"]
+        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Missing Required Files"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
