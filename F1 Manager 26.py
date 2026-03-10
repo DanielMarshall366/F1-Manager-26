@@ -7177,9 +7177,9 @@ class Game:
             if GAME.wet==1:
                 standardStrategy=0
             else:
-                if length>=GAME.laps-3:
+                if length*1.5>=GAME.laps-3:
                     standardStrategy=1
-                elif length*1.5>=GAME.laps:
+                elif length2>=GAME.laps:
                     standardStrategy=1.5
                 else:
                     standardStrategy=2
@@ -7265,8 +7265,8 @@ class Game:
                                 strategy=1
                             else:
                                 strategy=2
-                        elif random.randint(1,9)<3:
-                            strategy=1
+                        elif random.randint(1,12)==12:
+                            strategy=3-standardStrategy
                         else:
                             strategy=standardStrategy
                         GAME.strategy.append(strategy)
@@ -7780,12 +7780,7 @@ class Game:
                     team=GAME.Sanitise(teams[x])
                     position=int(GAME.Sanitise(c.execute("SELECT Position FROM  Teams WHERE Name=?",(team,)).fetchall()[0]))
                     for y in range(6):
-                        if team==GAME.team and position==1:
-                            statChange=random.randint(-28,5)
-                        elif team==GAME.team and position==2:
-                            statChange=random.randint(-20,10)
-                        else:
-                            statChange=round(position*1.3)+random.randint(-15,10)
+                        statChange=round(position*1.3)+random.randint(-15,10)
                         if y==0:
                             stat=int(GAME.Sanitise(c.execute("SELECT DragReduction FROM Cars WHERE Team=?",(team,)).fetchall()[0]))
                         elif y==1:
@@ -11050,11 +11045,11 @@ class Game:
         valid=1
         if os.path.isfile(f"F1 Manager 26 Save Data {GAME.database}.db"):
             c=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
-            race=GAME.Sanitise(c.execute("SELECT Race FROM Player").fetchall())
+            race=c.execute("SELECT Race FROM Player").fetchall()
             if len(race)==0:
                 valid=0
             else:
-                race=int(race[0])
+                race=int(GAME.Sanitise(race[0]))
                 if race<0:
                     valid=0
                 else:
