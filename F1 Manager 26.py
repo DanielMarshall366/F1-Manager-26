@@ -2827,8 +2827,6 @@ class Game:
                         tyrePace=0.1
                         T=0.5
                     speed=GAME.racePace[index]
-                    if GAME.time[index]>20 and GAME.teams[index]!=GAME.team:
-                        speed=round(speed*1.6)
                     speed+=T+tyrePace
                     speed=speed*(100-GAME.damage[index])/100
                     speed+=(GAME.tyreAggression[index]*10)
@@ -2853,11 +2851,15 @@ class Game:
                         speed=round(speed/4)
                     if GAME.replay==4 and GAME.tyre[index]!="Wet" and GAME.tyre[index]!="Intermediate" and GAME.water>=1:
                         speed=round(speed/2)
-                    distance+=speed
+
                     #Fastest Lap
                     if speed>GAME.fastest[1] and (x==0 or GAME.time[index]>=0.9) and GAME.water<=GAME.fastest[2]:
                         GAME.fastest=[index,speed,GAME.water]
                         GAME.AddToLog(f"{GAME.drivers[index]} has set the fastest lap of the race so far.")
+                    
+                    if GAME.time[index]>20 and GAME.teams[index]!=GAME.team:
+                        speed=round(speed*1.6)
+                    distance+=speed
                 if GAME.fuel[index]<=0:
                     #Run out of fuel
                     GAME.AddToLog(GAME.drivers[index]+" has run out of fuel.")
@@ -2930,13 +2932,13 @@ class Game:
                                         expectedWear=1000
                                     else:
                                         expectedWear=round(75-(wear*tyreAge/pitWindowLength))
-                                    if GAME.tyreRemaining[index]>expectedWear+10:
+                                    if GAME.tyreRemaining[index]>expectedWear+25:
                                         aggression=5
-                                    elif GAME.tyreRemaining[index]>expectedWear+5:
+                                    elif GAME.tyreRemaining[index]>expectedWear+10:
                                         aggression=4
-                                    elif GAME.tyreRemaining[index]>expectedWear-5:
-                                        aggression=3
                                     elif GAME.tyreRemaining[index]>expectedWear-10:
+                                        aggression=3
+                                    elif GAME.tyreRemaining[index]>expectedWear-25:
                                         aggression=2
                                     else:
                                         aggression=1
@@ -11948,7 +11950,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Select Save File","Calendar","Standings",
         "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Aston Martin Upgrade","Haas Upgrade","Audi Upgrade",
         "Alpine Upgrade","Cadillac Upgrade","Data Background","United Kingdom Flag","United States of America Flag","Brazil Flag","Italy Flag","Japan Flag","Germany Flag",
-        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Missing Required Files"]
+        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Austria Flag","Missing Required Files"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
