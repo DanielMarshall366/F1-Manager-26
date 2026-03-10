@@ -12016,14 +12016,13 @@ sponsors=["HP","Oracle","Petronas","Aramco","BWT","MoneyGram","Visa & Cash App",
 sponsorLogos=[]
 sponsorSuits=[]
 for x in range(len(sponsors)):
-    if sponsors[x]=="Visa & Cash App":
+    path = os.path.join(os.path.dirname(__file__), "Suits", (sponsors[x]+" Suit.png"))
+    if os.path.isfile(path):
+        sponsorSuits.append(tk.PhotoImage(file=path))
+    elif sponsors[x]=="Mastercard" or sponsors[x]=="Petronas" or sponsors[x]=="Oracle" or sponsors[x]=="HP" or sponsors[x]=="Atlassian" or sponsors[x]=="Visa & Cash App":
         sponsorSuits.append(0)
     else:
-        path = os.path.join(os.path.dirname(__file__), "Suits", (sponsors[x]+" Suit.png"))
-        if os.path.isfile(path):
-            sponsorSuits.append(tk.PhotoImage(file=path))
-        else:
-            missingFiles=1
+        missingFiles=1
     path = os.path.join(os.path.dirname(__file__), "Logos", (sponsors[x]+" Logo.png"))
     if os.path.isfile(path):
         sponsorLogos.append(tk.PhotoImage(file=path))
@@ -12082,6 +12081,8 @@ try:
     imageOnCanvas = canvas.create_image(0, 0, anchor=tk.NW, image=images[0])
 except:
     pass
+if not os.path.isfile("F1 Manager 26 Driver Data.json"):
+    missingFiles=1
 if missingFiles==1:
     if images[Images.index("Missing Required Files")]==0:
         canvas.delete('all')
