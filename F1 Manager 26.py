@@ -5660,6 +5660,33 @@ class Game:
                                         cursor.execute('''UPDATE Teams SET Position=? WHERE Name=?''',(position+1, ahead,))
                                         if position!=1:
                                             aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Position=?''',(position-1,)).fetchall()[0]))
+            if GAME.race==1:
+                with sqlite3.connect(GAME.database) as c:
+                    zeroPoints=[]
+                    f=c.execute("SELECT Name FROM Teams").fetchall()
+                    for team in f:
+                        team=GAME.Sanitise(team)
+                        if int(GAME.Sanitise(c.execute("SELECT Points FROM Teams WHERE Name=?",(team,)).fetchall()[0]))==0:
+                            zeroPoints.append(team)
+                    for x in range(len(zeroPoints)):
+                        found=0
+                        pos=0
+                        for index in GAME.positions:
+                            if found==0:
+                                team=GAME.teams[index]
+                                if team in zeroPoints:
+                                    found=1
+                                    position=len(f)-len(zeroPoints)+1
+                                    c.execute("UPDATE Teams SET Position=? WHERE Name=?",(position,team,))
+                                    zeroPoints.remove(team)
+                            if found==0 and pos==0:
+                                pos=len(f)-len(zeroPoints)+1
+                    if found==0:
+                        for x in range(len(f)):
+                            team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(x+1,)).fetchall()[0])
+                            if team in zeroPoints:
+                                c.execute("UPDATE Teams SET Position=? WHERE Name=?",(pos,team,))
+                                pos+=1
             #Development
             with sqlite3.connect(GAME.database) as conn:
                 cursor = conn.cursor()
@@ -7179,7 +7206,7 @@ class Game:
             else:
                 if length*1.5>=GAME.laps-3:
                     standardStrategy=1
-                elif length2>=GAME.laps:
+                elif length>=GAME.laps:
                     standardStrategy=1.5
                 else:
                     standardStrategy=2
