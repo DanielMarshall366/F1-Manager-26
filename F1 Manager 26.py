@@ -11802,7 +11802,7 @@ class Game:
         with sqlite3.connect(GAME.database) as F1:
                 F1.execute("DELETE FROM Calendar")
                 if GAME.season==2026:
-                    GAME.races=24
+                    GAME.races=22
                     calendar=["Albert Park","Shanghai","Suzuka","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
                               "Spa","Hungaroring","Zandvoort","Monza","Madrid","Baku","Marina Bay","Austin","Mexico City","Interlagos",
                               "Las Vegas","Qatar","Abu Dhabi"]
