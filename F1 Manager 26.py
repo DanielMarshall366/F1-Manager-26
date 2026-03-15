@@ -52,7 +52,7 @@ class Game:
         self.ranking=11
         self.season=2026
         self.race=-1
-        self.races=24
+        self.races=22
         self.drivers=[]
         self.teams=[]
         self.cars=[]
@@ -11803,7 +11803,7 @@ class Game:
                 F1.execute("DELETE FROM Calendar")
                 if GAME.season==2026:
                     GAME.races=24
-                    calendar=["Albert Park","Shanghai","Suzuka","Sakhir","Jeddah","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
+                    calendar=["Albert Park","Shanghai","Suzuka","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
                               "Spa","Hungaroring","Zandvoort","Monza","Madrid","Baku","Marina Bay","Austin","Mexico City","Interlagos",
                               "Las Vegas","Qatar","Abu Dhabi"]
                 else:
