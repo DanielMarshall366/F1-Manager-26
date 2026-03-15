@@ -9806,10 +9806,11 @@ class Game:
                         if attribute==1:
                             #Role
                             GAME.roleOptions=[GAME.car1,GAME.car2]
-                            if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Age<17",(GAME.options[GAME.displayedName],)).fetchall())==0:
-                                GAME.roleOptions.append("Reserve")
-                            else:
-                                GAME.roleOptions.append("Junior")
+                            if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Role='Reserve'",(GAME.options[GAME.displayedName],)).fetchall())==0:
+                                if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Age<17",(GAME.options[GAME.displayedName],)).fetchall())==0:
+                                    GAME.roleOptions.append("Reserve")
+                                else:
+                                    GAME.roleOptions.append("Junior")
                             if GAME.scouting=="Driver" or GAME.scouting=="Junior Driver":
                                 if modify=="+":
                                     looped=0
@@ -10124,7 +10125,7 @@ class Game:
                 #Renew
                 with sqlite3.connect(GAME.database) as c:
                     if GAME.role=="1" or GAME.role=="2" or GAME.role=="Reserve" or GAME.role=="Junior":
-                        if GAME.role=="Reserve" or GAME.role=="Junior" and GAME.team=="Racing Bulls" and len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())>0:
+                        if (GAME.role=="Reserve" or GAME.role=="Junior") and GAME.team=="Racing Bulls" and len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())>0:
                             team="Red Bull"
                         else:
                             team=GAME.team
@@ -10136,34 +10137,6 @@ class Game:
                     if os.path.isfile(path):
                         winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                 GAME.Menu()
-        if GAME.screen=="Junior & Reserve Drivers":
-            if event.x>=1000 and event.x<=1200 and event.y>=730 and event.y<=780:
-                #Renew
-                GAME.options=[]
-                with sqlite3.connect(GAME.database) as c:
-                    if len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Reserve' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Reserve')",(GAME.team,GAME.season,GAME.team,)).fetchall())<2:
-                        f=c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team=?",(GAME.team,)).fetchall() 
-                        for x in range(len(f)):
-                            GAME.options.append(GAME.Sanitise(f[x]))
-                    if len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Junior' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Junior')",(GAME.team,GAME.season,GAME.team,)).fetchall())<3:
-                        f=c.execute("SELECT Name FROM Drivers WHERE Role='Junior' AND Team=? AND ContractEnd=?",(GAME.team,GAME.season,)).fetchall() 
-                        for x in range(len(f)):
-                            GAME.options.append(GAME.Sanitise(f[x]))
-                    if GAME.team=="Racing Bulls":
-                        if len(c.execute("SELECT Name FROM Drivers WHERE (Team='Red Bull' AND Role='Reserve' AND ContractEnd>?) OR (NewTeam='Red Bull' AND NewRole='Reserve')",(GAME.season,)).fetchall())<2:
-                            f=c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team='Red Bull' AND ContractEnd=?",(GAME.season,)).fetchall()
-                            for x in range(len(f)):
-                                GAME.options.append(GAME.Sanitise(f[x]))
-                        if len(c.execute("SELECT Name FROM Drivers WHERE (Team='Red Bull' AND Role='Junior' AND ContractEnd>?) OR (NewTeam='Red Bull' AND NewRole='Junior')",(GAME.season,)).fetchall())<3:
-                            f=c.execute("SELECT Name FROM Drivers WHERE Role='Junior' AND Team='Red Bull' AND ContractEnd=?",(GAME.season,)).fetchall()
-                            for x in range(len(f)):
-                                GAME.options.append(GAME.Sanitise(f[x]))
-                if len(GAME.options)>0:
-                    GAME.displayed=0
-                    GAME.SelectRenewal()
-            elif event.x>=1220 and event.x<=1420 and event.y>=730 and event.y<=780:
-                #Promote
-                print("")
         elif GAME.screen=="New Tyres":
             tyre=0
             if event.x>=5 and event.x<=220 and event.y>=110 and event.y<=320:
