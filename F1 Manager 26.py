@@ -200,6 +200,7 @@ class Game:
         self.loaded=0
         self.battery=[]
         self.fastest=[-1,0,10]
+        self.startingPositions=[]
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -2098,9 +2099,9 @@ class Game:
                         rating=highest
                         promoted=1
                 if promoted==0:
-                    c.execute('''SELECT Name FROM Drivers WHERE (Team=? AND Role="Junior") OR (NewTeam=? AND NewRole="Junior")''',(team,team,))
-                    if len(c.fetchall())<3:
+                    if len(c.execute('''SELECT Name FROM Drivers WHERE (Team=? AND Role="Junior") OR (NewTeam=? AND NewRole="Junior")''',(team,team,)).fetchall())<3:
                         gap="Junior"
+                    if gap=="Junior":
                         GAME.scouting="Junior Driver"
                         drivers=GAME.DriverSuitability(team)
                         GAME.scouting=0
@@ -6969,6 +6970,7 @@ class Game:
                 GAME.positions.append(highestIndex)
             #Q1
             f=c.execute("SELECT Name FROM Teams").fetchall()
+        GAME.startingPositions=GAME.positions.copy()
         eliminations=len(f)-5
         delay=0
         if len(GAME.drivers)>10+eliminations:
@@ -8906,7 +8908,46 @@ class Game:
                 GAME.RaceResults()
         elif GAME.screen=="Race Results":
             if event.x>=1230 and event.x<=1430 and event.y>=5 and event.y<=55:
-                GAME.SaveRace()
+                #Driver Of The Day
+                GAME.ChangeScreen("Driver Of The Day")
+                best=[0,-1]
+                for x in range(len(GAME.positions)):
+                    index=GAME.positions[x]
+                    gained=GAME.startingPositions.index(index)-x
+                    if gained>best[1]:
+                        best=[gained,index]
+                driver=GAME.drivers[best[1]]
+                GAME.DisplayDriver(driver,520,500)
+                team=GAME.teams[best[1]]
+                if team=="McLaren":
+                    colour="#FFA100"
+                elif team=="Mercedes":
+                    colour="#1AE2CE"
+                elif team=="Red Bull":
+                    colour="#2400B2"
+                elif "Aston Martin" in team:
+                    colour="#49C18D"
+                elif "Alpine" in team:
+                    colour="#FF58FF"
+                elif "Williams" in team:
+                    colour="#5196FF"
+                elif "Ferrari" in team:
+                    colour="#EE1818"
+                elif "Renault" in team:
+                    colour="yellow"
+                elif "Audi" in team:
+                    colour="#AFB8C1"
+                elif "Haas" in team:
+                    colour="#D70000"
+                elif "Cadillac" in team:
+                    colour="#E6E6E6"
+                else:
+                    colour="white"
+                canvas.create_text(550, 270, text=driver, fill=colour, font=("Arial", 40), anchor="nw")
+                canvas.create_text(580, 330, text=f"P{GAME.startingPositions.index(best[1])+1}>P{GAME.positions.index(best[1])+1}", fill=colour, font=("Arial", 40), anchor="nw")
+                GAME.Button("Next",1230, 730)
+        elif GAME.screen=="Driver Of The Day":
+            GAME.SaveRace()
         elif GAME.screen=="Board Room":
             if event.x>=400 and event.x<=600 and event.y>=510 and event.y<=560:
                 #Standings
@@ -11945,7 +11986,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Select Save File","Calendar","Standings",
         "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Aston Martin Upgrade","Haas Upgrade","Audi Upgrade",
         "Alpine Upgrade","Cadillac Upgrade","Data Background","United Kingdom Flag","United States of America Flag","Brazil Flag","Italy Flag","Japan Flag","Germany Flag",
-        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Austria Flag","Missing Required Files"]
+        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Austria Flag","Missing Required Files","Driver Of The Day"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
