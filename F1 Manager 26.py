@@ -8012,7 +8012,7 @@ class Game:
                     message="bringing back the old ERS system."
             elif regulation=="Fastest Lap Point":
                 if state==0:
-                    message="bring back the fastest lap point for more interesting race."
+                    message="bring back the fastest lap point for more interesting races."
                 elif state==1:
                     message="removing the fastest lap point for simpler racing."
         GAME.ChangeScreen("Rule Vote")
@@ -8910,27 +8910,39 @@ class Game:
             if event.x>=1230 and event.x<=1430 and event.y>=5 and event.y<=55:
                 #Driver Of The Day
                 GAME.ChangeScreen("Driver Of The Day")
-                if random.randint(1,5)<4:
-                    best=[-1,0]
-                    for x in range(10):
-                        if len(GAME.positions)>x:
-                            index=GAME.positions[x]
-                            gained=GAME.startingPositions.index(index)-x
-                            if gained>best[0]:
-                                best=[gained,index]
+                message=0
+                winner=GAME.drivers[GAME.positions[0]]
+                with sqlite3.connect(GAME.database) as c:
+                    wins=int(GAME.Sanitise(c.execute("SELECT Wins FROM Drivers WHERE Name=?",(winner,)).fetchall()[0]))+1
+                if wins==1 or wins%10==0:
+                    driver=winner
+                    team=GAME.teams[GAME.positions[0]]
+                    if wins==1:
+                        message="First Win!"
+                    else:
+                        message=f"{wins}th Win!"
                 else:
-                    best=[0,0,-1]
-                    for x in range(3):
-                        index=GAME.positions[x]
-                        team=GAME.teams[index]
-                        with sqlite3.connect(GAME.database) as c:
-                            position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
-                        gained=GAME.startingPositions.index(index)-x
-                        if position>best[0] or (position==best[0] and gained>best[2]):
-                            best=[position,index,gained]
-                driver=GAME.drivers[best[1]]
+                    if random.randint(1,5)<4:
+                        best=[-1,0]
+                        for x in range(10):
+                            if len(GAME.positions)>x:
+                                index=GAME.positions[x]
+                                gained=GAME.startingPositions.index(index)-x
+                                if gained>best[0]:
+                                    best=[gained,index]
+                    else:
+                        best=[0,0,-1]
+                        for x in range(3):
+                            index=GAME.positions[x]
+                            team=GAME.teams[index]
+                            with sqlite3.connect(GAME.database) as c:
+                                position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
+                            gained=GAME.startingPositions.index(index)-x
+                            if position>best[0] or (position==best[0] and gained>best[2]):
+                                best=[position,index,gained]
+                    driver=GAME.drivers[best[1]]
+                    team=GAME.teams[best[1]]
                 GAME.DisplayDriver(driver,520,500)
-                team=GAME.teams[best[1]]
                 if team=="McLaren":
                     colour="#FFA100"
                 elif team=="Mercedes":
@@ -8956,7 +8968,9 @@ class Game:
                 else:
                     colour="white"
                 canvas.create_text(550, 270, text=driver, fill=colour, font=("Arial", 40), anchor="nw")
-                canvas.create_text(600, 330, text=f"P{GAME.startingPositions.index(best[1])+1}>P{GAME.positions.index(best[1])+1}", fill=colour, font=("Arial", 40), anchor="nw")
+                if message==0:
+                    message=f"P{GAME.startingPositions.index(best[1])+1}>P{GAME.positions.index(best[1])+1}"
+                canvas.create_text(600, 330, text=message, fill=colour, font=("Arial", 40), anchor="nw")
                 root.after(5000, lambda: GAME.SaveRace())
         elif GAME.screen=="Board Room":
             if event.x>=400 and event.x<=600 and event.y>=510 and event.y<=560:
