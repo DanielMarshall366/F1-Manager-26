@@ -201,6 +201,7 @@ class Game:
         self.battery=[]
         self.fastest=[-1,0,10]
         self.startingPositions=[]
+        self.homeWin=0
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -5440,6 +5441,7 @@ class Game:
     def Podium(self):
         GAME.ChangeScreen("Podium")
         GAME.Button("Results",1230,5)
+        GAME.homeWin=0
         for i in range(3):
             index=GAME.positions[i]
             driver=GAME.drivers[index]
@@ -5459,6 +5461,7 @@ class Game:
                                 if len(c.execute("SELECT Country FROM Teams WHERE Country=? AND Name=?",(GAME.raceCountry,team,)).fetchall())>0:
                                     country=1
                             if country==1:
+                                GAME.homeWin=1
                                 reputation=int(GAME.Sanitise(c.execute("SELECT Reputation FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
                                 reputation+=15
                                 if reputation>100:
@@ -5554,8 +5557,6 @@ class Game:
     def SaveRace(self):
         if os.path.isfile(GAME.database):
             GAME.actions=3
-            if GAME.music==1:
-                GAME.StopMusic()
             #Injuries
             if len(GAME.injured)>0:
                 for x in range(len(GAME.injured)):
@@ -5897,6 +5898,8 @@ class Game:
                         if dragReduction<70:
                             dragReduction+=1
                             c.execute("UPDATE Cars SET DragReduction=? WHERE Team=?",(dragReduction,team,))
+            if GAME.music==1:
+                GAME.StopMusic()
             GAME.drivers.clear()
             GAME.SaveScreen()
         else:
@@ -8914,15 +8917,20 @@ class Game:
                 winner=GAME.drivers[GAME.positions[0]]
                 with sqlite3.connect(GAME.database) as c:
                     wins=int(GAME.Sanitise(c.execute("SELECT Wins FROM Drivers WHERE Name=?",(winner,)).fetchall()[0]))+1
-                if wins==1 or wins%10==0:
+                if GAME.homeWin==1:
                     driver=winner
                     team=GAME.teams[GAME.positions[0]]
                     if wins==1:
-                        message="First Win!"
+                        message="Home Win"
+                elif wins==1 or wins%10==0:
+                    driver=winner
+                    team=GAME.teams[GAME.positions[0]]
+                    if wins==1:
+                        message="First Win"
                     else:
-                        message=f"{wins}th Win!"
+                        message=f"{wins}th Win"
                 else:
-                    if random.randint(1,5)<4:
+                    if random.randint(1,2)==1:
                         best=[-1,0]
                         for x in range(10):
                             if len(GAME.positions)>x:
@@ -8938,7 +8946,7 @@ class Game:
                             with sqlite3.connect(GAME.database) as c:
                                 position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
                             gained=GAME.startingPositions.index(index)-x
-                            if position>best[0] or (position==best[0] and gained>best[2]):
+                            if position>best[0] or (position==best[0] and gained>best[2]+2):
                                 best=[position,index,gained]
                     driver=GAME.drivers[best[1]]
                     team=GAME.teams[best[1]]
