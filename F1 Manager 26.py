@@ -6970,7 +6970,6 @@ class Game:
                 GAME.positions.append(highestIndex)
             #Q1
             f=c.execute("SELECT Name FROM Teams").fetchall()
-        GAME.startingPositions=GAME.positions.copy()
         eliminations=len(f)-5
         delay=0
         if len(GAME.drivers)>10+eliminations:
@@ -7080,6 +7079,7 @@ class Game:
                         canvas.create_text(150, y, text=f"taking a new engine, they will be starting the race in {place}{suffix}.", fill="white", font=("Arial", 30), anchor="nw")
         root.after(5000, lambda: GAME.RacePreparation())
     def RacePreparation(self):
+        GAME.startingPositions=GAME.positions.copy()
         #Soft
         GAME.tyrePace.append(random.randint(17,20))
         #Medium
@@ -8910,12 +8910,24 @@ class Game:
             if event.x>=1230 and event.x<=1430 and event.y>=5 and event.y<=55:
                 #Driver Of The Day
                 GAME.ChangeScreen("Driver Of The Day")
-                best=[0,-1]
-                for x in range(len(GAME.positions)):
-                    index=GAME.positions[x]
-                    gained=GAME.startingPositions.index(index)-x
-                    if gained>best[1]:
-                        best=[gained,index]
+                if random.randint(1,5)<4:
+                    best=[-1,0]
+                    for x in range(10):
+                        if len(GAME.positions)>x:
+                            index=GAME.positions[x]
+                            gained=GAME.startingPositions.index(index)-x
+                            if gained>best[0]:
+                                best=[gained,index]
+                else:
+                    best=[0,0,-1]
+                    for x in range(3):
+                        index=GAME.positions[x]
+                        team=GAME.teams[index]
+                        with sqlite3.connect(GAME.database) as c:
+                            position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
+                        gained=GAME.startingPositions.index(index)-x
+                        if position>best[0] or (position==best[0] and gained>best[2]):
+                            best=[position,index,gained]
                 driver=GAME.drivers[best[1]]
                 GAME.DisplayDriver(driver,520,500)
                 team=GAME.teams[best[1]]
@@ -8944,10 +8956,8 @@ class Game:
                 else:
                     colour="white"
                 canvas.create_text(550, 270, text=driver, fill=colour, font=("Arial", 40), anchor="nw")
-                canvas.create_text(580, 330, text=f"P{GAME.startingPositions.index(best[1])+1}>P{GAME.positions.index(best[1])+1}", fill=colour, font=("Arial", 40), anchor="nw")
-                GAME.Button("Next",1230, 730)
-        elif GAME.screen=="Driver Of The Day":
-            GAME.SaveRace()
+                canvas.create_text(600, 330, text=f"P{GAME.startingPositions.index(best[1])+1}>P{GAME.positions.index(best[1])+1}", fill=colour, font=("Arial", 40), anchor="nw")
+                root.after(5000, lambda: GAME.SaveRace())
         elif GAME.screen=="Board Room":
             if event.x>=400 and event.x<=600 and event.y>=510 and event.y<=560:
                 #Standings
