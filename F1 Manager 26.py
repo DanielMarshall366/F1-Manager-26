@@ -366,7 +366,7 @@ class Game:
         #Cars
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("McLaren", "Mercedes", 60, 60, 60, 60, 45, 60, 1, 100, 1, 100, 1, 4, 11)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Ferrari", "Ferrari", 70, 80, 80, 80, 60, 62, 1, 100, 1, 100, 1, 2, 15)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Red Bull", "Red Bull", 62, 58, 58, 58, 35, 62, 1, 100, 1, 100, 1, 3, 15)''')
+        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Red Bull", "Red Bull", 68, 62, 62, 62, 35, 62, 1, 100, 1, 100, 1, 3, 15)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Mercedes", "Mercedes", 85, 80, 80, 80, 60, 55, 1, 100, 1, 100, 1, 1, 15)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Aston Martin", "Honda", 30, 30, 30, 30, 25, 34, 1, 100, 1, 100, 1, 7, 14)''')
         c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Alpine", "Mercedes", 47, 47, 47, 47, 33, 38, 1, 100, 1, 100, 1, 6, 12)''')
@@ -5120,7 +5120,7 @@ class Game:
                                 probability=20
                             else:
                                 probability=30
-                            if random.randint(1,probability)<=2:
+                            if random.randint(1,probability)<=2 or (GAME.season==2026 and GAME.teams[driverID]=="Ferrari"):
                                 #Successful overtake
                                 if x==1:
                                     message=(driver+" overtook "+ahead+" for the lead!")
@@ -7862,23 +7862,23 @@ class Game:
             f=c.execute("SELECT Name FROM Teams WHERE Name!='GAME.team'").fetchall()
             for x in range(len(f)):
                 team=GAME.Sanitise(f[x])
-                amount=len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Reserve' AND NewTeam='0' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Reserve'",(team,GAME.season,team,)).fetchall())
+                amount=len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Reserve' AND NewTeam='0' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Reserve')",(team,GAME.season,team,)).fetchall())
                 if amount<2:
                     reserves=c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve' AND ContractEnd=?",(team,GAME.season,)).fetchall()
                     for y in range(2-amount):
                         if len(reserves)>0:
                             reserve=random.choice(reserves)
                             reserve=GAME.Sanitise(reserve)
-                            c.execute("UPDATE Drivers SET NewTeam=?, NewRole='Reserve', ContractEnd=?",(team,GAME.season+1,))
+                            c.execute("UPDATE Drivers SET NewTeam=?, NewRole='Reserve', ContractEnd=? WHERE Name=?",(team,GAME.season+1,junior))
                 #Juniors
-                amount=len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Junior' AND NewTeam='0' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Junior'",(team,GAME.season,team,)).fetchall())
+                amount=len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Junior' AND NewTeam='0' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Junior')",(team,GAME.season,team,)).fetchall())
                 if amount<3:
                     juniors=c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Junior' AND ContractEnd=?",(team,GAME.season,)).fetchall()
                     for y in range(3-amount):
                         if len(juniors)>0:
-                            reserve=random.choice(juniors)
-                            reserve=GAME.Sanitise(juniors)
-                            c.execute("UPDATE Drivers SET NewTeam=?, NewRole='Junior', ContractEnd=?",(team,GAME.season+1,))
+                            junior=random.choice(juniors)
+                            junior=GAME.Sanitise(juniors)
+                            c.execute("UPDATE Drivers SET NewTeam=?, NewRole='Junior', ContractEnd=? WHERE Name=?",(team,GAME.season+1,junior,))
                             
             #Drivers
             f=c.execute("SELECT Name FROM Drivers WHERE Pace<0 AND Condition!='Dead' AND Legend=0 AND Team!=? AND NewTeam!=?",(GAME.team,GAME.team,)).fetchall()
@@ -11894,6 +11894,8 @@ class Game:
                         finale="Suzuka"
                     else:
                         finale="Interlagos"
+                    if GAME.season==2027:
+                        GAME.races=24
                     if GAME.races==18:
                         GAME.races+=random.randint(-1,2)
                     elif GAME.races==17:
