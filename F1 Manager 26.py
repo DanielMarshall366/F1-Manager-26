@@ -7849,6 +7849,28 @@ class Game:
     def Update(self):
         drivers=[]
         with sqlite3.connect(GAME.database) as c:
+            #Reserves
+            f=c.execute("SELECT Name FROM Teams WHERE Name!='GAME.team'").fetchall()
+            for x in range(len(f)):
+                team=GAME.Sanitise(f[x])
+                amount=len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Reserve' AND NewTeam='0' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Reserve'",(team,GAME.season,team,)).fetchall())
+                if amount<2:
+                    reserves=c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve' AND ContractEnd=?",(team,GAME.season,)).fetchall()
+                    for y in range(2-amount):
+                        if len(reserves)>0:
+                            reserve=random.choice(reserves)
+                            reserve=GAME.Sanitise(reserve)
+                            c.execute("UPDATE Drivers SET NewTeam=?, NewRole='Reserve', ContractEnd=?",(team,GAME.season+1,))
+                #Juniors
+                amount=len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Junior' AND NewTeam='0' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Junior'",(team,GAME.season,team,)).fetchall())
+                if amount<3:
+                    juniors=c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Junior' AND ContractEnd=?",(team,GAME.season,)).fetchall()
+                    for y in range(3-amount):
+                        if len(juniors)>0:
+                            reserve=random.choice(juniors)
+                            reserve=GAME.Sanitise(juniors)
+                            c.execute("UPDATE Drivers SET NewTeam=?, NewRole='Junior', ContractEnd=?",(team,GAME.season+1,))
+                            
             #Drivers
             f=c.execute("SELECT Name FROM Drivers WHERE Pace<0 AND Condition!='Dead' AND Legend=0 AND Team!=? AND NewTeam!=?",(GAME.team,GAME.team,)).fetchall()
             if len(f)>0:
@@ -7873,7 +7895,7 @@ class Game:
                             role=GAME.Sanitise(c.execute("SELECT NewRole FROM Drivers WHERE Name=?",(name,)).fetchall()[0])
                             if role=="0":
                                 role=GAME.Sanitise(c.execute("SELECT Role FROM Drivers WHERE Name=?",(name,)).fetchall()[0])
-                            if role=="Reserve" or role=="Junior" or len(c.execute("SELECT Name FROM Drivers WHERE Name!=? AND Team=? AND ((Role=? AND NewTeam='0' AND ContractEnd>?) OR (NewTeam=? AND NewRole=?))",(name,team,role,GAME.season,team,role,)).fetchall())==0:
+                            if role=="Reserve" or role=="Junior" or len(c.execute("SELECT Name FROM Drivers WHERE Name!=? AND Team=? AND ((Role=? AND NewTeam='0' AND ContractEnd>?) OR (NewTeam=? AND (NewRole=? OR Role=?)))",(name,team,role,GAME.season,team,role,role,)).fetchall())==0:
                                 c.execute("UPDATE Drivers SET Team=?, Role=?, Salary=? WHERE Name=?",(team,role,salary,name,))
                             else:
                                 c.execute("UPDATE Drivers SET Team='Free Agent', Role='Free Agent', ContractEnd=0 WHERE Name=?",(name,))
@@ -8917,16 +8939,13 @@ class Game:
                 winner=GAME.drivers[GAME.positions[0]]
                 with sqlite3.connect(GAME.database) as c:
                     wins=int(GAME.Sanitise(c.execute("SELECT Wins FROM Drivers WHERE Name=?",(winner,)).fetchall()[0]))+1
-                if GAME.homeWin==1:
-                    driver=winner
-                    team=GAME.teams[GAME.positions[0]]
-                    if wins==1:
-                        message="Home Win"
-                elif wins==1 or wins%10==0:
+                if GAME.homeWin==1 or wins==1 or wins%10==0:
                     driver=winner
                     team=GAME.teams[GAME.positions[0]]
                     if wins==1:
                         message="First Win"
+                    elif GAME.homeWin==1:
+                        message="Home Win"
                     else:
                         message=f"{wins}th Win"
                 else:
@@ -8946,7 +8965,7 @@ class Game:
                             with sqlite3.connect(GAME.database) as c:
                                 position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
                             gained=GAME.startingPositions.index(index)-x
-                            if position>best[0] or (position==best[0] and gained>best[2]+2):
+                            if position>best[0]+1 or (position==best[0] and gained>best[2]+2):
                                 best=[position,index,gained]
                     driver=GAME.drivers[best[1]]
                     team=GAME.teams[best[1]]
