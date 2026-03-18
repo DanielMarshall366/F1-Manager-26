@@ -1438,10 +1438,19 @@ class Game:
                     message.append("PRESS CONFERENCE! You are holding a press conference as Team Principal of "+GAME.team)
                     message.append("It's time to announce to the world what engine")
                     message.append(f"{GAME.team} will be using in the {GAME.season+1} season.")
+                    best=[0,0]
+                    engines=c.execute("SELECT Name FROM Engines").fetchall()
+                    for engine in engines:
+                        engine=GAME.Sanitise(engine)
+                        score=int(GAME.Sanitise(c.execute("SELECT Power FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*5
+                        score+=int(GAME.Sanitise(c.execute("SELECT Reliability FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*2
+                        score+=int(GAME.Sanitise(c.execute("SELECT Battery FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*3
+                        if score>best[1]:
+                            best=[engine,score]
                     GAME.options=["No Change"]
                     if len(c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(GAME.team,)).fetchall())==0 and regulationChange==1:
                         GAME.options.append(GAME.team)
-                    c.execute('''SELECT Name FROM Engines WHERE ((Name!="Red Bull" AND Name!=? AND Name!='Honda' AND Manufacturer!=?) OR Manufacturer="None") AND Power>0''',(GAME.engine,GAME.team))
+                    c.execute('''SELECT Name FROM Engines WHERE ((Name!="Red Bull" AND Name!=? AND Name!='Honda' AND Name!=? AND Manufacturer!=?) OR Manufacturer="None") AND Power>0''',(GAME.engine,best[0],GAME.team))
                     engines=c.fetchall()
                     for x in range(len(engines)):
                         engine=GAME.Sanitise(engines[x])
