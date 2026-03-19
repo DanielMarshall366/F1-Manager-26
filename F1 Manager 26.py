@@ -345,8 +345,8 @@ class Game:
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Gaetan Jego", "Williams", "Race Engineer 2", 76, 1000000, 85, "France", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Steven Petrik", "Audi", "Race Engineer 1", 80, 1000000, 85, "Switzerland", 0, 0, 0))
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Jose Manuel Lopez", "Audi", "Race Engineer 2", 80, 1000000, 85, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("John Howard", "Cadillac", "Race Engineer 1", 84, 1500000, 70, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Carlo Pasetti", "Cadillac", "Race Engineer 2", 84, 1500000, 70, "Italy", 0, 0, 0))
+        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("John Howard", "Cadillac", "Race Engineer 2", 84, 1500000, 70, "United Kingdom", 0, 0, 0))
+        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Carlo Pasetti", "Cadillac", "Race Engineer 1", 84, 1500000, 70, "Italy", 0, 0, 0))
         
         #Regulations
         c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Double Points On Last Race", 0)''')
@@ -9536,7 +9536,7 @@ class Game:
                     f=c.execute("SELECT Name FROM Drivers WHERE (Role='Reserve' OR Role='Junior') AND Team=?",(GAME.team,)).fetchall()
                     if len(f)==0 and GAME.team=="Racing Bulls":
                         f=c.execute("SELECT Name FROM Drivers WHERE (Role='Reserve' OR Role='Junior') AND Team='Red Bull'").fetchall()
-                if len(f)>0:
+                if len(f)>0 or GAME.team=="Ferrari" or GAME.team=="Red Bull":
                     GAME.ChangeScreen("Junior & Reserve Drivers")
                     GAME.Button("Back",5,730)
                     GAME.Button("Other Contracts",600,730)
@@ -9567,6 +9567,11 @@ class Game:
                             for x in range(len(f)):
                                 drivers.append(GAME.Sanitise(f[x]))
                                 roles.append("Racing Bulls Driver")
+                        if GAME.team=="Ferrari":
+                            f=c.execute("SELECT Name FROM Drivers WHERE Team='Haas'").fetchall()
+                            for x in range(len(f)):
+                                drivers.append(GAME.Sanitise(f[x]))
+                                roles.append("Haas Driver")
                     if len(drivers)>0:
                         for x in range(len(drivers)):
                             driver=drivers[x]
@@ -9701,6 +9706,14 @@ class Game:
                     if len(f)>0:
                         for x in range(len(f)):
                             if len(c.execute("SELECT Name FROM Drivers WHERE NewTeam='Red Bull' AND (NewRole='1' OR NewRole='2')").fetchall())<2:
+                                GAME.options.append(GAME.Sanitise(f[x]))
+                                GAME.roles.append("Reserve")
+                    #Haas
+                    if GAME.team=="Ferrari":
+                        f=c.execute("SELECT Name FROM Drivers WHERE Team='Haas' AND (Role='1' OR Role='2') AND NewTeam='0'").fetchall()
+                    if len(f)>0:
+                        for x in range(len(f)):
+                            if len(c.execute("SELECT Name FROM Drivers WHERE NewTeam='Ferrari' AND (NewRole='1' OR NewRole='2')").fetchall())<2:
                                 GAME.options.append(GAME.Sanitise(f[x]))
                                 GAME.roles.append("Reserve")
                 if len(GAME.options)>0:
