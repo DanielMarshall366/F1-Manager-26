@@ -1073,12 +1073,21 @@ class Game:
         F1.commit()
         F1.close()
     def PressConference(self,objective):
+        F1=sqlite3.connect(GAME.database)
+        c=F1.cursor()
+        c.execute("UPDATE Player SET Actions=1")
+        message=[]
+        retirement=0
+        if GAME.team!="Aston Martin" and GAME.season==2026 and GAME.race==3:
+            #Jonathan Wheatley - Aston Martin
+            GAME.ChangeScreen("Aston Martin Press Conference")
+            c.execute("UPDATE Teams SET TeamPrincipal='Jonathan Wheatley' WHERE Name='Aston Martin'")
+            c.execute("UPDATE TeamPrincipals SET Team='Aston Martin' WHERE Name='Jonathan Wheatley'")
+            c.execute("DELETE FROM TeamPrincipals WHERE Name='Adrian Newey'")
+            c.execute("UPDATE Teams SET TeamPrincipal='Mattia Binotto' WHERE Name='Audi'")
+            c.execute("INSERT into TeamPrincipals (Name, Team) VALUES ('Mattia Binotto', 'Audi')")
+        else:
             GAME.ChangeScreen("Press Conference")
-            F1=sqlite3.connect(GAME.database)
-            c=F1.cursor()
-            c.execute("UPDATE Player SET Actions=1")
-            message=[]
-            retirement=0
             if objective=="Upgrade":
                 team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(random.randint(2,3),)).fetchall()[0])
             else:
@@ -1523,8 +1532,8 @@ class Game:
                             canvas.create_image(1400, 730, anchor=tk.NW, image=logo)
                 F1.commit()
                 F1.close()
-            for x in range(len(message)):
-                canvas.create_text(80, 240+(x*30), text=message[x], fill="black", font=("Arial", 20), anchor="nw")
+        for x in range(len(message)):
+            canvas.create_text(80, 240+(x*30), text=message[x], fill="black", font=("Arial", 20), anchor="nw")
     def NextEngine(self):
         GAME.screen="Next Engine"
         GAME.Button("Name Selector",150,450)
@@ -4840,10 +4849,15 @@ class Game:
                 Y=0
             else:
                 Y=200
+            fullTitle=f"{driver} {team}"
+            if len(fullTitle)>35:
+                fullTitle=f"{driver} "
+                for y in range(5):
+                    fullTitle+=team[y]
             if x<9:
-                canvas.create_text(10, (x*24)+Y, text=f"{x+1}.{driver} {team}", fill=colour, font=("Arial", 15), anchor="nw")
+                canvas.create_text(10, (x*24)+Y, text=f"{x+1}. {fullTitle}", fill=colour, font=("Arial", 15), anchor="nw")
             else:
-                canvas.create_text(5, (x*24)+Y, text=f"{x+1}.{driver} {team}", fill=colour, font=("Arial", 15), anchor="nw")
+                canvas.create_text(5, (x*24)+Y, text=f"{x+1}.{fullTitle}", fill=colour, font=("Arial", 15), anchor="nw")
             if GAME.safety<3:
                 if x==0:
                     if GAME.replay==9:
@@ -7869,7 +7883,7 @@ class Game:
                         if len(reserves)>0:
                             reserve=random.choice(reserves)
                             reserve=GAME.Sanitise(reserve)
-                            c.execute("UPDATE Drivers SET NewTeam=?, NewRole='Reserve', ContractEnd=? WHERE Name=?",(team,GAME.season+1,junior))
+                            c.execute("UPDATE Drivers SET NewTeam=?, NewRole='Reserve', ContractEnd=? WHERE Name=?",(team,GAME.season+1,reserve))
                 #Juniors
                 amount=len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Junior' AND NewTeam='0' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Junior')",(team,GAME.season,team,)).fetchall())
                 if amount<3:
