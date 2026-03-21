@@ -8452,7 +8452,12 @@ class Game:
             screen="Calendar"
         elif screen=="Upgrade":
             if f"{GAME.team} Upgrade" in Images:
-                screen=f"{GAME.team} Upgrade"
+                with sqlite3.connect(GAME.database) as c:
+                    race=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.race,)).fetchall()[0])
+                if f"{race} {GAME.team} Upgrade" in Images:
+                    screen=f"{race} {GAME.team} Upgrade"
+                else:
+                    screen=f"{GAME.team} Upgrade"
         elif screen=="Car Data" or screen=="Team Data" or screen=="Achievements" or screen=="Team Management":
             screen="Data Background"
         elif screen not in Images:
@@ -12075,7 +12080,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Select Save File","Calendar","Standings",
         "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Aston Martin Upgrade","Haas Upgrade","Audi Upgrade",
         "Alpine Upgrade","Cadillac Upgrade","Data Background","United Kingdom Flag","United States of America Flag","Brazil Flag","Italy Flag","Japan Flag","Germany Flag",
-        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Austria Flag","Missing Required Files","Driver Of The Day"]
+        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Austria Flag","Missing Required Files","Driver Of The Day","Suzuka Racing Bulls Upgrade"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
