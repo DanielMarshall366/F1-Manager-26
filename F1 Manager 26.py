@@ -202,28 +202,44 @@ class Game:
         self.fastest=[-1,0,10]
         self.startingPositions=[]
         self.homeWin=0
+        self.startYear=2026
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         #Teams
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("McLaren", "McLaren", "McLaren", 1, 0, 50000000, 1500000, "Andrea Stella", "United Kingdom", 80, "Mastercard", 1, 0)''')
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Ferrari", "Ferrari", "Ferrari", 2, 0, 55000000, 2000000, "Fred Vasseur", "Italy", 90, "HP", 4, 0)''')
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Red Bull", "Red Bull", "Red Bull", 3, 0, 40000000, 1400000, "Laurent Mekies", "Austria", 65, "Oracle", 3, 0)''')
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Mercedes", "Mercedes", "Mercedes", 4, 0, 45000000, 1500000, "Toto Wolff", "Germany", 70, "Petronas", 2, 0)''')
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Aston Martin", "Aston Martin", "Aston Martin", 5, 0, 70000000, 2200000, "Adrian Newey", "United Kingdom", 70, "Aramco", 7, 0)''')
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Alpine", "Alpine", "Alpine", 6, 0, 18000000, 1100000, "Flavio Briatore", "France", 50, "BWT", 10, 0)''')
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Haas", "Haas", "Haas", 7, 0, 15000000, 1000000, "Ayao Komatsu", "United States of America", 55, "Gazoo Racing", 8, 0)''')
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Racing Bulls", "Racing Bulls", "Racing Bulls", 8, 0, 15000000, 1000000, "Alan Permane", "Austria", 35, "Visa & Cash App", 6, 0)''')
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Williams", "Williams", "Williams", 9, 0, 15000000, 1000000, "James Vowles", "United Kingdom", 85, "Atlassian", 5, 0)''')
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Audi", "Audi", "Audi", 10, 0, 50000000, 2000000, "Jonathan Wheatley", "Germany", 75, "Revolut", 9, 0)''')
-        c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Cadillac", "Cadillac", "Cadillac", 11, 0, 32000000, 1400000, "Graeme Lowdon", "United States of America", 40, 0, 0, 0,))
+        if GAME.startYear==2026:
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("McLaren", "McLaren", "McLaren", 1, 0, 50000000, 1500000, "Andrea Stella", "United Kingdom", 80, "Mastercard", 1, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Ferrari", "Ferrari", "Ferrari", 2, 0, 55000000, 2000000, "Fred Vasseur", "Italy", 90, "HP", 4, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Red Bull", "Red Bull", "Red Bull", 3, 0, 40000000, 1400000, "Laurent Mekies", "Austria", 65, "Oracle", 3, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Mercedes", "Mercedes", "Mercedes", 4, 0, 45000000, 1500000, "Toto Wolff", "Germany", 70, "Petronas", 2, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Aston Martin", "Aston Martin", "Aston Martin", 5, 0, 70000000, 2200000, "Adrian Newey", "United Kingdom", 70, "Aramco", 7, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Alpine", "Alpine", "Alpine", 6, 0, 18000000, 1100000, "Flavio Briatore", "France", 50, "BWT", 10, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Haas", "Haas", "Haas", 7, 0, 15000000, 1000000, "Ayao Komatsu", "United States of America", 55, "Gazoo Racing", 8, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Racing Bulls", "Racing Bulls", "Racing Bulls", 8, 0, 15000000, 1000000, "Alan Permane", "Austria", 35, "Visa & Cash App", 6, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Williams", "Williams", "Williams", 9, 0, 15000000, 1000000, "James Vowles", "United Kingdom", 85, "Atlassian", 5, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Audi", "Audi", "Audi", 10, 0, 50000000, 2000000, "Jonathan Wheatley", "Germany", 75, "Revolut", 9, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Cadillac", "Cadillac", "Cadillac", 11, 0, 32000000, 1400000, "Graeme Lowdon", "United States of America", 40, 0, 0, 0,))
+        else:
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Ferrari", "Marlboro Ferrari", "Ferrari", 1, 0, 55000000, 2000000, "Stefano Domenicali", "Italy", 90, "Marlboro", 1, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("McLaren", "Vodafone McLaren", "McLaren", 2, 0, 50000000, 1500000, "Ron Dennis", "United Kingdom", 80, "Vodafone", 2, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("BMW Sauber", "BMW", "BMW Sauber", 3, 0, 40000000, 1500000, "Mario Theissen", "Switzerland", 65, "Petronas", 3, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Renault", "Renault", "Renault", 4, 0, 18000000, 1500000, "Flavio Briatore", "France", 50, "ING", 4, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Toyota", "Toyota", "Toyota", 5, 0, 15000000, 1000000, "Tadashi Yamashina", "Japan", 55, "Panasonic", 5, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Toro Rosso", "Toro Rosso", "Toro Rosso", 6, 0, 15000000, 1000000, "Franz Tost", "Italy", 35, "0", 6, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Red Bull", "Red Bull", "Red Bull", 7, 0, 40000000, 1400000, "Christian Horner", "Austria", 65, "0", 7, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Williams", "Williams", "Williams", 8, 0, 15000000, 1000000, "Frank Williams", "United Kingdom", 85, "AT&T", 8, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Brawn GP", "Brawn GP", "Brawn GP", 9, 0, 8000000, 900000, "Ross Brawn", "United Kingdom", 55, "Virgin", 9, 0)''')
+            c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Force India", "Force India", "Force India", 10, 0, 13000000, 1000000, "Vijay Mallya", "India", 55, "Kingfisher", 10, 0)''')
 
         #Drivers
         path = "F1 Manager 26 Driver Data.json"
         with open(path, "r") as file:
             jsonData = json.load(file)
-        data = jsonData["Drivers"]["Standard"]
+        if GAME.startYear==2026:
+            data=jsonData["Drivers"]["Standard"]
+        else:
+            data=jsonData["Drivers"]["2009"]
         for driver in data:
             c.execute("""
                 INSERT INTO Drivers (Name, Appearance, Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend) 
@@ -293,23 +309,71 @@ class Game:
                 driver['Tier']
             ))
 
-        if GAME.team!="Mercedes":
+        if GAME.startYear==2009:
+            data=jsonData["Drivers"]["Standard"]
+            for driver in data:
+                if len(c.execute("SELECT Name FROM Drivers WHERE Name=?",(driver['Name'],)).fetchall())==0:
+                    c.execute("""
+                        INSERT INTO Drivers (Name, Appearance, Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        driver['Name'],
+                        0,
+                        "Free Agent",
+                        "Free Agent",
+                        driver['Country'],
+                        0,
+                        0,
+                        0,
+                        'Well',
+                        round(driver['Rating']/10),
+                        round(driver['Overtaking']/10),
+                        round(driver['Defending']/10),
+                        round(driver['Pace']/10),
+                        0,
+                        driver['Control'],
+                        driver['Reaction'],
+                        driver['Calmness'],
+                        driver['Age']-17,
+                        driver['Marketability'],
+                        driver['DevelopmentRate']+random.randint(100,200),
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                    ))
+        elif GAME.team!="Mercedes":
             c.execute("UPDATE Drivers SET ContractEnd=2027 WHERE Name='George Russell'")
 
         #Staff
         
         #Technical Directors
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Peter Prodromou", "McLaren", "Technical Director", 90, 5000000, 95, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Loic Serra", "Ferrari", "Technical Director", 90, 5000000, 90, "France", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Pierre Wache", "Red Bull", "Technical Director", 92, 5000000, 65, "France", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("James Allison", "Mercedes", "Technical Director", 91, 5000000, 70, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Enrico Cardile", "Aston Martin", "Technical Director", 92, 5000000, 88, "Italy", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("David Sanchez", "Alpine", "Technical Director", 85, 3000000, 70, "France", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Andrea de Zordo", "Haas", "Technical Director", 87, 3000000, 85, "Italy", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Dan Fallows", "Racing Bulls", "Technical Director", 85, 2000000, 70, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Matt Harman", "Williams", "Technical Director", 85, 2500000, 85, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("James Key", "Audi", "Technical Director", 88, 3000000, 80, "United Kingdom", 0, 0, 0))
-        c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Pat Symonds", "Cadillac", "Technical Director", 92, 3000000, 80, "United Kingdom", 0, 0, 0))
+        if GAME.startYear==2026:
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Peter Prodromou", "McLaren", "Technical Director", 90, 5000000, 95, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Loic Serra", "Ferrari", "Technical Director", 90, 5000000, 90, "France", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Pierre Wache", "Red Bull", "Technical Director", 92, 5000000, 65, "France", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("James Allison", "Mercedes", "Technical Director", 91, 5000000, 70, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Enrico Cardile", "Aston Martin", "Technical Director", 92, 5000000, 88, "Italy", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("David Sanchez", "Alpine", "Technical Director", 85, 3000000, 70, "France", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Andrea de Zordo", "Haas", "Technical Director", 87, 3000000, 85, "Italy", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Dan Fallows", "Racing Bulls", "Technical Director", 85, 2000000, 70, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Matt Harman", "Williams", "Technical Director", 85, 2500000, 85, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("James Key", "Audi", "Technical Director", 88, 3000000, 80, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Pat Symonds", "Cadillac", "Technical Director", 92, 3000000, 80, "United Kingdom", 0, 0, 0))
+        else:
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Aldo Costa", "Ferrari", "Technical Director", 92, 3000000, 0, "Italy", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Paddy Lowe", "McLaren", "Technical Director", 92, 3000000, 0, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Willy Rampf", "BMW Sauber", "Technical Director", 90, 3000000, 0, "Germany", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Bob Bell", "Renault", "Technical Director", 88, 3000000, 0, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Noritoshi Arai", "Toyota", "Technical Director", 88, 3000000, 0, "Japan", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Giorgio Ascanelli", "Toro Rosso", "Technical Director", 85, 3000000, 0, "Italy", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Adrian Newey", "Red Bull", "Technical Director", 100, 10000000, 0, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Sam Michael", "Williams", "Technical Director", 88, 3000000, 0, "Australia", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("James Allison", "Brawn GP", "Technical Director", 91, 3000000, 70, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("James Key", "Force Indi", "Technical Director", 83, 3000000, 0, "United Kingdom", 0, 0, 0))
 
         #Sporting Directors
         c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Will Courtenay", "McLaren", "Sporting Director", 90, 4000000, 95, "United Kingdom", 0, 0, 0))
@@ -352,31 +416,51 @@ class Game:
         c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Double Points On Last Race", 0)''')
         c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Team Orders", 1)''')
         c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Reduced Winner Windtunnel Time", 0)''')
-        c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Old Points System", 0)''')
-        c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 1)''')
         c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Fastest Lap Point", 0)''')
+        if GAME.startYear==2026:
+            c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Old Points System", 0)''')
+            c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 1)''')
+        else:
+            c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Old Points System", 1)''')
+            c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 2)''')
 
         #Engines
-        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Mercedes", "Mercedes", 9, 8, 7, 1)''')
-        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ferrari", "Ferrari", 8, 10, 6, 1)''')
-        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Red Bull", "Red Bull", 7, 8, 7, 1)''')
-        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Audi", "Audi", 7, 8, 5, 1)''')
-        c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "Aston Martin", 4, 1, 3, 1)''')
+        if GAME.startYear==2026:
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Mercedes", "Mercedes", 9, 8, 7, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ferrari", "Ferrari", 8, 10, 6, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Red Bull", "Red Bull", 7, 8, 7, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Audi", "Audi", 7, 8, 5, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "Aston Martin", 4, 1, 3, 1)''')
+        else:
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Mercedes", "Mercedes", 9, 10, 5, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Renault", "Renault", 10, 7, 5, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ferrari", "Ferrari", 9, 9, 5, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Toyota", "Toyota", 8, 9, 5, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("BMW", "BMW Sauber", 8, 8, 5, 1)''')
 
         #Cars
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("McLaren", "Mercedes", 60, 60, 60, 60, 45, 60, 1, 100, 1, 100, 1, 4, 11)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Ferrari", "Ferrari", 70, 80, 80, 80, 60, 62, 1, 100, 1, 100, 1, 2, 15)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Red Bull", "Red Bull", 68, 62, 62, 62, 35, 62, 1, 100, 1, 100, 1, 3, 15)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Mercedes", "Mercedes", 85, 80, 80, 80, 60, 55, 1, 100, 1, 100, 1, 1, 15)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Aston Martin", "Honda", 30, 30, 30, 30, 25, 34, 1, 100, 1, 100, 1, 7, 14)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Alpine", "Mercedes", 47, 47, 47, 47, 33, 38, 1, 100, 1, 100, 1, 6, 12)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Haas", "Ferrari", 47, 47, 47, 47, 35, 40, 1, 100, 1, 100, 1, 5, 15)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Racing Bulls", "Red Bull", 50, 45, 45, 45, 40, 45, 1, 100, 1, 100, 1, 7, 20)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Williams", "Mercedes", 40, 40, 40, 40, 30, 35, 1, 100, 1, 100, 1, 8, 12)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Audi", "Audi", 48, 48, 48, 48, 33, 40, 1, 100, 1, 100, 1, 9, 15)''')
-        c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Cadillac", "Ferrari", 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 1, 10, 15)''')
-        if GAME.newTeam==1:
-            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES (?, ?, 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 0, 12, 12)''',(GAME.team, GAME.engine))
+        if GAME.startYear==2026:
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("McLaren", "Mercedes", 60, 60, 60, 60, 45, 60, 1, 100, 1, 100, 1, 4, 11)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Ferrari", "Ferrari", 70, 80, 80, 80, 60, 62, 1, 100, 1, 100, 1, 2, 15)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Red Bull", "Red Bull", 68, 62, 62, 62, 35, 62, 1, 100, 1, 100, 1, 3, 15)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Mercedes", "Mercedes", 85, 80, 80, 80, 60, 55, 1, 100, 1, 100, 1, 1, 15)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Aston Martin", "Honda", 30, 30, 30, 30, 25, 34, 1, 100, 1, 100, 1, 7, 14)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Alpine", "Mercedes", 47, 47, 47, 47, 33, 38, 1, 100, 1, 100, 1, 6, 12)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Haas", "Ferrari", 47, 47, 47, 47, 35, 40, 1, 100, 1, 100, 1, 5, 15)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Racing Bulls", "Red Bull", 50, 45, 45, 45, 40, 45, 1, 100, 1, 100, 1, 7, 20)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Williams", "Mercedes", 40, 40, 40, 40, 30, 35, 1, 100, 1, 100, 1, 8, 12)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Audi", "Audi", 48, 48, 48, 48, 33, 40, 1, 100, 1, 100, 1, 9, 15)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Cadillac", "Ferrari", 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 1, 10, 15)''')
+            if GAME.newTeam==1:
+                c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES (?, ?, 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 0, 12, 12)''',(GAME.team, GAME.engine))
+        else:
+            cars=["Brawn GP","Red Bull","McLaren","Ferrari","Toyota","BMW Sauber","Williams","Renault","Toro Rosso","Force India"]
+            engines=["Mercedes","Renault","Mercedes","Ferrari","Toyota","BMW","Toyota","Renault","Ferrari","Mercedes"]
+            counter=0
+            for x in range(13):
+                if x!=2 and x!=5 and x!=11:
+                    c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES (?, ?, ?, ?, ?, ?, 30, 30, 1, 100, 1, 100, 1, ?, 15)''',(cars[counter],engines[counter],80-(5*x),80-(5*x),80-(5*x),80-(5*x),counter+1,))
+                    counter+=1
 
         #Sponsors
         c.execute('''INSERT into Sponsors (Name, Team, Pay) VALUES ("HP", "Ferrari", 70000)''')
@@ -408,17 +492,28 @@ class Game:
         c.execute('''INSERT into Sponsors (Name, Team, Pay) VALUES ("Revolut", "Audi", 65000)''')
         c.execute('''INSERT into Sponsors (Name, Team, Pay) VALUES ("Malboro", "None", 80000)''')
         c.execute('''INSERT into Sponsors (Name, Team, Pay) VALUES ("West", "None", 68000)''')
-        c.execute("DELETE FROM Sponsors WHERE Name=?",(GAME.team,))
-        sponsor=0
-        if GAME.team=="Malboro Ferrari":
-            sponsor="Malboro"
-        elif GAME.team=="Vodafone McLaren":
-            sponsor="Vodafone"
-        elif GAME.team=="West McLaren":
-            sponsor="West"
-        if sponsor!=0:
-            c.execute("UPDATE Teams SET Sponsor=? WHERE Name=?",(sponsor,GAME.team,))
-            c.execute("UPDATE Sponsors SET Team=? WHERE Name=?",(GAME.team,sponsor,))
+        if GAME.startYear==2026:
+            c.execute("DELETE FROM Sponsors WHERE Name=?",(GAME.team,))
+            sponsor=0
+            if GAME.team=="Malboro Ferrari":
+                sponsor="Malboro"
+            elif GAME.team=="Vodafone McLaren":
+                sponsor="Vodafone"
+            elif GAME.team=="West McLaren":
+                sponsor="West"
+            if sponsor!=0:
+                c.execute("UPDATE Teams SET Sponsor=? WHERE Name=?",(sponsor,GAME.team,))
+                c.execute("UPDATE Sponsors SET Team=? WHERE Name=?",(GAME.team,sponsor,))
+        else:
+            teams=["Ferrari","McLaren","BMW Sauber","Renault","Toyota","Williams","Brawn GP","Force India"]
+            sponsors=["Marlboro","Vodafone","Petronas","ING","Panasonic","AT&T","Virgin","Kingfisher"]
+            for team in teams:
+                c.execute("UPDATE Sponsors SET Team='None' WHERE Team=?",(team,))
+                sponsor=sponsors[teams.index(team)]
+                if len(c.execute("SELECT Name FROM Sponsors WHERE Name=?",(sponsor,)).fetchall())==0:
+                    c.execute('''INSERT into Sponsors (Name, Team, Pay) VALUES (?, ?, 50000)''',(sponsor,team,))
+                else:
+                    c.execute("UPDATE Sponsors SET Team=? WHERE Name=?",(team,sponsor,))
 
         #Tracks
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Albert Park", "Australia", 5.278, 58, 50, 25, 30, "High", 40, 0, 0, 3)''')
@@ -452,7 +547,11 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Portimão", "Portugal", 4.653, 66, 60, 40, 18, "High", 50, 0, 0, 3)''')
         
         #Player
-        c.execute('''INSERT into Player (Name, Country, Team, newTeam, Season, Race, RegulationChange, Points, Wins, Championships, NextYearEngine, Actions, Financial, Management, Warnings, TyreWear, MovingTo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.name, GAME.country, GAME.team, GAME.newTeam, 2026, -1, 2029, 0, 0, 0, 0, 3, 5, 3, 0, 0, 0))
+        if GAME.startYear==2026:
+            regulationChange=2029
+        else:
+            regulationChange=2014
+        c.execute('''INSERT into Player (Name, Country, Team, newTeam, Season, Race, RegulationChange, Points, Wins, Championships, NextYearEngine, Actions, Financial, Management, Warnings, TyreWear, MovingTo, StartYear) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.name, GAME.country, GAME.team, GAME.newTeam, GAME.startYear, -1, regulationChange, 0, 0, 0, 0, 3, 5, 3, 0, 0, 0, GAME.startYear))
         
         #History
         c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2001, "Michael Schumacher", "Ferrari")''')
@@ -463,23 +562,24 @@ class Game:
         c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2006, "Fernando Alonso", "Renault")''')
         c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2007, "Kimi Raikkonen", "Ferrari")''')
         c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2008, "Lewis Hamilton", "Ferrari")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2009, "Jenson Button", "Brawn")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2010, "Sebastian Vettel", "Red Bull")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2011, "Sebastian Vettel", "Red Bull")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2012, "Sebastian Vettel", "Red Bull")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2013, "Sebastian Vettel", "Red Bull")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2014, "Lewis Hamilton", "Mercedes")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2015, "Lewis Hamilton", "Mercedes")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2016, "Nico Rosberg", "Mercedes")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2017, "Lewis Hamilton", "Mercedes")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2018, "Lewis Hamilton", "Mercedes")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2019, "Lewis Hamilton", "Mercedes")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2020, "Lewis Hamilton", "Mercedes")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2021, "Max Verstappen", "Mercedes")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2022, "Max Verstappen", "Red Bull")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2023, "Max Verstappen", "Red Bull")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2024, "Max Verstappen", "McLaren")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2025, "Lando Norris", "McLaren")''')
+        if GAME.startYear==2026:
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2009, "Jenson Button", "Brawn")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2010, "Sebastian Vettel", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2011, "Sebastian Vettel", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2012, "Sebastian Vettel", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2013, "Sebastian Vettel", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2014, "Lewis Hamilton", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2015, "Lewis Hamilton", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2016, "Nico Rosberg", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2017, "Lewis Hamilton", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2018, "Lewis Hamilton", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2019, "Lewis Hamilton", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2020, "Lewis Hamilton", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2021, "Max Verstappen", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2022, "Max Verstappen", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2023, "Max Verstappen", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2024, "Max Verstappen", "McLaren")''')
+            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2025, "Lando Norris", "McLaren")''')
 
         #Buyers
         c.execute('''INSERT into Buyers(Name, Country) VALUES("BMW", "Germany")''')
@@ -502,18 +602,30 @@ class Game:
         c.execute("DELETE FROM Buyers WHERE Name=?",(GAME.team,))
 
         #Team Principals
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Andrea Stella", "McLaren")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Fred Vasseur", "Ferrari")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Laurent Mekies", "Red Bull")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Toto Wolff", "Mercedes")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Adrian Newey", "Aston Martin")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Flavio Briatore", "Alpine")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Ayao Komatsu", "Haas")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Alan Permane", "Racing Bulls")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("James Vowles", "Williams")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Jonathan Wheatley", "Audi")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Graeme Lowdon", "Cadillac")''')
-        c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Christian Horner", "None")''')
+        if GAME.startYear==2026:
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Andrea Stella", "McLaren")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Fred Vasseur", "Ferrari")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Laurent Mekies", "Red Bull")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Toto Wolff", "Mercedes")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Adrian Newey", "Aston Martin")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Flavio Briatore", "Alpine")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Ayao Komatsu", "Haas")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Alan Permane", "Racing Bulls")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("James Vowles", "Williams")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Jonathan Wheatley", "Audi")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Graeme Lowdon", "Cadillac")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Christian Horner", "None")''')
+        else:
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Stefano Domenicali", "Ferrari")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Ron Dennis", "McLaren")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Mario Theissen", "BMW Sauber")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Flavio Briatore", "Renault")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Tadashi Yamashina", "Toyota")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Franz Tost", "Toro Rosso")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Christian Horner", "Red Bull")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Frank Williams", "Williams")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Ross Brawn", "Brawn GP")''')
+            c.execute('''INSERT into TeamPrincipals(Name, Team) VALUES("Indian Vijay Mallya", "Force India")''')
         c.execute("UPDATE TeamPrincipals SET Team='None' WHERE Team=?",(GAME.team,))
         F1.commit()
         F1.close()
@@ -1078,7 +1190,7 @@ class Game:
         c.execute("UPDATE Player SET Actions=1")
         message=[]
         retirement=0
-        if GAME.team!="Aston Martin" and GAME.season==2026 and GAME.race==3:
+        if GAME.team!="Aston Martin" and GAME.season==2026 and GAME.race==3 and False:
             #Jonathan Wheatley - Aston Martin
             GAME.ChangeScreen("Aston Martin Press Conference")
             c.execute("UPDATE Teams SET TeamPrincipal='Jonathan Wheatley' WHERE Name='Aston Martin'")
@@ -1412,7 +1524,9 @@ class Game:
                                         else:
                                             c.execute("UPDATE Engines SET Reliability=? WHERE Name=?",(stat,engine,))
                         root.after(10000, lambda: GAME.Menu())
-                    if team in steam:
+                    if team=="McLaren" and GAME.season<2026:
+                        appearance="Classic McLaren"
+                    elif team in steam:
                         appearance=team
                     else:
                         appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
@@ -1489,7 +1603,9 @@ class Game:
                         GAME.Button("Decline",350,550)
                         GAME.Button("Accept",890,550)
                         GAME.screen="Team Offer"
-                        if GAME.offer in steam:
+                        if GAME.offer=="McLaren" and GAME.season<2026:
+                            appearance="Classic McLaren"
+                        elif GAME.offer in steam:
                             appearance=GAME.offer
                         else:
                             appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.offer,)).fetchall()[0])
@@ -1515,7 +1631,9 @@ class Game:
                         GAME.displayed=0
                         GAME.Expectations()
                 c.execute('''UPDATE Teams SET PressConferences=? WHERE Name=?''',(pressConferenceNumber,GAME.team,))
-                if GAME.team in steam:
+                if GAME.team=="McLaren" and GAME.season<2026:
+                        appearance="Classic McLaren"
+                elif GAME.team in steam:
                     appearance=GAME.team
                 else:
                     appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
@@ -1606,7 +1724,9 @@ class Game:
             canvas.create_text(60, 470, text="Consequences:", fill="#D4D4D4", font=("Arial", 30), anchor="nw")
             for x in range(len(consequence)):
                 canvas.create_text(60, 520+(50*x), text=consequence[x], fill="#D4D4D4", font=("Arial", 30), anchor="nw")
-            if GAME.team in steam:
+            if GAME.team=="McLaren" and GAME.season<2026:
+                        appearance="Classic McLaren"
+            elif GAME.team in steam:
                 appearance=GAME.team
             else:
                 appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
@@ -1725,7 +1845,9 @@ class Game:
             text=f"${money}"
         canvas.create_text(1190, 700, text=text, fill="#DADADA", font=("Arial", 30), anchor="nw")
     def BoardRoomLogo(self):
-        if GAME.team in steam:
+        if GAME.team=="McLaren" and GAME.season<2026:
+            appearance="Classic McLaren"
+        elif GAME.team in steam:
             appearance=GAME.team
         else:
             with sqlite3.connect(GAME.database) as c:
@@ -7563,7 +7685,9 @@ class Game:
                 if x==0:
                     colour="#F5C939"
                     firstPoints=points
-                    if name in steam:
+                    if name=="McLaren" and GAME.season<2026:
+                        appearance="Classic McLaren"
+                    elif name in steam:
                         appearance=name
                     else:
                         appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(name,)).fetchall()[0])
@@ -7650,7 +7774,9 @@ class Game:
                      canvas.create_text(1285, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
                 else:
                     canvas.create_text(1280, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
-        if GAME.team in steam:
+        if GAME.team=="McLaren" and GAME.season<2026:
+            appearance="Classic McLaren"
+        elif GAME.team in steam:
             appearance=GAME.team
         else:
             appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
@@ -8302,6 +8428,8 @@ class Game:
                         Y=130*(x-6)
                     if team=="Create New Team":
                         appearance="0"
+                    elif team=="McLaren" and GAME.season<2026:
+                        appearance="Classic McLaren"
                     elif team in steam:
                         appearance=team
                     else:
@@ -8375,7 +8503,10 @@ class Game:
         canvas.create_text(880, 400, text=constructor, fill="black", font=("Arial", 60), anchor="nw")
         if constructor in steam:
             GAME.BackgroundColour()
-            appearance=constructor
+            if constructor=="McLaren" and GAME.season<2026:
+                appearance="Classic McLaren"
+            else:
+                appearance=constructor
         else:
             with sqlite3.connect(GAME.database) as c:
                 appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(constructor,)).fetchall()[0])
@@ -8451,13 +8582,16 @@ class Game:
         elif screen=="calendar":
             screen="Calendar"
         elif screen=="Upgrade":
-            if f"{GAME.team} Upgrade" in Images:
-                with sqlite3.connect(GAME.database) as c:
-                    race=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.race,)).fetchall()[0])
-                if f"{race} {GAME.team} Upgrade" in Images:
-                    screen=f"{race} {GAME.team} Upgrade"
-                else:
-                    screen=f"{GAME.team} Upgrade"
+            if GAME.season>2025:
+                if f"{GAME.team} Upgrade" in Images:
+                    with sqlite3.connect(GAME.database) as c:
+                        race=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.race,)).fetchall()[0])
+                    if f"{race} {GAME.team} Upgrade" in Images:
+                        screen=f"{race} {GAME.team} Upgrade"
+                    else:
+                        screen=f"{GAME.team} Upgrade"
+            elif f"2009 {GAME.team} Upgrade" in Images:
+                screen=f"2009 {GAME.team} Upgrade"
         elif screen=="Car Data" or screen=="Team Data" or screen=="Achievements" or screen=="Team Management":
             screen="Data Background"
         elif screen not in Images:
@@ -8480,6 +8614,8 @@ class Game:
     def OnClick(self, event):
         if GAME.screen=="Title Screen":
             GAME.replay=0
+            GAME.team=""
+            GAME.startYear=2026
             GAME.screen="Opening Menu"
             GAME.Button("New Game",500,575)
             GAME.Button("Load Game",735,575)
@@ -8491,12 +8627,13 @@ class Game:
             GAME.database="F1 Manager 26 Save Data 1.db"
         elif GAME.screen=="Opening Menu":
             if event.x>=500 and event.x<=700 and event.y>=575 and event.y<=625:
-                GAME.database=1
+                GAME.startYear=2026
                 GAME.StartNewGame()
             elif event.x>=735 and event.x<=935 and event.y>=575 and event.y<=625 and GAME.newGame==0:
                 GAME.SelectSave()
             elif event.x>=500 and event.x<=700 and event.y>=645 and event.y<=695:
                 GAME.legends=1
+                GAME.startYear=2026
                 GAME.StartNewGame()
             elif event.x>=735 and event.x<=935 and event.y>=645 and event.y<=695:
                 GAME.ChangeScreen("Replay Screen")
@@ -8505,6 +8642,7 @@ class Game:
                 GAME.Button("Spa 2000",320,520)
                 GAME.Button("Monaco 1984",320,645)
                 GAME.Button("Back",5,730)
+                GAME.Button("2009 Career",1235,730)
                 root.after(400, lambda: GAME.ReplayScreen())
             elif event.x>=1295 and event.x<=1345 and event.y>=710 and event.y<=760:
                 GAME.Settings()
@@ -8538,7 +8676,10 @@ class Game:
                 change=1
                 GAME.ChangeScreen("Get Country 2")
             if change==0 and GAME.country!="":
-                GAME.ChangeScreen("Choose a Team")
+                if GAME.startYear==2026:
+                    GAME.ChangeScreen("Choose a Team")
+                else:
+                    GAME.ChangeScreen("2009 Choose a Team")
         elif GAME.screen=="Get Country 2":
             change=0
             if event.x>=77 and event.x<=332 and event.y>=292 and event.y<=457:
@@ -8562,7 +8703,10 @@ class Game:
                 change=1
                 GAME.ChangeScreen("Get Country 1")
             if change==0 and GAME.country!="":
-                GAME.ChangeScreen("Choose a Team")
+                if GAME.startYear==2026:
+                    GAME.ChangeScreen("Choose a Team")
+                else:
+                    GAME.ChangeScreen("2009 Choose a Team")
         elif GAME.screen=="Choose a Team":
             if event.x>=100 and event.x<=400 and event.y>=160 and event.y<=320:
                 GAME.team="McLaren"
@@ -8634,7 +8778,7 @@ class Game:
                 GAME.TeamData()
         elif GAME.screen=="Welcome To Team":
             if event.x>=1237 and event.x<=1436 and event.y>=721 and event.y<=769:
-                if GAME.season==2026:
+                if GAME.season==2026 or GAME.season==2009:
                     GAME.race=0
                     with sqlite3.connect(GAME.database) as F1:
                         F1.execute("UPDATE Player SET Race=0")
@@ -9227,7 +9371,7 @@ class Game:
                 canvas.create_text(40, 10, text="Achievements", fill="white", font=("Arial", 100), anchor="nw")
                 canvas.create_text(40, 200, text=f"Name: {GAME.name}", fill="white", font=("Arial", 40), anchor="nw")
                 canvas.create_text(40, 280, text=f"Current Team: {GAME.team}", fill="white", font=("Arial", 40), anchor="nw")
-                canvas.create_text(40, 360, text=f"Seasons: {GAME.season-2025}", fill="white", font=("Arial", 40), anchor="nw")
+                canvas.create_text(40, 360, text=f"Seasons: {GAME.season-GAME.startYear}", fill="white", font=("Arial", 40), anchor="nw")
                 canvas.create_text(40, 440, text=f"Points: {points}", fill="white", font=("Arial", 40), anchor="nw")
                 if wins>0:
                     canvas.create_text(40, 520, text=f"Wins: {wins}", fill="white", font=("Arial", 40), anchor="nw")
@@ -9240,7 +9384,11 @@ class Game:
                 canvas.create_text(400, 135, text="Year", fill="black", font=("Arial", 20), anchor="nw")
                 canvas.create_text(470, 135, text="Driver", fill="black", font=("Arial", 20), anchor="nw")
                 canvas.create_text(750, 135, text="Constructor", fill="black", font=("Arial", 20), anchor="nw")
-                for x in range(25):
+                if GAME.season<2026:
+                    i=GAME.season-2001
+                else:
+                    i=25
+                for x in range(i):
                     year=GAME.season-25+x
                     with sqlite3.connect(GAME.database) as c:
                         driver=GAME.Sanitise(c.execute("SELECT Driver FROM History WHERE Year=?",(year,)).fetchall()[0])
@@ -9845,7 +9993,9 @@ class Game:
                             else:
                                 GAME.Button("Promote",800,660)
                             GAME.Button("Back",5,730)
-                            if GAME.team in steam:
+                            if GAME.team=="McLaren" and GAME.season<2026:
+                                appearance="Classic McLaren"
+                            elif GAME.team in steam:
                                 appearance=GAME.team
                             else:
                                 with sqlite3.connect(GAME.database) as c:
@@ -9904,7 +10054,9 @@ class Game:
                             GAME.ChangeScreen("Contract")
                             GAME.Button("Hire",800,660)
                             GAME.Button("Back",5,730)
-                            if GAME.team in steam:
+                            if GAME.team=="McLaren" and GAME.season<2026:
+                                appearance="Classic McLaren"
+                            elif GAME.team in steam:
                                 appearance=GAME.team
                             else:
                                 with sqlite3.connect(GAME.database) as c:
@@ -10383,6 +10535,9 @@ class Game:
                     GAME.replay=6
                 if GAME.replay!=0:
                     GAME.ReplayObjective()
+            elif event.x>=1235 and event.x<=1435 and event.y>=730 and event.y<=780:
+                GAME.startYear=2009
+                GAME.StartNewGame()
         elif GAME.screen=="Safety Car Menu":
             tyre=-1
             if event.y>=235 and event.y<=325:
@@ -10559,6 +10714,44 @@ class Game:
         elif GAME.screen=="Calendar":
             if event.x>=5 and event.x<=205 and event.y>=720 and event.y<=770:
                 GAME.Menu()
+        elif GAME.screen=="2009 Choose a Team":
+            if event.x>=90 and event.x<=495 and event.y>=200 and event.y<=330:
+                GAME.team="Ferrari"
+            elif event.x>=590 and event.x<=855 and event.y>=210 and event.y<=320:
+                GAME.team="McLaren"
+            elif event.x>=920 and event.x<=1395 and event.y>=235 and event.y<=300:
+                GAME.team="BMW Sauber"
+            elif event.x<=395 and event.y>=365 and event.y<=495:
+                GAME.team="Renault"
+            elif event.x>=445 and event.x<=690 and event.y>=385 and event.y<=460:
+                GAME.team="Toyota"
+            elif event.x>=755 and event.x<=1035 and event.y>=395 and event.y<=460:
+                GAME.team="Toro Rosso"
+            elif event.x>=1125 and event.x<=1385 and event.y>=385 and event.y<=490:
+                GAME.team="Red Bull"
+            elif event.x>=235 and event.x<=370 and event.y>=530 and event.y<=675:
+                GAME.team="Williams"
+            elif event.x>=540 and event.x<=895 and event.y>=575 and event.y<=630:
+                GAME.team="Brawn GP"
+            elif event.x>=980 and event.x<=1415 and event.y>=540 and event.y<=645:
+                GAME.team="Force India"
+            if GAME.team!="":
+                GAME.newTeam=0
+                GAME.BackgroundColour()
+                if os.path.isfile("F1 Manager 26 Driver Data.json") and os.path.isfile(GAME.database):
+                    GAME.FillDatabase()
+                    F1=sqlite3.connect(GAME.database)
+                    c=F1.cursor()
+                    c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
+                    c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="1"''',(GAME.team,))
+                    GAME.car1=GAME.Sanitise(c.fetchall()[0])
+                    c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="2"''',(GAME.team,))
+                    GAME.car2=GAME.Sanitise(c.fetchall()[0])
+                    F1.commit()
+                    F1.close()
+                    GAME.WelcomeToTeam()
+                else:
+                    GAME.ChangeScreen("Missing Required Files")
     def SaveScreen(self):
         if os.path.isfile(GAME.database):
             GAME.ChangeScreen("Save Screen")
@@ -10900,7 +11093,7 @@ class Game:
     def BackgroundColour(self):
         if GAME.team==0:
             root.configure(background="black")
-        elif GAME.team=="McLaren":
+        elif GAME.team=="McLaren" and GAME.season>2025:
             root.configure(background="#FFA100")
         elif GAME.team=="Red Bull":
             root.configure(background='#2400B2')
@@ -10920,13 +11113,16 @@ class Game:
             root.configure(background="yellow")
         elif "Audi" in GAME.team:
             root.configure(background='#AFB8C1')
-        elif GAME.team=="West McLaren" or GAME.team=="Vodafone McLaren":
+        elif GAME.team=="West McLaren" or GAME.team=="Vodafone McLaren" or GAME.team=="McLaren":
             root.configure(background='#DADADA')
+        elif GAME.team=="Brawn GP":
+            root.configure(background='#CDFF00')
         else:
             root.configure(background="black")
     def StartNewGame(self):
         GAME.drivers=[]
         GAME.database=1
+        GAME.season=GAME.startYear
         while True:
             database=f"F1 Manager 26 Save Data {GAME.database}.db"
             try:
@@ -10966,13 +11162,20 @@ class Game:
         c.execute('''CREATE TABLE Sponsors(Name str, Team str, Pay int)''')
         c.execute('''CREATE TABLE Calendar(ID int, Track str)''')
         c.execute('''CREATE TABLE Tracks(Name str, Country str, Length float, Laps int, Risk int, RainChance int, Temperature int, Corners str, Straights int, Sprint int, Street int, Overtakeability int)''')
-        c.execute('''CREATE TABLE Player(Name str, Country str, Team str, newTeam int, Season int, Race int, RegulationChange int, Points int, Wins int, Championships int, NextYearEngine str, Actions int, Financial int, Management int, Warnings int, TyreWear int, MovingTo str)''')
+        c.execute('''CREATE TABLE Player(Name str, Country str, Team str, newTeam int, Season int, Race int, RegulationChange int, Points int, Wins int, Championships int, NextYearEngine str, Actions int, Financial int, Management int, Warnings int, TyreWear int, MovingTo str, StartYear int)''')
         c.execute('''CREATE TABLE History(Year int, Driver str, Constructor str)''')
         c.execute('''CREATE TABLE Buyers(Name str, Country str)''')
         c.execute('''CREATE TABLE TeamPrincipals(Name str, Team str)''')
         c.commit()
         c.close()
-        GAME.ChangeScreen("Welcome screen")
+        if GAME.startYear==2026:
+            GAME.ChangeScreen("Welcome screen")
+        else:
+            GAME.ChangeScreen("Get Name")
+            GAME.name=GAME.Sanitise(simpledialog.askstring(" ", "Limit: 20 characters"))
+            valid=GAME.Validate(GAME.name)
+            if valid==1:
+                GAME.ChangeScreen("Get Country 1")
     def CreateTeam(self):
         GAME.ChangeScreen("Get Team Name")
         GAME.team=GAME.Sanitise(simpledialog.askstring(" ", "Limit: 20 characters"))
@@ -11139,7 +11342,9 @@ class Game:
         GAME.screen="Renewal"
         GAME.Button("Renew",800,660)
         GAME.Button("Back",5,730)
-        if GAME.team in steam:
+        if GAME.team=="McLaren" and GAME.season<2026:
+                        appearance="Classic McLaren"
+        elif GAME.team in steam:
             appearance=GAME.team
         else:
             with sqlite3.connect(GAME.database) as c:
@@ -11223,7 +11428,9 @@ class Game:
                         else:
                             canvas.create_text(400, 440, text="Post-Season", fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(400, 510, text=team, fill=colour, font=("Arial", 50), anchor="nw")
-                    if team in steam:
+                    if team=="McLaren" and GAME.season<2026:
+                        appearance="Classic McLaren"
+                    elif team in steam:
                         appearance=team
                     else:
                         appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
@@ -11303,12 +11510,12 @@ class Game:
                 elif team=="AlphaTauri" and GAME.replay>0:
                     team="Racing Bulls"
                 elif team=="McLaren":
-                    if GAME.replay==3 or GAME.replay==4:
+                    if GAME.replay==3 or GAME.replay==4 or GAME.season<2026:
                         team="Vodafone McLaren"
                     elif GAME.replay==5:
                         team="West McLaren"
                 elif team=="Ferrari":
-                    if GAME.replay==5 or GAME.replay==4:
+                    if GAME.replay==5 or GAME.replay==4 or GAME.season<2026:
                         team="Marlboro Ferrari"
             if team in steam:
                 if os.path.isfile(os.path.join(os.path.dirname(__file__), "Suits", (f"{team} Suit.png"))):
@@ -11340,8 +11547,8 @@ class Game:
             canvas.image=suit
             canvas.create_image(x, y, anchor=tk.NW, image=suit)
             if driver!="Sonny Hayes" and driver!="Joshua Pearce":
-                if driver=="Lewis Hamilton" and (GAME.replay==3 or GAME.replay==4):
-                    driver="Young Hamilton"
+                if f"Young {driver}" in driverHeads and (GAME.replay==3 or GAME.replay==4 or GAME.season<2026):
+                    driver=f"Young {driver}"
                 try:
                     X=xDif[index]
                     Y=yDif[index]
@@ -11391,7 +11598,9 @@ class Game:
         GAME.DisplayLogo()
         GAME.DisplayTeam(GAME.team)
     def DisplayLogo(self):
-        if GAME.team in steam:
+        if GAME.team=="McLaren" and GAME.season<2026:
+            appearance="Classic McLaren"
+        elif GAME.team in steam:
             appearance=GAME.team
         else:
             with sqlite3.connect(GAME.database) as c:
@@ -11421,7 +11630,15 @@ class Game:
             GAME.newTeams.append(team)
         F1.commit()
         F1.close()
-        screen=team+" Display"
+        if GAME.season<2026:
+            if f"2009 {team} Display" in Images:
+                screen=f"2009 {team} Display"
+            elif team=="McLaren":
+                screen=f"Vodafone McLaren Display"
+            else:
+                screen=f"{team} Display"
+        else:
+            screen=f"{team} Display"
         if screen not in Images:
             screen="Generic Display"
         GAME.ChangeScreen(screen)
@@ -11518,6 +11735,7 @@ class Game:
                 canvas.create_text(715, 280+(50*(x-round(len(f)/2))), text=(str(x+1)+". "+team), fill="white", font=("Arial", 30), anchor="nw")
         GAME.Button("Next",1200,695)
     def PreSeasonEvents(self):
+        buyer=0
         if GAME.actions>=2:
             F1=sqlite3.connect(GAME.database)
             c=F1.cursor()
@@ -11528,17 +11746,18 @@ class Game:
                 GAME.news.append("BREAKING NEWS! Cadillac are now producing their own General Motors engines.")
                 c.execute("UPDATE Cars SET Engine='General Motors' WHERE Team='Cadillac'")
             c.execute('''INSERT into TeamPrincipals (Name, Team) VALUES (?, "None")''',(GAME.GenerateName(),))
-            #Team Principal Replacement
-            f=c.execute("SELECT Name FROM Teams WHERE TeamPrincipal='None'").fetchall()
-            if len(f)>0:
-                for x in range(len(f)):
-                    team=GAME.Sanitise(f[x])
-                    name=GAME.Sanitise(random.choice(c.execute("SELECT Name FROM TeamPrincipals WHERE Team='None'").fetchall()))
-                    GAME.news.append(f"BREAKING NEWS! {name} is the new Team Principal of {team}.")
-                    c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(name,team,))
-                    c.execute("UPDATE TeamPrincipals SET Team=? WHERE Name=?",(team,name,))
-            buyer=0
-            if random.randint(1,4)>=2 and GAME.season!=2026:
+            if GAME.startYear==2026:
+                #Team Principal Replacement
+                f=c.execute("SELECT Name FROM Teams WHERE TeamPrincipal='None'").fetchall()
+                if len(f)>0:
+                    for x in range(len(f)):
+                        team=GAME.Sanitise(f[x])
+                        name=GAME.Sanitise(random.choice(c.execute("SELECT Name FROM TeamPrincipals WHERE Team='None'").fetchall()))
+                        GAME.news.append(f"BREAKING NEWS! {name} is the new Team Principal of {team}.")
+                        c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(name,team,))
+                        c.execute("UPDATE TeamPrincipals SET Team=? WHERE Name=?",(team,name,))
+                buyer=0
+                if random.randint(1,4)>=2 and GAME.season!=2026 and GAME.season>2010:
                     #Team Acquired
                     f=c.execute('''SELECT Name FROM Teams WHERE Name!="Ferrari" AND Name!="McLaren" AND Name!="Mercedes" AND Name!=? AND OriginalName!="Player"''',(GAME.team,)).fetchall()
                     team=random.choice(f)
@@ -11728,7 +11947,7 @@ class Game:
                         c.execute("UPDATE Engines SET Name='Ford' WHERE Name='Red Bull'")
                         c.execute("UPDATE Cars SET Engine='Ford' WHERE Engine='Red Bull'")
                         c.execute("UPDATE Cars SET Engine='Ford' WHERE Team=?",(name,))
-            if GAME.season!=2026:
+            if GAME.season!=2026 and GAME.season>2009:
                 #Sponsor Negotiation
                 f=c.execute("SELECT Name FROM Teams WHERE Sponsor='0' AND Name!=?",(GAME.team,)).fetchall()
                 teamsSigned=[]
@@ -11745,7 +11964,7 @@ class Game:
                         GAME.news.append(f"as their Title Sponsor for the {GAME.season} season.")
                         c.execute("UPDATE Teams SET Sponsor=? WHERE Name=?",(sponsor,team,))
                         c.execute("UPDATE Sponsors SET Team=? WHERE Name=?",(team,sponsor,))
-                if random.randint(1,2)==2:
+                if random.randint(1,2)==2 and GAME.startYear==2026:
                     team=GAME.Sanitise(random.choice(c.execute("SELECT Name FROM Teams WHERE Name!='McLaren' AND Name!='Ferrari' AND Name!='Red Bull' AND Name!='Mercedes' AND Name!='Aston Martin' AND Name!='Alpine' AND Name!='Haas' AND Name!='Racing Bulls' AND Name!='Williams' AND Name!='Audi' AND Name!=?",(GAME.team,)).fetchall()))
                     if team not in teamsSigned:
                         oldSponsor=GAME.Sanitise(c.execute("SELECT Sponsor FROM Teams WHERE Name=?",(team,)).fetchall()[0])
@@ -11912,6 +12131,10 @@ class Game:
                     calendar=["Albert Park","Shanghai","Suzuka","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
                               "Spa","Hungaroring","Zandvoort","Monza","Madrid","Baku","Marina Bay","Austin","Mexico City","Interlagos",
                               "Las Vegas","Qatar","Abu Dhabi"]
+                elif GAME.season==2009:
+                    GAME.races=17
+                    calendar=["Albert Park","Sepang","Shanghai","Sakhir","Catalunya","Monte Carlo","Instanbul Park","Silverstone","Nürburgring","Hungaroring",
+                              "Valencia","Spa","Monza","Marina Bay","Suzuka","Interlagos","Abu Dhabi"]
                 else:
                     if random.randint(1,3)==3:
                         opener="Sakhir"
@@ -12080,13 +12303,17 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Choose a Team 2008","Lewis Hamilton Victory","Felipe Massa Victory","Settings","Sponsor Review","Grey Screen","Box","Select Save File","Calendar","Standings",
         "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Aston Martin Upgrade","Haas Upgrade","Audi Upgrade",
         "Alpine Upgrade","Cadillac Upgrade","Data Background","United Kingdom Flag","United States of America Flag","Brazil Flag","Italy Flag","Japan Flag","Germany Flag",
-        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Austria Flag","Missing Required Files","Driver Of The Day","Suzuka Racing Bulls Upgrade"]
+        "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Austria Flag","Missing Required Files","Driver Of The Day","Suzuka Racing Bulls Upgrade","2009 Choose a Team",
+        "2009 Ferrari Upgrade","2009 Ferrari Display","2009 McLaren Upgrade","Vodafone McLaren Display","2009 BMW Sauber Upgrade","2009 BMW Sauber Display","2009 Renault Upgrade",
+        "2009 Renault Display","2009 Toyota Upgrade","2009 Toyota Display","2009 Toro Rosso Upgrade","2009 Toro Rosso Display","2009 Red Bull Upgrade","2009 Red Bull Display",
+        "2009 Williams Upgrade","2009 Williams Display","2009 Brawn GP Upgrade","Brawn GP Display","2009 Force India Upgrade"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
     if os.path.isfile(path):
         images.append(tk.PhotoImage(file=path))
     else:
+        print(Images[x])
         images.append(0)
         missingFiles=1
 driverHeads=["Max Verstappen","Lando Norris","Charles Leclerc","Oscar Piastri","Carlos Sainz","George Russell","Lewis Hamilton","Fernando Alonso","Pierre Gasly","Nico Hulkenberg",
@@ -12094,7 +12321,7 @@ driverHeads=["Max Verstappen","Lando Norris","Charles Leclerc","Oscar Piastri","
              "Franco Colapinto","Frederik Vesti","Jak Crawford","Victor Martins","Mick Schumacher","Valtteri Bottas","Zhou Guanyu","Antonio Giovinazzi","Arvid Lindblad","Pato Oward",
              "Ayumu Iwasa","Stoffel Vandoorne","Paul Aron","Ryo Hirakawa","Doriane Pin","Abbi Pulling","Juan Manuel Fangio","Michael Schumacher","Ayrton Senna","Alain Prost",
              "Jackie Stewart","Niki Lauda","Sergio Perez","Alex Dunne","Kevin Magnussen","Logan Sargeant","Sebastian Vettel","Daniel Ricciardo","Kimi Raikkonen","Jenson Button",
-             "Nigel Mansell","Nicholas Latifi","Mika Hakkinen","David Coulthard","Luke Browning","Leonardo Fornaroli","Rubens Barrichello","Jim Clark","Young Hamilton",
+             "Nigel Mansell","Nicholas Latifi","Mika Hakkinen","David Coulthard","Luke Browning","Leonardo Fornaroli","Rubens Barrichello","Jim Clark","Young Lewis Hamilton",
              "Felipe Massa","Heikki Kovalainen","Johnny Cecotto","Colton Herta","Freddie Slater","Kush Maini","Theo Pourchaire"]
 for x in range(3):
     driverHeads.append(f"Man {x+1}")
@@ -12166,7 +12393,7 @@ Buttons=["Next","Quit","Qualifying","Prepare for Race","Tyre Aggression","Fuel A
          "View Contracts","Scout Drivers","Scout Technical Directors","Scout Sporting Directors","Scout Race Engineers","Renew","Reserve & Junior Drivers","Other Contracts",
          "Promote","Propose Contract","Name Selector","Hire","Choose Driver","Choose Engine","Choose","Swap Drivers","End Season","Vote For","Vote Against","Start Season",
          "Length Selector","Stay","Move","Create","Accept","Decline","Team Management","Fired","Stay Out","Start Race","ERS Disabled","Banned","Hire Reserve","Canada 2011",
-         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay"]
+         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career"]
 buttons=[]
 for x in range(len(Buttons)):
     path = os.path.join(os.path.dirname(__file__), "Buttons", (Buttons[x]+" Button.png"))
