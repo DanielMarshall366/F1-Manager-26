@@ -5739,42 +5739,7 @@ class Game:
                     GAME.pointsScored.pop(index)
                     GAME.pointsScored.insert(index,points)
                 team=GAME.teams[index]
-                if team=="McLaren" and GAME.season>2025:
-                    colour="#FFA100"
-                elif team=="Mercedes":
-                    colour="#1AE2CE"
-                elif team=="Red Bull":
-                    colour="#2400B2"
-                elif "Aston Martin" in team:
-                    colour="#49C18D"
-                elif "Alpine" in team:
-                    colour="#FF58FF"
-                elif "Williams" in team:
-                    colour="#5196FF"
-                elif "Ferrari" in team:
-                    colour="#EE1818"
-                elif "Renault" in team:
-                    colour="yellow"
-                elif "Audi" in team:
-                    colour="#AFB8C1"
-                elif "Haas" in team:
-                    colour="#D70000"
-                elif "Cadillac" in team:
-                    colour="#E6E6E6"
-                elif "McLaren" in team:
-                    colour="#DADADA"
-                elif team=="Brawn GP":
-                    colour="#CDFF00"
-                elif team=="Toro Rosso":
-                    colour="#1F009A"
-                elif team=="Toyota":
-                    colour="#B40000"
-                elif team=="Force India":
-                    colour="#FF7800"
-                elif team=="Lotus":
-                    colour="#C8A028"
-                else:
-                    colour="white"
+                colour=GAME.TeamColour(team)
                 if x<9:
                     if x==0:
                         canvas.create_text(50, 5, text=GAME.track, fill=colour, font=("Arial", 50), anchor="nw")
@@ -9268,42 +9233,7 @@ class Game:
                     driver=GAME.drivers[best[1]]
                     team=GAME.teams[best[1]]
                 GAME.DisplayDriver(driver,520,500)
-                if team=="McLaren" and GAME.season>2025:
-                    colour="#FFA100"
-                elif team=="Mercedes":
-                    colour="#1AE2CE"
-                elif team=="Red Bull":
-                    colour="#2400B2"
-                elif "Aston Martin" in team:
-                    colour="#49C18D"
-                elif "Alpine" in team:
-                    colour="#FF58FF"
-                elif "Williams" in team:
-                    colour="#5196FF"
-                elif "Ferrari" in team:
-                    colour="#EE1818"
-                elif "Renault" in team:
-                    colour="yellow"
-                elif "Audi" in team:
-                    colour="#AFB8C1"
-                elif "Haas" in team:
-                    colour="#D70000"
-                elif "Cadillac" in team:
-                    colour="#E6E6E6"
-                elif "McLaren" in team:
-                    colour="#DADADA"
-                elif team=="Brawn GP":
-                    colour="#CDFF00"
-                elif team=="Toro Rosso":
-                    colour="#1F009A"
-                elif team=="Toyota":
-                    colour="#B40000"
-                elif team=="Force India":
-                    colour="#FF7800"
-                elif team=="Lotus":
-                    colour="#C8A028"
-                else:
-                    colour="white"
+                colour=GAME.TeamColour(team)
                 canvas.create_text(550, 270, text=driver, fill=colour, font=("Arial", 40), anchor="nw")
                 if message==0:
                     message=f"P{GAME.startingPositions.index(best[1])+1}>P{GAME.positions.index(best[1])+1}"
@@ -11228,41 +11158,58 @@ class Game:
         canvas.create_text(350, 10, text="Select Replacement", fill="black", font=("Arial", 50), anchor="nw")
         GAME.Button("Name Selector",250,100)
         canvas.create_text(350, 170, text=GAME.options[GAME.displayed], fill="black", font=("Arial", 40), anchor="nw")
+    def TeamColour(self,team):
+        if team=="McLaren" and GAME.season>2025:
+            colour="#FFA100"
+        elif team=="Mercedes":
+            colour="#1AE2CE"
+        elif team=="Red Bull":
+            colour="#2400B2"
+        elif "Aston Martin" in team:
+            colour="#49C18D"
+        elif "Alpine" in team:
+            colour="#FF58FF"
+        elif "Williams" in team:
+            colour="#5196FF"
+        elif "Ferrari" in team:
+            colour="#EE1818"
+        elif "Renault" in team:
+            colour="yellow"
+        elif "Audi" in team:
+            colour="#AFB8C1"
+        elif "Haas" in team:
+            colour="#D70000"
+        elif "Cadillac" in team:
+            colour="#E6E6E6"
+        elif "McLaren" in team:
+            colour="#DADADA"
+        elif team=="Brawn GP":
+            colour="#CDFF00"
+        elif team=="Toro Rosso":
+            colour="#1F009A"
+        elif team=="Toyota":
+            colour="#B40000"
+        elif team=="Force India":
+            colour="#FF7800"
+        elif team=="Lotus":
+            colour="#C8A028"
+        elif team=="HRT":
+            colour="#C80000"
+        elif team=="Virgin":
+            colour="#8C0014"
+        else:
+            colour="white"
+        return colour
     def BackgroundColour(self):
         if GAME.team==0:
             root.configure(background="black")
-        elif GAME.team=="McLaren" and GAME.season>2025:
-            root.configure(background="#FFA100")
-        elif GAME.team=="Red Bull":
-            root.configure(background='#2400B2')
-        elif "Aston Martin" in GAME.team:
-            root.configure(background="#49C18D")
-        elif "Alpine" in GAME.team:
-            root.configure(background='#FF58FF')
-        elif "Williams" in GAME.team:
-            root.configure(background="#5196FF")
         elif "Racing Bulls" in GAME.team or "Honda" in GAME.team:
             root.configure(background="White")
-        elif "Haas" in GAME.team:
-            root.configure(background="#D70000")
-        elif "Ferrari" in GAME.team:
-            root.configure(background="#EE1818")
-        elif "Renault" in GAME.team:
-            root.configure(background="yellow")
-        elif "Audi" in GAME.team:
-            root.configure(background='#AFB8C1')
-        elif "McLaren" in GAME.team:
-            root.configure(background='#DADADA')
-        elif GAME.team=="Brawn GP":
-            root.configure(background='#CDFF00')
-        elif GAME.team=="Toyota":
-            root.configure(background='#B40000')
-        elif GAME.team=="Force India":
-            root.configure(background='#FF7800')
-        elif GAME.team=="Lotus":
-            root.configure(background='#C8A028')
         else:
-            root.configure(background="black")
+            colour=GAME.TeamColour(GAME.team)
+            if colour=="white":
+                colour="black"
+            root.configure(background=colour)
     def StartNewGame(self):
         GAME.drivers=[]
         GAME.database=1
@@ -12532,7 +12479,8 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Austria Flag","Missing Required Files","Driver Of The Day","Suzuka Racing Bulls Upgrade","2009 Choose a Team",
         "2009 Ferrari Upgrade","2009 Ferrari Display","2009 McLaren Upgrade","Vodafone McLaren Display","2009 BMW Sauber Upgrade","2009 BMW Sauber Display","2009 Renault Upgrade",
         "2009 Renault Display","2009 Toyota Upgrade","2009 Toyota Display","2009 Toro Rosso Upgrade","2009 Toro Rosso Display","2009 Red Bull Upgrade","2009 Red Bull Display",
-        "2009 Williams Upgrade","2009 Williams Display","2009 Brawn GP Upgrade","Brawn GP Display","2009 Force India Upgrade"]
+        "2009 Williams Upgrade","2009 Williams Display","2009 Brawn GP Upgrade","Brawn GP Display","2009 Force India Upgrade","2009 Mercedes Upgrade","Suzuka Haas Upgrade",
+        "Virgin Upgrade","HRT Upgrade","Lotus Upgrade"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
