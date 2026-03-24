@@ -11191,12 +11191,14 @@ class Game:
             colour="#B40000"
         elif team=="Force India":
             colour="#FF7800"
-        elif team=="Lotus":
+        elif "Lotus" in team:
             colour="#C8A028"
         elif team=="HRT":
             colour="#C80000"
-        elif team=="Virgin":
+        elif team=="Virgin" or team=="Marussia":
             colour="#8C0014"
+        elif team=="Caterham":
+            colour="#006E3C"
         else:
             colour="white"
         return colour
@@ -11913,18 +11915,30 @@ class Game:
             elif GAME.season==2011:
                 GAME.drs=1
                 GAME.news.append("BREAKING NEWS! A new system called DRS has been introduced.")
+            elif GAME.season==2012:
+                F1.commit()
+                F1.close()
+                GAME.TeamAcquired("Virgin","Marussia")
+                GAME.TeamAcquired("Lotus","Caterham")
+                GAME.TeamAcquired("Renault","Lotus Renault")
+                F1=sqlite3.connect(GAME.database)
+                c=F1.cursor()
+                c.execute("UPDATE Teams SET Appearance='Marussia' WHERE Name='Marussia'")
+                c.execute("UPDATE Teams SET Appearance='Caterham' WHERE Name='Caterham'")
+                c.execute("UPDATE Teams SET Appearance='Lotus' WHERE Name='Lotus Renault'")
+                c.execute("UPDATE Cars SET Engine='Renault' WHERE Team='Caterham'")
             elif GAME.season==2026:
                 GAME.drs=0
+            #Team Principal Replacement
+            f=c.execute("SELECT Name FROM Teams WHERE TeamPrincipal='None'").fetchall()
+            if len(f)>0:
+                for x in range(len(f)):
+                    team=GAME.Sanitise(f[x])
+                    name=GAME.Sanitise(random.choice(c.execute("SELECT Name FROM TeamPrincipals WHERE Team='None'").fetchall()))
+                    GAME.news.append(f"BREAKING NEWS! {name} is the new Team Principal of {team}.")
+                    c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(name,team,))
+                    c.execute("UPDATE TeamPrincipals SET Team=? WHERE Name=?",(team,name,))
             if GAME.startYear==2026:
-                #Team Principal Replacement
-                f=c.execute("SELECT Name FROM Teams WHERE TeamPrincipal='None'").fetchall()
-                if len(f)>0:
-                    for x in range(len(f)):
-                        team=GAME.Sanitise(f[x])
-                        name=GAME.Sanitise(random.choice(c.execute("SELECT Name FROM TeamPrincipals WHERE Team='None'").fetchall()))
-                        GAME.news.append(f"BREAKING NEWS! {name} is the new Team Principal of {team}.")
-                        c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(name,team,))
-                        c.execute("UPDATE TeamPrincipals SET Team=? WHERE Name=?",(team,name,))
                 buyer=0
                 if random.randint(1,4)>=2 and GAME.season!=2026 and GAME.season>2010:
                     #Team Acquired
