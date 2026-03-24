@@ -3692,13 +3692,13 @@ class Game:
                                 break
                         GAME.positions.remove(driverIndex)
                         GAME.positions.insert(newPos,driverIndex)
-                    if GAME.replay==5:
+                    if GAME.replay==5 or GAME.season<2011:
                         if GAME.pitTyre[driverIndex]=="Medium":
                             if GAME.tyre[driverIndex]=="Hard":
                                 GAME.pitTyre[driverIndex]="Soft"
                             else:
                                 GAME.pitTyre[driverIndex]="Hard"
-                        elif GAME.pitTyre[driverIndex]=="Intermediate":
+                        elif GAME.pitTyre[driverIndex]=="Intermediate" and GAME.replay==5:
                             GAME.pitTyre[driverIndex]="Hard"
                     if GAME.tyre[driverIndex]!=GAME.pitTyre[driverIndex]:
                         GAME.tyre[driverIndex] = GAME.pitTyre[driverIndex]
@@ -4583,6 +4583,8 @@ class Game:
             for x in range(5):
                 if Tyres[x]=="Wet":
                     text=f"{GAME.expectedTyreLife[3]} Laps"
+                elif Tyres[x]=="Medium" and GAME.season<2011:
+                    text="Pirelli \U0001F512"
                 else:
                     text=f"{GAME.expectedTyreLife[x]} Laps"
                 canvas.create_text(100+(x*280), 560, text=text, fill="white", font=("Arial", 30), anchor="nw")
@@ -4644,10 +4646,12 @@ class Game:
                     GAME.tyreCompoundsUsed.insert(x,compounds)
                     if GAME.wet==0 or GAME.water==0 or GAME.rain==0:
                         if GAME.laps-lap<=10:
-                            if GAME.tyre[x]=="Soft" and GAME.tyreCompoundsUsed[x]==1:
+                            if GAME.tyre[x]=="Soft" and GAME.tyreCompoundsUsed[x]==1 and GAME.season>2010:
                                 tyre="Medium"
                             elif (GAME.tyre[x]=="Medium" and GAME.tyreCompoundsUsed[x]==1) or random.randint(1,2)==1:
                                 tyre="Soft"
+                            elif GAME.season<2011:
+                                tyre="Hard"
                             else:
                                 tyre="Medium"
                         else:
@@ -4656,9 +4660,9 @@ class Game:
                                 num-=1
                             elif num==1 and GAME.tyre[x]=="Soft" and GAME.tyreCompoundsUsed[x]==1:
                                 num=3
-                            if num==1:
+                            if num==1 or (GAME.season<2011 and GAME.tyre[x]=="Hard"):
                                 tyre="Soft"
-                            elif num==2:
+                            elif num==2 and GAME.season>2010:
                                 tyre="Medium"
                             else:
                                 tyre="Hard"
@@ -4678,12 +4682,12 @@ class Game:
                             pitLap=lap+tyreLength+random.randint(-2,2)
                             GAME.pitLap.insert(x,pitLap)
                             if GAME.laps-pitLap<=10:
-                                if random.randint(1,3)==1:
+                                if random.randint(1,3)==1 and GAME.season>2010:
                                     pitTyre="Medium"
                                 else:
                                     pitTyre="Soft"
                             elif GAME.laps-pitLap<=GAME.expectedTyreLife[1]:
-                                if random.randint(1,2)==2:
+                                if random.randint(1,2)==2 and GAME.season>2010:
                                     pitTyre="Medium"
                                 else:
                                     pitTyre="Hard"
@@ -4691,7 +4695,7 @@ class Game:
                                 num=random.randint(1,4)
                                 if num==1:
                                     pitTyre="Soft"
-                                elif num==4:
+                                elif num==4 and GAME.season>2010:
                                     pitTyre="Hard"
                                 else:
                                     pitTyre="Medium"
@@ -4744,7 +4748,10 @@ class Game:
                 tyre=tyres[x]
                 canvas.image=tyre
                 canvas.create_image(510+(300*x), 230, anchor=tk.NW, image=tyre)
-                canvas.create_text(650+(300*x), 260, text=(f"{GAME.expectedTyreLife[x]} Laps"), fill="black", font=("Arial", 20), anchor="nw")
+                if x==1 and GAME.season<2011:
+                    canvas.create_text(650+(300*x), 260, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
+                else:
+                    canvas.create_text(650+(300*x), 260, text=(f"{GAME.expectedTyreLife[x]} Laps"), fill="black", font=("Arial", 20), anchor="nw")
             for x in range(2):
                 tyre=tyres[x+3]
                 canvas.image=tyre
@@ -4825,7 +4832,10 @@ class Game:
                 tyre=tyres[x]
                 canvas.image=tyre
                 canvas.create_image(510+(300*x), 230, anchor=tk.NW, image=tyre)
-                canvas.create_text(650+(300*x), 260, text=(f"{GAME.expectedTyreLife[x]} Laps"), fill="black", font=("Arial", 20), anchor="nw")
+                if x==1 and GAME.season<2011:
+                    canvas.create_text(650+(300*x), 260, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
+                else:
+                    canvas.create_text(650+(300*x), 260, text=(f"{GAME.expectedTyreLife[x]} Laps"), fill="black", font=("Arial", 20), anchor="nw")
             for x in range(2):
                 tyre=tyres[x+3]
                 canvas.image=tyre
@@ -4883,10 +4893,12 @@ class Game:
                         if GAME.expectedTyreLife[2]*1.5>=lapsLeft:
                             if GAME.expectedTyreLife[0]>=lapsLeft and (GAME.tyre[index]!="Soft" or GAME.tyreCompoundsUsed[index]>1):
                                 tyre="Soft"
-                            elif GAME.expectedTyreLife[1]>=lapsLeft and (GAME.tyre[index]!="Medium" or GAME.tyreCompoundsUsed[index]>1):
+                            elif GAME.expectedTyreLife[1]>=lapsLeft and (GAME.tyre[index]!="Medium" or GAME.tyreCompoundsUsed[index]>1) and GAME.season>2010:
                                 tyre="Medium"
                             elif GAME.tyre[index]!="Hard" or GAME.tyreCompoundsUsed[index]>1:
                                 tyre="Hard"
+                            elif GAME.season<2011:
+                                tyre="Soft"
                             else:
                                 tyre="Medium"
                             GAME.pitLap.pop(index)
@@ -5038,7 +5050,10 @@ class Game:
         GAME.RefreshScreen()
         GAME.NextMove()
     def Leaderboard(self):
-        colours=["red","yellow","white","green","blue"]
+        if GAME.season<2011:
+            colours=["#29E9D0","Not Real","#B4B9C3","#00B4DC","#0046FF"]
+        else:
+            colours=["red","yellow","white","green","blue"]
         for x in range(len(GAME.positions)):
             driver=GAME.drivers[GAME.positions[x]]
             team=GAME.teams[GAME.positions[x]]
@@ -5670,38 +5685,35 @@ class Game:
         for i in range(3):
             index=GAME.positions[i]
             driver=GAME.drivers[index]
+            path=0
             if i==0:
                 if GAME.music==1:
-                    if driver=="Fernando Alonso":
-                        path = os.path.join(os.path.dirname(__file__), "Music", "Fernando Alonso Song.wav")
-                        if os.path.isfile(path):
-                            winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
-                    else:
-                        country=0
-                        team=GAME.teams[GAME.positions[0]]
-                        with sqlite3.connect(GAME.database) as c:
-                            if len(c.execute("SELECT Country FROM Drivers WHERE Country=? AND Name=?",(GAME.raceCountry,driver,)).fetchall())>0:
+                    country=0
+                    team=GAME.teams[GAME.positions[0]]
+                    with sqlite3.connect(GAME.database) as c:
+                        if len(c.execute("SELECT Country FROM Drivers WHERE Country=? AND Name=?",(GAME.raceCountry,driver,)).fetchall())>0:
+                            country=1
+                        else:
+                            if len(c.execute("SELECT Country FROM Teams WHERE Country=? AND Name=?",(GAME.raceCountry,team,)).fetchall())>0:
                                 country=1
-                            else:
-                                if len(c.execute("SELECT Country FROM Teams WHERE Country=? AND Name=?",(GAME.raceCountry,team,)).fetchall())>0:
-                                    country=1
-                            if country==1:
-                                GAME.homeWin=1
-                                reputation=int(GAME.Sanitise(c.execute("SELECT Reputation FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
-                                reputation+=15
-                                if reputation>100:
-                                    reputation=100
-                                c.execute("UPDATE Teams SET Reputation=? WHERE Name=?",(reputation,team,))
-                                path = os.path.join(os.path.dirname(__file__), "Music", f"{GAME.raceCountry} National Anthem.wav")
-                                if not os.path.isfile(path):
-                                    path = os.path.join(os.path.dirname(__file__), "Music", "Podium Theme.wav")
-                                GAME.ChangeScreen(f"{GAME.raceCountry} Flag")
-                                GAME.Button("Results",1230,5)
-                                GAME.screen="Podium"
-                            else:
-                                path = os.path.join(os.path.dirname(__file__), "Music", "Podium Theme.wav")
-                        if os.path.isfile(path):
-                            winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                        if country==1:
+                            GAME.homeWin=1
+                            reputation=int(GAME.Sanitise(c.execute("SELECT Reputation FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
+                            reputation+=15
+                            if reputation>100:
+                                reputation=100
+                            c.execute("UPDATE Teams SET Reputation=? WHERE Name=?",(reputation,team,))
+                            path=os.path.join(os.path.dirname(__file__), "Music", f"{GAME.raceCountry} National Anthem.wav")
+                            GAME.ChangeScreen(f"{GAME.raceCountry} Flag")
+                            GAME.Button("Results",1230,5)
+                            GAME.screen="Podium"
+                        if driver=="Fernando Alonso":
+                            path=os.path.join(os.path.dirname(__file__), "Music", "Fernando Alonso Song.wav")
+                    if os.path.isfile(path):
+                        winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
+                    else:
+                        path=os.path.join(os.path.dirname(__file__), "Music", "Podium Theme.wav")
+                        winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
                 x=520
             elif i==1:
                 x=120
@@ -7362,7 +7374,7 @@ class Game:
                 valid=1
                 GAME.tyreWear=[]
                 for x in range(4):
-                    if x==0:
+                    if x==0 or (x==1 and (GAME.replay==5 or GAME.season<2011)):
                         wear=GAME.wearConstant
                     elif x==1:
                         wear=round(GAME.wearConstant/1.5)
@@ -7469,16 +7481,16 @@ class Game:
                         if GAME.water==0:
                             if GAME.rainStarts<GAME.expectedTyreLife[0]:
                                 GAME.tyre.append("Soft")
-                            elif GAME.rainStarts<GAME.expectedTyreLife[1]:
+                            elif GAME.rainStarts<GAME.expectedTyreLife[1] and GAME.season>2010:
                                 GAME.tyre.append("Medium")
                             else:
-                                if GAME.rainStarts>=GAME.expectedTyreLife[2]:
+                                if GAME.rainStarts>=GAME.expectedTyreLife[2] and GAME.season>2010:
                                     GAME.tyre.append("Medium")
                                 else:
                                     num=random.randint(1,3)
                                     if num==1:
                                         GAME.tyre.append("Soft")
-                                    elif num==2:
+                                    elif num==2 and GAME.season>2010:
                                         GAME.tyre.append("Medium")
                                     else:
                                         GAME.tyre.append("Hard")
@@ -7490,7 +7502,7 @@ class Game:
                         GAME.strategy.append(1)
                         GAME.pitLap.append(1)
                         GAME.tyre.append("Soft")
-                        if random.randint(1,5)<=3:
+                        if random.randint(1,5)<=3 and GAME.season>2010:
                             GAME.pitTyre.append("Medium")
                         else:
                             GAME.pitTyre.append("Hard")
@@ -7510,21 +7522,21 @@ class Game:
                             if position<=5:
                                 if num<=5:
                                     tyre="Soft"
-                                elif num<=9:
+                                elif num<=9 and GAME.season>2010:
                                     tyre="Medium"
                                 else:
                                     tyre="Hard"
                             elif position<=10:
                                 if num<=3:
                                     tyre="Soft"
-                                elif num<=8:
+                                elif num<=8 and GAME.season>2010:
                                     tyre="Medium"
                                 else:
                                     tyre="Hard"
                             else:
                                 if num==1:
                                     tyre="Soft"
-                                elif num<=5:
+                                elif num<=5 and GAME.season>2010:
                                     tyre="Medium"
                                 else:
                                     tyre="Hard"
@@ -7537,7 +7549,7 @@ class Game:
                             if tyreLife+length>=GAME.laps:
                                 pitLap=(GAME.laps*tyreLife/(tyreLife+length))+random.randint(-2,2)
                                 if pitLap+GAME.expectedTyreLife[0]+GAME.expectedTyreLife[1]>=GAME.laps and random.randint(1,4)>1:
-                                    if tyre=="Soft":
+                                    if tyre=="Soft" and GAME.season>2010:
                                         pitTyre="Medium"
                                     else:
                                         pitTyre="Soft"
@@ -7551,7 +7563,7 @@ class Game:
                                 else:
                                     if tyre=="Medium":
                                         pitTyre="Hard"
-                                    elif tyre=="Hard" or random.randint(1,2)==1:
+                                    elif tyre=="Hard" or random.randint(1,2)==1 and GAME.season>2010:
                                         pitTyre="Medium"
                                     else:
                                         pitTyre="Hard"
@@ -7567,7 +7579,7 @@ class Game:
                             else:
                                 pitLap=round(tyreLife*1.5)+random.randint(-2,1)
                                 if (pitLap+GAME.expectedTyreLife[0]+GAME.expectedTyreLife[1])*1.5>=GAME.laps and random.randint(1,4)>1:
-                                    if tyre=="Soft":
+                                    if tyre=="Soft" and GAME.season>2010:
                                         pitTyre="Medium"
                                     else:
                                         pitTyre="Soft"
@@ -7581,15 +7593,15 @@ class Game:
                                 else:
                                     if tyre=="Medium":
                                         pitTyre="Hard"
-                                    elif tyre=="Hard" or random.randint(1,2)==1:
+                                    elif (tyre=="Hard" or random.randint(1,2)==1) and GAME.season>2010:
                                         pitTyre="Medium"
                                     else:
                                         pitTyre="Hard"
                         else:
                             #1 Stop
-                            if GAME.expectedTyreLife[0]+GAME.expectedTyreLife[1]>=GAME.laps-3:
+                            if GAME.expectedTyreLife[0]+GAME.expectedTyreLife[1]>=GAME.laps-3 and GAME.season>2010:
                                 tyreOptions=["Soft","Medium"]
-                            elif GAME.expectedTyreLife[0]+GAME.expectedTyreLife[2]>=GAME.laps-3:
+                            elif GAME.expectedTyreLife[0]+GAME.expectedTyreLife[2]>=GAME.laps-3 or GAME.season<2011:
                                 tyreOptions=["Soft","Hard"]
                             else:
                                 tyreOptions=["Medium","Hard"]
@@ -7643,8 +7655,11 @@ class Game:
         canvas.create_text(1250, 10, text=(str(GAME.laps)+" Laps"), fill="black", font=("Arial", 40), anchor="nw")
         canvas.create_text(230, 200, text=("Estimated: "+str(GAME.expectedTyreLife[0])+" Laps"), fill="black", font=("Arial", 20), anchor="nw")
         if GAME.replay==5:
-            canvas.create_text(230, 420, text=("Not Available"), fill="black", font=("Arial", 20), anchor="nw")
-            canvas.create_text(1180, 380, text=("Not Available"), fill="black", font=("Arial", 20), anchor="nw")
+            canvas.create_text(230, 420, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
+            canvas.create_text(1180, 380, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
+        elif GAME.season<2011:
+            canvas.create_text(230, 420, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
+            canvas.create_text(1180, 380, text=("Estimated: "+str(GAME.expectedTyreLife[3])+" Laps"), fill="black", font=("Arial", 20), anchor="nw")
         else:
             canvas.create_text(230, 420, text=("Estimated: "+str(GAME.expectedTyreLife[1])+" Laps"), fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(1180, 380, text=("Estimated: "+str(GAME.expectedTyreLife[3])+" Laps"), fill="black", font=("Arial", 20), anchor="nw")
@@ -8925,7 +8940,7 @@ class Game:
                 GAME.car2ID=-1
             if event.x>=5 and event.x<=220 and event.y>=110 and event.y<=320:
                 tyre="Soft"
-            elif event.x>=5 and event.x<=220 and event.y>=330 and event.y<=540:
+            elif event.x>=5 and event.x<=220 and event.y>=330 and event.y<=540 and GAME.season>2010:
                 tyre="Medium"
             elif event.x>=5 and event.x<=220 and event.y>=545 and event.y<=780:
                 tyre="Hard"
@@ -9165,7 +9180,7 @@ class Game:
                 tyre=0
                 if event.x>=20 and event.x<=300:
                     tyre="Soft"
-                elif event.x>=320 and event.x<=580:
+                elif event.x>=320 and event.x<=580 and GAME.season>2010:
                     tyre="Medium"
                 elif event.x>=600 and event.x<=860:
                     tyre="Hard"
@@ -10611,7 +10626,7 @@ class Game:
             if event.y>=235 and event.y<=325:
                 if event.x>=515 and event.x<=605:
                     tyre="Soft"
-                elif event.x>=810 and event.x<=910:
+                elif event.x>=810 and event.x<=910 and GAME.season>2010:
                     tyre="Medium"
                 elif event.x>=1110 and event.x<=1210:
                     tyre="Hard"
@@ -10641,7 +10656,7 @@ class Game:
             if event.y>=235 and event.y<=325:
                 if event.x>=515 and event.x<=605:
                     tyre="Soft"
-                elif event.x>=810 and event.x<=910:
+                elif event.x>=810 and event.x<=910 and GAME.season>2010:
                     tyre="Medium"
                 elif event.x>=1110 and event.x<=1210:
                     tyre="Hard"
@@ -11915,6 +11930,7 @@ class Game:
             elif GAME.season==2011:
                 GAME.drs=1
                 GAME.news.append("BREAKING NEWS! A new system called DRS has been introduced.")
+                GAME.news.append("BREAKING NEWS! Formula 1 is now using Pirelli tyres.")
             elif GAME.season==2012:
                 F1.commit()
                 F1.close()
