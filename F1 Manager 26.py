@@ -2538,7 +2538,7 @@ class Game:
                 driver=0
                 dead=[]
                 deadTeam=[]
-                if random.randint(1,40)==40:
+                if random.randint(1,40)==40 and GAME.season>2009:
                     driver=GAME.Sanitise(random.choice(c.execute('''SELECT Name FROM Drivers WHERE Condition="Well" AND (Role="1" OR Role="2")''').fetchall()))
                     GAME.news.append("BREAKING NEWS! "+driver+" is ill and will be unable to race in the next Grand Prix.")
                     c.execute('''UPDATE Drivers SET Condition="Ill" WHERE Name=?''',(driver,))
@@ -5771,6 +5771,8 @@ class Game:
                     colour="#B40000"
                 elif team=="Force India":
                     colour="#FF7800"
+                elif team=="Lotus":
+                    colour="#C8A028"
                 else:
                     colour="white"
                 if x<9:
@@ -8097,7 +8099,7 @@ class Game:
         drivers=[]
         with sqlite3.connect(GAME.database) as c:
             #Reserves
-            f=c.execute("SELECT Name FROM Teams WHERE Name!='GAME.team'").fetchall()
+            f=c.execute("SELECT Name FROM Teams WHERE Name!=?",(GAME.team,)).fetchall()
             for x in range(len(f)):
                 team=GAME.Sanitise(f[x])
                 amount=len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='Reserve' AND NewTeam='0' AND ContractEnd>?) OR (NewTeam=? AND NewRole='Reserve')",(team,GAME.season,team,)).fetchall())
@@ -8599,7 +8601,7 @@ class Game:
         elif GAME.race==GAME.races+1:
             GAME.Championships()
         elif GAME.race==GAME.races+2:
-            if GAME.year>2013:
+            if GAME.season>2013:
                 GAME.RuleVote()
             else:
                 GAME.race+=1
@@ -9298,6 +9300,8 @@ class Game:
                     colour="#B40000"
                 elif team=="Force India":
                     colour="#FF7800"
+                elif team=="Lotus":
+                    colour="#C8A028"
                 else:
                     colour="white"
                 canvas.create_text(550, 270, text=driver, fill=colour, font=("Arial", 40), anchor="nw")
@@ -11255,6 +11259,8 @@ class Game:
             root.configure(background='#B40000')
         elif GAME.team=="Force India":
             root.configure(background='#FF7800')
+        elif GAME.team=="Lotus":
+            root.configure(background='#C8A028')
         else:
             root.configure(background="black")
     def StartNewGame(self):
@@ -11920,7 +11926,7 @@ class Game:
                 c=F1.cursor()
                 c.execute("UPDATE Teams SET Appearance='Mercedes' WHERE Name='Mercedes'")
                 c.execute("UPDATE Teams SET Appearance='Sauber' WHERE Name='Sauber'")
-                c.execute("UPDATE Teams SET Appearance='Lotus' WHERE Name='Lotus'")
+                c.execute("UPDATE Teams SET Appearance='Lotus', PreviousPosition=0, TeamPrincipal='Tony Fernandes', Country='United Kingdom' WHERE Name='Lotus'")
                 c.execute("UPDATE Teams SET Sponsor='0' WHERE Name='Sauber'")
                 c.execute("UPDATE Teams SET Sponsor='Petronas' WHERE Name='Mercedes'")
                 c.execute("UPDATE Sponsors SET Team='Mercedes' WHERE Name='Petronas'")
@@ -11940,12 +11946,23 @@ class Game:
                             team="Virgin"
                         else:
                             team="HRT"
-                        f=c.execute("SELECT Name FROM Staff WHERE Team='Free Agent' AND Role=?",(roles[y],))
+                        f=c.execute("SELECT Name FROM Staff WHERE Team='Free Agent' AND Role=?",(roles[y],)).fetchall()
                         if y>1:
                             role=f"Race Engineer {y-1}"
                         else:
                             role=roles[y]
                         c.execute("UPDATE Staff SET Team=?, Role=?, Salary=1000000 WHERE Name=?",(team,role,GAME.Sanitise(random.choice(f)),))
+                dragReduction=int(GAME.Sanitise(c.execute("SELECT DragReduction FROM Cars WHERE Team='Mercedes'").fetchall()[0]))-10
+                lowSpeed=int(GAME.Sanitise(c.execute("SELECT LowSpeed FROM Cars WHERE Team='Mercedes'").fetchall()[0]))-10
+                mediumSpeed=int(GAME.Sanitise(c.execute("SELECT MediumSpeed FROM Cars WHERE Team='Mercedes'").fetchall()[0]))-10
+                highSpeed=int(GAME.Sanitise(c.execute("SELECT HighSpeed FROM Cars WHERE Team='Mercedes'").fetchall()[0]))-10
+                c.execute("UPDATE Cars SET DragReduction=?, LowSpeed=?, MediumSpeed=?, HighSpeed=? WHERE Team='Mercedes'",(dragReduction,lowSpeed,mediumSpeed,highSpeed,))
+                if GAME.team!="Red Bull":
+                    dragReduction=int(GAME.Sanitise(c.execute("SELECT DragReduction FROM Cars WHERE Team='Red Bull'").fetchall()[0]))+15
+                    lowSpeed=int(GAME.Sanitise(c.execute("SELECT LowSpeed FROM Cars WHERE Team='Red Bull'").fetchall()[0]))+15
+                    mediumSpeed=int(GAME.Sanitise(c.execute("SELECT MediumSpeed FROM Cars WHERE Team='Red Bull'").fetchall()[0]))+15
+                    highSpeed=int(GAME.Sanitise(c.execute("SELECT HighSpeed FROM Cars WHERE Team='Red Bull'").fetchall()[0]))+25
+                    c.execute("UPDATE Cars SET DragReduction=?, LowSpeed=?, MediumSpeed=?, HighSpeed=? WHERE Team='Red Bull'",(dragReduction,lowSpeed,mediumSpeed,highSpeed,))
             elif GAME.season==2011:
                 GAME.drs=1
                 GAME.news.append("BREAKING NEWS! A new system called DRS has been introduced.")
@@ -12532,7 +12549,8 @@ driverHeads=["Max Verstappen","Lando Norris","Charles Leclerc","Oscar Piastri","
              "Nigel Mansell","Nicholas Latifi","Mika Hakkinen","David Coulthard","Luke Browning","Leonardo Fornaroli","Rubens Barrichello","Jim Clark","Young Lewis Hamilton",
              "Felipe Massa","Heikki Kovalainen","Johnny Cecotto","Colton Herta","Freddie Slater","Kush Maini","Theo Pourchaire","Nico Rosberg","Mark Webber","Robert Kubica",
              "Nelson Piquet Jr.","Nick Heidfeld","Sebastien Buemi","Sebastien Bourdais","Jaime Alguersuari","Jarno Trulli","Timo Glock","Kazuki Nakajima","Adrian Sutil",
-             "Giancarlo Fisichella","Vitantonio Liuzzi","Luca Badoer"]
+             "Giancarlo Fisichella","Vitantonio Liuzzi","Luca Badoer","Kamui Kobayashi","Pedro de la Rosa","Vitaly Petrov","Bruno Senna","Karun Chandhok","Lucas di Grassi",
+             "Romain Grosjean"]
 for x in range(3):
     driverHeads.append(f"Man {x+1}")
     if x<2:
@@ -12547,8 +12565,8 @@ for x in range(len(driverHeads)):
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Toro Rosso","Toyota","BMW","Amazon","Ford","Tesla","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
        "Alfa Romeo"]
-xDif=[90,82,88,95,110,95,92,100,95,90,105,102,92,85,95,97,95,98,95,88]
-yDif=[115,90,95,108,105,87,90,70,122,80,108,145,112,105,80,100,85,50,88,60]
+xDif=[90,82,88,95,110,95,92,100,95,90,105,98,92,85,95,97,95,98,95,88]
+yDif=[115,90,95,108,105,87,90,70,122,80,108,135,112,105,80,100,85,50,88,60]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 GAME.suits=[tk.PhotoImage(file=path)]
 logos=[]

@@ -1529,7 +1529,7 @@
           "Calmness": 90,
 	  "Age": 32,
 	  "Marketability": 80,
-          "DevelopmentRate": 20, 
+          "DevelopmentRate": -1, 
           "ContractEnd": 2013, 
           "Championships": 0,
           "Wins": 0
@@ -1871,7 +1871,7 @@
           "Wins": 0
         },
 	{
-          "Name": "Lucas di",
+          "Name": "Lucas di Grassi",
           "Team": "Free Agent", 
           "Role": "Free Agent", 
           "Country": "Brazil",
