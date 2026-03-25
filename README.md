@@ -29,5 +29,5 @@
   <p>This game mode is different from the others as it is just a single race and no progress is saved. These replay races allow you to manage historic races such as Abu Dhabi 2021 or Brazil 2008. See if you can achieve what the legends did or change history in the way you see fit. There are 6 replay races to play through, 5 of these are historic races and the other allows you to play through the final race from F1: The Movie, managing APXGP.</p>
 
   <h3>2009 Career</h3>
-  <p>Within the Replay Menu, there is the option of starting a 2009 career mode. This mode is the same same as a standard career except it's in 2009 with the 2009 drivers and cars.</p>
+  <p>Within the Replay Menu, there is the option of starting a 2009 career mode. This mode is the same same as a standard career except it's in 2009 with the 2009 drivers and cars. This allows you to experience a different era of rules and racing.</p>
 </body>
