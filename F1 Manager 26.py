@@ -203,6 +203,7 @@ class Game:
         self.startingPositions=[]
         self.homeWin=0
         self.startYear=2026
+        self.refueling=0
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -462,9 +463,11 @@ class Game:
         if GAME.startYear==2026:
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Old Points System", 0)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 1)''')
+            c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Refueling", 0)''')
         else:
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Old Points System", 1)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 2)''')
+            c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Refueling", 1)''')
 
         #Engines
         if GAME.startYear==2026:
@@ -3067,7 +3070,11 @@ class Game:
                         if GAME.ERS[index]>0:
                             speed+=(GAME.ERSdeployment[index]*20)
                     if GAME.water>=1:
-                        speed=(speed+GAME.water*GAME.experience[index])/2
+                        if GAME.startYear==2009 and GAME.drivers[index]=="Lewis Hamilton":
+                            experience=100
+                        else:
+                            experience=GAME.experience[index]
+                        speed=(speed+GAME.water*experience)/2
                     speed-=round(GAME.fuel[index]/1.5)
                     if GAME.teams[index]==GAME.team and ((GAME.cars[index]==1 and "Drive in Clean Air" in GAME.car1Instructions) or (GAME.cars[index]==2 and "Drive in Clean Air" in GAME.car2Instructions)) and x!=0 and GAME.time[index]<=2:
                         speed-=25
@@ -3110,7 +3117,7 @@ class Game:
                             GAME.tyreAggression.insert(index, 2)
                         else:
                             #Fuel management
-                            if GAME.lap[GAME.positions[0]]==GAME.laps:
+                            if GAME.lap[GAME.positions[0]]==GAME.laps or (GAME.refueling==1 and GAME.lap[index]==GAME.pitLap[index]):
                                 if GAME.fuel[index]>6:
                                     if GAME.fuelAggression[index]!=3:
                                         GAME.fuelAggression.pop(index)
@@ -3122,15 +3129,20 @@ class Game:
                                 elif GAME.fuelAggression[index]!=2:
                                     GAME.fuelAggression.pop(index)
                                     GAME.fuelAggression.insert(index, 2)
-                            elif GAME.fuel[index]<(92/(GAME.laps*(GAME.laps-GAME.lap[GAME.positions[0]]))) or GAME.engineTemperature[index]>=120:
-                                GAME.fuelAggression.pop(index)
-                                GAME.fuelAggression.insert(index, 1)
-                            elif GAME.fuel[index]<(95/(GAME.laps*(GAME.laps-GAME.lap[GAME.positions[0]]))) and GAME.fuelAggression[index]==3:
-                                GAME.fuelAggression.pop(index)
-                                GAME.fuelAggression.insert(index, 2)
-                            elif GAME.lap[GAME.positions[0]]>=GAME.laps-5 and GAME.fuel[index]>=(95/(GAME.laps*(GAME.laps-GAME.lap[GAME.positions[0]]))):
-                                GAME.fuelAggression.pop(index)
-                                GAME.fuelAggression.insert(index, 3)
+                            else:
+                                if GAME.refueling==0 or GAME.pitLap[index]<GAME.lap[index]:
+                                    lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
+                                else:
+                                    lapsLeft=GAME.pitLap[index]-GAME.lap[index]
+                                if GAME.fuel[index]<((92/GAME.laps)*lapsLeft) or GAME.engineTemperature[index]>=120:
+                                    GAME.fuelAggression.pop(index)
+                                    GAME.fuelAggression.insert(index, 1)
+                                elif GAME.fuel[index]<((95/GAME.laps)*lapsLeft) and GAME.fuelAggression[index]==3:
+                                    GAME.fuelAggression.pop(index)
+                                    GAME.fuelAggression.insert(index, 2)
+                                elif GAME.lap[GAME.positions[0]]>=GAME.laps-5 and GAME.fuel[index]>=((95/GAME.laps)*lapsLeft):
+                                    GAME.fuelAggression.pop(index)
+                                    GAME.fuelAggression.insert(index, 3)
                         #Tyre Management
                         tyreAge=GAME.lap[index]-GAME.lapPittedTo[index]
                         if GAME.lap[index]==GAME.pitLap[index] or GAME.lap[GAME.positions[0]]==GAME.laps:
@@ -3670,6 +3682,13 @@ class Game:
                         pitStopTime = random.uniform(2.2, 2.9)   # Good
                     else:
                         pitStopTime = random.uniform(1.8, 2.3)   # Amazing
+                    #Refueling
+                    if GAME.refueling==1:
+                        totalFuelNeeded=round(100*(GAME.laps-GAME.lap[GAME.positions[0]])/GAME.laps)
+                        if GAME.fuel[driverIndex]<totalFuelNeeded:
+                            fuelNeeded=totalFuelNeeded-GAME.fuel[driverIndex]
+                            pitStopTime+=fuelNeeded/10
+                            GAME.fuel[driverIndex]=totalFuelNeeded
                     if pitStopTime < GAME.bestPitStop[1]:
                         GAME.AddToLog(f"{GAME.drivers[driverIndex]} has just completed a {pitStopTime:.3f} second pit stop, the fastest of the race so far.")
                         GAME.bestPitStop = [GAME.drivers[driverIndex], pitStopTime]
@@ -4643,6 +4662,11 @@ class Game:
             GAME.stops.insert(x,stops)
             if x in GAME.positions:
                 GAME.distance.append(GAME.positions.index(x)*-2)
+                #Refueling
+                if GAME.refueling==1:
+                    totalFuelNeeded=round(100*(GAME.laps-lap]])/GAME.laps)
+                    if GAME.fuel[driverIndex]<totalFuelNeeded:
+                        GAME.fuel[driverIndex]=totalFuelNeeded
                 if GAME.teams[x]!=GAME.team:
                     compounds=GAME.tyreCompoundsUsed[x]+1
                     GAME.tyreCompoundsUsed.pop(x)
@@ -5005,6 +5029,13 @@ class Game:
                             pitStopTime = random.uniform(2.0, 2.6)   # Good
                         else:
                             pitStopTime = random.uniform(1.7, 2.2)   # Amazing
+                        #Refueling
+                        if GAME.refueling==1:
+                            totalFuelNeeded=round(100*(GAME.laps-lap)/GAME.laps)
+                            if GAME.fuel[driverIndex]<totalFuelNeeded:
+                                fuelNeeded=totalFuelNeeded-GAME.fuel[driverIndex]
+                                pitStopTime+=fuelNeeded/10
+                                GAME.fuel[driverIndex]=totalFuelNeeded
                         if pitStopTime < GAME.bestPitStop[1]:
                             GAME.AddToLog(f"{driver} has just completed a {pitStopTime:.3f} second pit stop, the fastest of the race so far.")
                             GAME.bestPitStop = [GAME.drivers[driverIndex], pitStopTime]
@@ -5754,7 +5785,7 @@ class Game:
                     GAME.pointsScored.pop(index)
                     GAME.pointsScored.insert(index,points)
                 team=GAME.teams[index]
-                colour=GAME.TeamColour(team)
+                colour=GAME.TeamColour(team,GAME.season)
                 if x<9:
                     if x==0:
                         canvas.create_text(50, 5, text=GAME.track, fill=colour, font=("Arial", 50), anchor="nw")
@@ -6746,12 +6777,13 @@ class Game:
         GAME.tyreWear=[6,0,3,4]
         GAME.expectedTyreLife=[12,0,23,18]
         GAME.rainChance=0
+        GAME.refueling=1
         for x in range(22):
                 GAME.positions.append(x)
                 GAME.tyrePreservation.append(0)
                 GAME.defending.append(5)
                 GAME.tyreRemaining.append(100)
-                GAME.fuel.append(100)
+                GAME.fuel.append(70)
                 GAME.ERS.append(100)
                 GAME.strategy.append(0)
                 GAME.faults.append(0)
@@ -6847,12 +6879,13 @@ class Game:
         GAME.tyreWear=[6,3,2,2]
         GAME.expectedTyreLife=[12,23,35,35]
         GAME.rainChance=0
+        GAME.refueling=1
         for x in range(20):
                 GAME.positions.append(x)
                 GAME.tyrePreservation.append(0)
                 GAME.defending.append(5)
                 GAME.tyreRemaining.append(100)
-                GAME.fuel.append(100)
+                GAME.fuel.append(70)
                 GAME.ERS.append(100)
                 GAME.strategy.append(0)
                 GAME.faults.append(0)
@@ -7459,13 +7492,16 @@ class Game:
                 GAME.cooling.append(int(GAME.Sanitise(c.execute('''SELECT Cooling FROM Cars WHERE Team=?''',(team,)).fetchall()[0])))
                 GAME.tyrePreservation.append(int(GAME.Sanitise(c.execute('''SELECT TyrePreservation FROM Cars WHERE Team=?''',(team,)).fetchall()[0])))
                 GAME.engineTemperature.append(85+random.randint(0,15))
-                GAME.fuel.append(100)
                 GAME.frontWings.append(1)
                 GAME.repairBill.append(0)
                 GAME.penalties.append(0)
                 GAME.lapPittedTo.append(1)
                 GAME.battery.append(8)
                 GAME.DRS.append(30)
+                if GAME.wet==1:
+                    GAME.fuel.append(100)
+                else:
+                    GAME.fuel.append(70)
                 #Strategy
                 if team==GAME.team:
                     GAME.tyre.append("Placeholder")
@@ -8276,9 +8312,14 @@ class Game:
                     message="bringing back the old ERS system."
             elif regulation=="Fastest Lap Point":
                 if state==0:
-                    message="bring back the fastest lap point for more interesting races."
-                elif state==1:
+                    message="bringing back the fastest lap point for more interesting races."
+                else:
                     message="removing the fastest lap point for simpler racing."
+            elif regulation=="Refueling":
+                if state==0:
+                    message="bringing back Refueling for more interesting strategies."
+                else:
+                    message="banning refueling for improved safety."
         GAME.ChangeScreen("Rule Vote")
         canvas.create_text(10, 150, text="The FIA is proposing", fill="#DADADA", font=("Arial", 20), anchor="nw")
         canvas.create_text(10, 180, text=message, fill="#DADADA", font=("Arial", 20), anchor="nw")
@@ -8322,6 +8363,8 @@ class Game:
         with sqlite3.connect(GAME.database) as c:
             if vote=="for":
                 c.execute("UPDATE Regulations SET True=? WHERE Regulation=?",(GAME.proposed,GAME.regulation,))
+                if GAME.regulation=="Refueling":
+                    GAME.refueling=GAME.proposed
             GAME.race+=1
             c.execute("UPDATE Player SET Race=?",(GAME.race,))
     def ChangeTeam(self):
@@ -8744,6 +8787,7 @@ class Game:
         elif GAME.screen=="Opening Menu":
             if event.x>=500 and event.x<=700 and event.y>=575 and event.y<=625:
                 GAME.startYear=2026
+                GAME.refueling=0
                 GAME.StartNewGame()
             elif event.x>=735 and event.x<=935 and event.y>=575 and event.y<=625 and GAME.newGame==0:
                 GAME.SelectSave()
@@ -9258,7 +9302,7 @@ class Game:
                     driver=GAME.drivers[best[1]]
                     team=GAME.teams[best[1]]
                 GAME.DisplayDriver(driver,520,500)
-                colour=GAME.TeamColour(team)
+                colour=GAME.TeamColour(team,GAME.season)
                 canvas.create_text(550, 270, text=driver, fill=colour, font=("Arial", 40), anchor="nw")
                 if message==0:
                     message=f"P{GAME.startingPositions.index(best[1])+1}>P{GAME.positions.index(best[1])+1}"
@@ -10630,6 +10674,7 @@ class Game:
                     GAME.ReplayObjective()
             elif event.x>=1235 and event.x<=1435 and event.y>=730 and event.y<=780:
                 GAME.startYear=2009
+                GAME.refueling=1
                 GAME.StartNewGame()
         elif GAME.screen=="Safety Car Menu":
             tyre=-1
@@ -11183,8 +11228,8 @@ class Game:
         canvas.create_text(350, 10, text="Select Replacement", fill="black", font=("Arial", 50), anchor="nw")
         GAME.Button("Name Selector",250,100)
         canvas.create_text(350, 170, text=GAME.options[GAME.displayed], fill="black", font=("Arial", 40), anchor="nw")
-    def TeamColour(self,team):
-        if team=="McLaren" and GAME.season>2025:
+    def TeamColour(self,team,season):
+        if team=="McLaren" and season>2025:
             colour="#FFA100"
         elif team=="Mercedes":
             colour="#1AE2CE"
@@ -11233,7 +11278,7 @@ class Game:
         elif "Racing Bulls" in GAME.team or "Honda" in GAME.team:
             root.configure(background="White")
         else:
-            colour=GAME.TeamColour(GAME.team)
+            colour=GAME.TeamColour(GAME.team,GAME.season)
             if colour=="white":
                 colour="black"
             root.configure(background=colour)
@@ -11514,7 +11559,7 @@ class Game:
                     if "Racing Bulls" in team or "Honda" in team:
                         colour="white"
                     else:
-                        colour=GAME.TeamColour(team)
+                        colour=GAME.TeamColour(team,season)
                         if colour=="white":
                             colour="#DADADA"
                     canvas.create_text(400, 300, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
@@ -11576,6 +11621,7 @@ class Game:
             GAME.sponsor=GAME.Sanitise(c.execute('''SELECT Sponsor FROM Teams WHERE Name=?''',(GAME.team,)).fetchall()[0])
             GAME.actions=int(GAME.Sanitise(c.execute("SELECT Actions FROM Player").fetchall()[0]))
             GAME.startYear=int(GAME.Sanitise(c.execute("SELECT StartYear FROM Player").fetchall()))
+            GAME.refueling=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Refueling'").fetchall()[0]))
             GAME.races=len(c.execute("SELECT Track FROM Calendar").fetchall())
             if GAME.races==0:
                 GAME.races=24
@@ -11886,11 +11932,14 @@ class Game:
                 c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Virgin", "Cosworth", 30, 30, 30, 30, 60, 30, 1, 100, 1, 100, 1, 11, 13)''')
                 c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("HRT", "Cosworth", 15, 15, 15, 15, 45, 20, 1, 100, 1, 100, 1, 12, 9)''')
                 GAME.news.append("BREAKING NEWS! Formula 1 have introduced a new points system.")
+                GAME.news.append("BREAKING NEWS! Formula 1 has banned refueling.")
                 GAME.news.append("BREAKING NEWS! Brawn GP has been acquired by Mercedes.")
                 GAME.news.append("BREAKING NEWS! Sauber have ended their partnership with BMW.")
                 GAME.news.append("BREAKING NEWS! Toyota have left Formula 1.")
                 GAME.news.append("BREAKING NEWS! Lotus, Virgin and HRT have joined Formula 1.")
                 c.execute("UPDATE Drivers SET NewTeam='HRT', NewRole='1', ContractEnd=2011 WHERE Name='Daniel Ricciardo'")
+                c.execute("UPDATE Regulations SET True=0 WHERE Regulation='Refueling'")
+                GAME.refueling=0
                 for x in range(2):
                     for y in range(4):
                         if x==0:
