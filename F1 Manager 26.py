@@ -8562,7 +8562,7 @@ class Game:
                     i=2
                 else:
                     i=len(teams)-position+1
-                if len(teams)<12:
+                if len(teams)<12 and GAME.startYear==2026:
                     i+=1
                 for x in range(i):
                     if x==0:
@@ -11266,17 +11266,19 @@ class Game:
             colour="#FF7800"
         elif team=="HRT":
             colour="#C80000"
-        elif team=="Virgin" or team=="Marussia":
+        elif team=="Virgin" or team=="Marussia" or team=="Manor":
             colour="#8C0014"
         elif team=="Caterham":
             colour="#006E3C"
+        elif team=="Racing Point":
+            colour="#FF69B4"
         else:
             colour="white"
         return colour
     def BackgroundColour(self):
         if GAME.team==0:
             root.configure(background="black")
-        elif "Racing Bulls" in GAME.team or "Honda" in GAME.team:
+        elif "Racing Bulls" in GAME.team or "Honda" in GAME.team or GAME.team=="AlphaTauri":
             root.configure(background="White")
         else:
             colour=GAME.TeamColour(GAME.team,GAME.season)
@@ -11557,7 +11559,7 @@ class Game:
                     valid=0
                 else:
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0])
-                    if "Racing Bulls" in team or "Honda" in team:
+                    if "Racing Bulls" in team or "Honda" in team or team=="AlphaTauri":
                         colour="white"
                     else:
                         colour=GAME.TeamColour(team,season)
@@ -11700,7 +11702,7 @@ class Game:
             canvas.image=suit
             canvas.create_image(x, y, anchor=tk.NW, image=suit)
             if driver!="Sonny Hayes" and driver!="Joshua Pearce":
-                if f"Young {driver}" in driverHeads and (GAME.replay==3 or GAME.replay==4 or GAME.season<2026):
+                if f"Young {driver}" in driverHeads and (GAME.replay==3 or GAME.replay==4 or GAME.season<2015):
                     driver=f"Young {driver}"
                 try:
                     X=xDif[index]
@@ -11911,7 +11913,6 @@ class Game:
                 GAME.TeamAcquired("Brawn GP","Mercedes")
                 GAME.TeamAcquired("BMW Sauber","Sauber")
                 GAME.TeamAcquired("Toyota","Lotus")
-                roles=["Technical Director","Sporting Director","Race Engineer","Race Engineer"]
                 for x in range(2):
                     for y in range(4):
                         GAME.GeneratePeople(roles[y])
@@ -12000,15 +12001,155 @@ class Game:
                 c.execute("UPDATE Teams SET Appearance='Caterham' WHERE Name='Caterham'")
                 c.execute("UPDATE Teams SET Appearance='Lotus' WHERE Name='Lotus Renault'")
                 c.execute("UPDATE Cars SET Engine='Renault' WHERE Team='Caterham'")
-            elif GAME.season==2013 and GAME.team!="Mercedes":
-                c.execute("UPDATE Teams SET Income=2000000 WHERE Name='Mercedes'")
+            elif GAME.season==2013:
+                if GAME.team!="Mercedes":
+                    c.execute("UPDATE Teams SET Income=2000000 WHERE Name='Mercedes'")
                 if GAME.team!="Red Bull" and len(c.execute("SELECT Name FROM Drivers WHERE Team='Toro Rosso' AND Name='Daniel Ricciardo'").fetchall())>0:
                     c.execute("UPDATE Drivers SET NewTeam='Red Bull', NewRole='2', NewSalary=1000000, ContractEnd=2016 WHERE Name='Daniel Ricciardo'")
+                if GAME.team!="HRT":
+                    GAME.news.append("BREAKING NEWS! HRT have left Formula 1.")
+                    c.execute("DELETE FROM Teams WHERE Name='HRT'")
+                    c.execute("DELETE FROM Cars WHERE Name='HRT'")
+                    c.execute("UPDATE Drivers SET Team='Free Agent, Role='Free Agent', ContractEnd=0 WHERE Team='HRT'")
+                    c.execute("UPDATE Staff SET Team='Free Agent' WHERE Team='HRT'")
             elif GAME.season==2015:
+                if GAME.team!="Caterham":
+                    GAME.news.append("BREAKING NEWS! Caterham have left Formula 1.")
+                    c.execute("DELETE FROM Teams WHERE Name='Caterham'")
+                    c.execute("DELETE FROM Cars WHERE Name='Caterham'")
+                    c.execute("UPDATE Drivers SET Team='Free Agent, Role='Free Agent', ContractEnd=0 WHERE Team='Caterham'")
+                    c.execute("UPDATE Staff SET Team='Free Agent' WHERE Team='Caterham'")
                 GAME.news.append("BREAKING NEWS! McLaren are now partnering with Honda for their engines.")
                 c.execute("UPDATE Cars SET Engine='Honda' WHERE Team='McLaren'")
                 c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "McLaren", 3, 1, 5, 1)''')
+            elif GAME.season==2016:
+                if len(c.execute("SELECT Name FROM Teams").fetchall())>11:
+                    f=c.execute("SELECT Name FROM Teams WHERE (Name='HRT' OR Name='Caterham') AND Name!=?",(GAME.team,)).fetchall()
+                    leavingTeam=GAME.Sanitise(random.choice(f))
+                    GAME.news.append(f"BREAKING NEWS! {leavingTeam} is leaving Formula 1.")
+                    c.execute("DELETE FROM Teams WHERE Name=?",(leavingTeam,))
+                    c.execute("DELETE FROM Cars WHERE Name=?",(leavingTeam,))
+                    c.execute("UPDATE Drivers SET Team='Free Agent, Role='Free Agent', ContractEnd=0 WHERE Team=?",(leavingTeam,))
+                    c.execute("UPDATE Staff SET Team='Free Agent' WHERE Team=?",(leavingTeam,))
+                GAME.news.append("BREAKING NEWS! Marussia has now become the Manor Formula 1 team.")
+                GAME.news.append("BREAKING NEWS! Haas has joined Formula 1.")
+                GAME.news.append("BREAKING NEWS! Lotus Renault has rebranded back to Renault.")
+                F1.commit()
+                F1.close()
+                GAME.TeamAcquired("Marussia","Manor")
+                GAME.TeamAcquired("Lotus Renault","Renault")
+                F1=sqlite3.connect(GAME.database)
+                c=F1.cursor()
+                c.execute("UPDATE Teams SET Appearance='Manor' WHERE Name='Manor'")
+                c.execute("UPDATE Teams SET Appearance='Renault' WHERE Name='Renault'")
+                c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Haas", "Haas", "Haas", 12, 0, 15000000, 1000000, "Guenther Steiner", "United States of America", 55, "0", 0, 0)''')
+                c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Haas", "Ferrari", 40, 40, 40, 40, 40, 30, 1, 100, 1, 100, 1, 10, 15)''')
+                roles=["Technical Director","Sporting Director","Race Engineer","Race Engineer"]
+                for x in range(4):
+                    GAME.GeneratePeople(roles[x])
+                for y in range(4):
+                    f=c.execute("SELECT Name FROM Staff WHERE Team='Free Agent' AND Role=?",(roles[y],)).fetchall()
+                    if y>1:
+                        role=f"Race Engineer {y-1}"
+                    else:
+                        role=roles[y]
+                    c.execute("UPDATE Staff SET Team='Haas', Role=?, Salary=1000000 WHERE Name=?",(role,GAME.Sanitise(random.choice(f)),))
+            elif GAME.season==2017 and GAME.team!="Manor":
+                GAME.news.append("BREAKING NEWS! Manor has left Formula 1.")
+                c.execute("DELETE FROM Teams WHERE Name='Manor'")
+                c.execute("DELETE FROM Cars WHERE Name='Manor'")
+                c.execute("UPDATE Drivers SET Team='Free Agent, Role='Free Agent', ContractEnd=0 WHERE Team='Manor'")
+                c.execute("UPDATE Staff SET Team='Free Agent' WHERE Team='Manor'")
+            elif GAME.season==2019:
+                GAME.news.append("BREAKING NEWS! Force India is now the Racing Point Formula 1 team.")
+                GAME.news.append("BREAKING NEWS! Sauber is now the Alfa Romeo Formula 1 team.")
+                GAME.news.append("BREAKING NEWS! Formula 1 have reintroduced the fastest lap point.")
+                c.execute("UPDATE Regulations SET True=1 WHERE Regulation='Fastest Lap Point'")
+                F1.commit()
+                F1.close()
+                GAME.TeamAcquired("Force India","Racing Point")
+                GAME.TeamAcquired("Sauber","Alfa Romeo")
+                F1=sqlite3.connect(GAME.database)
+                c=F1.cursor()
+                c.execute("UPDATE Teams SET Sponsor='0' WHERE Sponsor='BWT'")
+                c.execute("UPDATE Sponsors SET Team='None' WHERE Team='Racing Point'")
+                c.execute("UPDATE Sponsors SET Team='Racing Point WHERE Name='BWT'")
+                c.execute("UPDATE Teams SET Appearance='Racing Point', Sponsor='BWT' WHERE Name='Racing Point'")
+                c.execute("UPDATE Teams SET Appearance='Alfa Romeo' WHERE Name='Alfa Romeo'")
+            elif GAME.season==2020:
+                GAME.news.append("BREAKING NEWS! Toro Rosso have rebranded as AlphaTauri.")
+                F1.commit()
+                F1.close()
+                GAME.TeamAcquired("Toro Rosso","AlphaTauri")
+                F1=sqlite3.connect(GAME.database)
+                c=F1.cursor()
+                c.execute("UPDATE Teams SET Appearance='Manor' WHERE Name='Manor'")
+            elif GAME.season==2021:
+                GAME.news.append("BREAKING NEWS! Racing Point have rebranded as Aston Martin.")
+                GAME.news.append("BREAKING NEWS! Renault have rebranded as Alpine.")
+                F1.commit()
+                F1.close()
+                GAME.TeamAcquired("Racing Point","Aston Martin")
+                GAME.TeamAcquired("Renault","Alpine")
+                F1=sqlite3.connect(GAME.database)
+                c=F1.cursor()
+                c.execute("UPDATE Teams SET Sponsor='0' WHERE Sponsor='Aramco'")
+                c.execute("UPDATE Sponsors SET Team='None' WHERE Team='Aston Martin'")
+                c.execute("UPDATE Sponsors SET Team='Aston Martin' WHERE Name='Aramco'")
+                c.execute("UPDATE Teams SET Appearance='Aston Martin', Sponsor='Aramco' WHERE Name='Aston Martin'")
+                c.execute("UPDATE Teams SET Appearance='Alpine' WHERE Name='Alpine'")
+            elif GAME.season==2024:
+                GAME.news.append("BREAKING NEWS! Alfa Romeo have rebranded as KICK Sauber")
+                GAME.news.append("BREAKING NEWS! AlphaTauri have rebranded as RB.")
+                F1.commit()
+                F1.close()
+                GAME.TeamAcquired("Alfa Romeo","KICK Sauber")
+                GAME.TeamAcquired("AlphaTauri","RB")
+                F1=sqlite3.connect(GAME.database)
+                c=F1.cursor()
+                c.execute("UPDATE Teams SET Sponsor='0' WHERE Sponsor='Visa & Cash App'")
+                c.execute("UPDATE Sponsors SET Team='None' WHERE Team='RB'")
+                c.execute("UPDATE Sponsors SET Team='RB' WHERE Name='Visa & Cash App'")
+                c.execute("UPDATE Teams SET Appearance='Racing Bulls', Sponsor='Visa & Cash App' WHERE Name='RB'")
+                c.execute("UPDATE Teams SET Appearance='KICK Sauber' WHERE Name='KICK Sauber'")
+            elif GAME.season==2025:
+                GAME.news.append("BREAKING NEWS! RB have rebranded as Racing Bulls.")
+                F1.commit()
+                F1.close()
+                GAME.TeamAcquired("RB","Racing Bulls")
+                F1=sqlite3.connect(GAME.database)
+                c=F1.cursor()
             elif GAME.season==2026:
+                if GAME.startYear<2026:
+                    GAME.news.append("BREAKING NEWS! Audi have bought KICK Sauber.")
+                    GAME.news.append("BREAKING NEWS! Cadillac have joined Formula 1.")
+                    GAME.news.append("BREAKING NEWS! Formula 1 have removed the fastest lap point.")
+                    c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Cadillac", "Cadillac", "Cadillac", 11, 0, 32000000, 1400000, "Graeme Lowdon", "United States of America", 40, 0, 0, 0,))
+                    c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Cadillac", "Ferrari", 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 1, 10, 15)''')
+                    F1.commit()
+                    F1.close()
+                    GAME.TeamAcquired("KICK Sauber","Audi")
+                    F1=sqlite3.connect(GAME.database)
+                    c=F1.cursor()
+                    c.execute("UPDATE Teams SET Appearance='Audi' WHERE Name='Audi'")
+                    c.execute("UPDATE Regulations SET True=0 WHERE Regulation='Fastest Lap Point'")
+                    c.execute("UPDATE Regulations SET True=1 WHERE Regulation='ERS'")
+                    #Sponsors and engines
+                    c.execute("DELETE FROM Engines WHERE Name='Renault'")
+                    c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Audi", "Audi", 7, 8, 5, 1)''')
+                    c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Red Bull", "Red Bull", 7, 8, 7, 1)''')
+                    c.execute("UPDATE Engines SET Manufacturer='Aston Martin' WHERE Name='Honda'")
+                    teams=["McLaren","Mercedes","Red Bull","Ferrari","Williams","Racing Bulls","Aston Martin","Haas","Audi","Alpine","Cadillac"]
+                    sponsors=["Mastercard","Petronas","Oracle","HP","Atlassian","Visa & Cash App","Aramco","Gazoo Racing","Revolut","BWT",0]
+                    engines=["Mercedes","Mercedes","Red Bull","Ferrari","Mercedes","Red Bull","Honda","Ferrari","Audi","Mercedes","Ferrari"]
+                    for x in range(11):
+                        c.execute("UPDATE Sponsors SET Team='None' WHERE Team=?",(teams[x],))
+                        c.execute("UPDATE Sponsors SET Team=? WHERE Name=?",(teams[x],sponsors[x],))
+                        c.execute("UPDATE Teams SET Sponsor='0' WHERE Sponsor=?",(sponsors[x],))
+                        c.execute("UPDATE Teams SET Sponsor=? WHERE Name=?",(sponsors[x],teams[x],))
+                        if GAME.team!=teams[x] or teams[x]=="Aston Martin" or teams[x]=="Red Bull" or teams[x]=="Racing Bulls" or teams[x]=="Audi":
+                            c.execute("UPDATE Cars SET Engine=? WHERE Team=?",(engines[x],teams[x],))
+                GAME.ers=1
                 GAME.drs=0
             #Team Principal Replacement
             f=c.execute("SELECT Name FROM Teams WHERE TeamPrincipal='None'").fetchall()
@@ -12019,9 +12160,9 @@ class Game:
                     GAME.news.append(f"BREAKING NEWS! {name} is the new Team Principal of {team}.")
                     c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(name,team,))
                     c.execute("UPDATE TeamPrincipals SET Team=? WHERE Name=?",(team,name,))
-            if GAME.startYear==2026:
+            if GAME.season>2026:
                 buyer=0
-                if random.randint(1,4)>=2 and GAME.season!=2026 and GAME.season>2010:
+                if random.randint(1,4)>=2:
                     #Team Acquired
                     f=c.execute('''SELECT Name FROM Teams WHERE Name!="Ferrari" AND Name!="McLaren" AND Name!="Mercedes" AND Name!=? AND OriginalName!="Player"''',(GAME.team,)).fetchall()
                     team=random.choice(f)
@@ -12577,7 +12718,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "2009 Renault Display","2009 Toyota Upgrade","2009 Toyota Display","2009 Toro Rosso Upgrade","2009 Toro Rosso Display","2009 Red Bull Upgrade","2009 Red Bull Display",
         "2009 Williams Upgrade","2009 Williams Display","2009 Brawn GP Upgrade","Brawn GP Display","2009 Force India Upgrade","2009 Mercedes Upgrade","Suzuka Haas Upgrade",
         "Virgin Upgrade","HRT Upgrade","Lotus Upgrade","Sauber Display","Virgin Display","HRT Display","Lotus Renault Display","Lotus Renault Upgrade","Caterham Display",
-        "Marussia Display","Suzuka Mercedes Upgrade"]
+        "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","KICK Sauber Display"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
@@ -12609,7 +12750,7 @@ for x in range(len(driverHeads)):
         missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Toro Rosso","Toyota","BMW","Amazon","Ford","Tesla","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
-       "Alfa Romeo","Sauber","HRT"]
+       "Alfa Romeo","Sauber","HRT","Manor","Racing Point","AlphaTauri","KICK Sauber"]
 xDif=[90,82,88,95,110,95,92,100,95,90,105,98,92,85,95,97,95,98,95,88]
 yDif=[115,90,95,108,105,87,90,70,122,80,108,135,112,105,80,100,85,50,88,60]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
