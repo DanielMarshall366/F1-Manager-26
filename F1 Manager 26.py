@@ -4664,7 +4664,7 @@ class Game:
                 GAME.distance.append(GAME.positions.index(x)*-2)
                 #Refueling
                 if GAME.refueling==1:
-                    totalFuelNeeded=round(100*(GAME.laps-lap]])/GAME.laps)
+                    totalFuelNeeded=round(100*(GAME.laps-lap)/GAME.laps)
                     if GAME.fuel[driverIndex]<totalFuelNeeded:
                         GAME.fuel[driverIndex]=totalFuelNeeded
                 if GAME.teams[x]!=GAME.team:
@@ -7498,7 +7498,7 @@ class Game:
                 GAME.lapPittedTo.append(1)
                 GAME.battery.append(8)
                 GAME.DRS.append(30)
-                if GAME.wet==1:
+                if GAME.wet==1 or GAME.refueling==0:
                     GAME.fuel.append(100)
                 else:
                     GAME.fuel.append(70)
@@ -9287,7 +9287,7 @@ class Game:
                             if len(GAME.positions)>x:
                                 index=GAME.positions[x]
                                 gained=GAME.startingPositions.index(index)-x
-                                if gained>best[0]:
+                                if gained>best[0]+1:
                                     best=[gained,index]
                     else:
                         best=[0,0,-1]
@@ -10955,7 +10955,8 @@ class Game:
                 engine=GAME.Sanitise(f[x])
                 score=int(GAME.Sanitise(c.execute("SELECT Power FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*5
                 score+=int(GAME.Sanitise(c.execute("SELECT Reliability FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*3
-                score+=int(GAME.Sanitise(c.execute("SELECT Battery FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*4
+                if GAME.ers==1:
+                    score+=int(GAME.Sanitise(c.execute("SELECT Battery FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))*4
                 scores.append(score)
             for x in range(i):
                 highest=0
@@ -11775,14 +11776,12 @@ class Game:
     def DisplayGridLoop(self,position):
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
-        try:
-            c.execute('''SELECT Name FROM Teams WHERE PreviousPosition=?''',(position,))
-            team=GAME.Sanitise(c.fetchall()[0])
-        except:
-            c.execute('''SELECT Name FROM Teams WHERE PreviousPosition=0''')
-            F=c.fetchall()
-            team=GAME.Sanitise(F[len(GAME.newTeams)])
-            GAME.newTeams.append(team)
+        f=c.execute('''SELECT Name FROM Teams WHERE PreviousPosition=?''',(position,)).fetchall()
+        if len(f)>0:
+            team=GAME.Sanitise(f[0])
+        else:
+            team=GAME.Sanitise(GAME.newTeams[0])
+            GAME.newTeams.pop(0)
         F1.commit()
         F1.close()
         if GAME.season<2026:
@@ -11807,9 +11806,9 @@ class Game:
                 winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
         GAME.ChangeScreen("Blank Screen")
         canvas.create_text(80, 250, text=f"The {GAME.season} Grid", fill="white", font=("Arial", 150), anchor="nw")
-        GAME.newTeams=[]
         with sqlite3.connect(GAME.database) as F1:
-            f = F1.execute("SELECT Name FROM Teams").fetchall()
+            GAME.newTeams=F1.execute("SELECT Name FROM Teams WHERE PreviousPosition=0").fetchall()
+            f=F1.execute("SELECT Name FROM Teams").fetchall()
         time=round(71500/(len(f)+1))
         delay_ms=time
         for idx, _ in enumerate(f, start=0):
@@ -11921,7 +11920,18 @@ class Game:
                 c.execute("UPDATE Teams SET Appearance='Mercedes' WHERE Name='Mercedes'")
                 c.execute("UPDATE Teams SET Appearance='Sauber' WHERE Name='Sauber'")
                 c.execute("UPDATE Teams SET Appearance='Lotus', PreviousPosition=0, TeamPrincipal='Tony Fernandes', Country='United Kingdom' WHERE Name='Lotus'")
-                c.execute("UPDATE Teams SET Sponsor='0' WHERE Name='Sauber' OR Name='Lotus")
+                teams=[]
+                position=10
+                while True:
+                    f=c.execute("SELECT Name FROM Teams WHERE PreviousPosition=?",(position,)).fetchall()
+                    if len(f)==0:
+                        break
+                    else:
+                        teams.append(GAME.Sanitise(f[0]))
+                        position-=1
+                for x in range(len(teams)):
+                    c.execute("UPDATE Teams SET PreviousPosition=? WHERE Name=?",(9-x,teams[x],))
+                c.execute("UPDATE Teams SET Sponsor='0' WHERE Name='Sauber' OR Name='Lotus'")
                 c.execute("UPDATE Sponsors SET Team='None' WHERE Name='Panasonic'")
                 c.execute("UPDATE Teams SET Sponsor='Petronas', Country='Germany' WHERE Name='Mercedes'")
                 c.execute("UPDATE Sponsors SET Team='Mercedes' WHERE Name='Petronas'")
