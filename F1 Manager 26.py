@@ -1022,32 +1022,33 @@ class Game:
         drivers=[]
         for x in range(len(f)):
             driver=GAME.Sanitise(f[x])
-            team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Name=?''',(driver,)).fetchall()[0])
-            if team!=Team and team!="Retired":
-                age=1
-                if GAME.scouting=="Junior Driver":
-                    if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Age<18",(driver,)).fetchall())==0:
-                        age=0
-                if age==1:
-                    c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(driver,))
-                    role=GAME.Sanitise(c.fetchall()[0])
-                    if role=="Reserve" or role=="Junior" or role=="Free Agent":
-                        drivers.append(driver)
-                    elif GAME.race>=7:
-                        c.execute('''SELECT ContractEnd FROM Drivers WHERE Name=?''',(driver,))
-                        contractEnd=int(GAME.Sanitise(c.fetchall()[0]))
-                        if Team==GAME.team and Team=="Racing Bulls" and team=="Red Bull" and contractEnd==GAME.season and GAME.race>=GAME.races-6:
+            if driver!="Daniel Ricciardo" or GAME.season!=2010:
+                team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Name=?''',(driver,)).fetchall()[0])
+                if team!=Team and team!="Retired":
+                    age=1
+                    if GAME.scouting=="Junior Driver":
+                        if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Age<18",(driver,)).fetchall())==0:
+                            age=0
+                    if age==1:
+                        c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(driver,))
+                        role=GAME.Sanitise(c.fetchall()[0])
+                        if role=="Reserve" or role=="Junior" or role=="Free Agent":
                             drivers.append(driver)
-                        else:
-                            c.execute('''SELECT Ranking FROM Cars WHERE Team=?''',(team,))
-                            ranking=int(GAME.Sanitise(c.fetchall()[0]))
-                            c.execute('''SELECT Position FROM Teams WHERE Name=?''',(team,))
-                            position=int(GAME.Sanitise(c.fetchall()[0]))
-                            if contractEnd==GAME.season:
-                                if Ranking<=ranking+1 or Position<=position+1 or GAME.race>=20:
-                                    drivers.append(driver)
-                            elif Ranking<ranking or Position<position:
+                        elif GAME.race>=7:
+                            c.execute('''SELECT ContractEnd FROM Drivers WHERE Name=?''',(driver,))
+                            contractEnd=int(GAME.Sanitise(c.fetchall()[0]))
+                            if Team==GAME.team and Team=="Racing Bulls" and team=="Red Bull" and contractEnd==GAME.season and GAME.race>=GAME.races-6:
                                 drivers.append(driver)
+                            else:
+                                c.execute('''SELECT Ranking FROM Cars WHERE Team=?''',(team,))
+                                ranking=int(GAME.Sanitise(c.fetchall()[0]))
+                                c.execute('''SELECT Position FROM Teams WHERE Name=?''',(team,))
+                                position=int(GAME.Sanitise(c.fetchall()[0]))
+                                if contractEnd==GAME.season:
+                                    if Ranking<=ranking+1 or Position<=position+1 or GAME.race>=20:
+                                        drivers.append(driver)
+                                elif Ranking<ranking or Position<position:
+                                    drivers.append(driver)
         F1.commit()
         F1.close()
         return drivers
@@ -7955,6 +7956,11 @@ class Game:
             regulationChange=int(GAME.Sanitise(c.execute('''SELECT RegulationChange FROM Player''').fetchall()[0]))
             if regulationChange==GAME.season:
                 championships=int(GAME.Sanitise(c.execute("SELECT Championships FROM Player").fetchall()[0]))
+                if GAME.season==2014 and GAME.team!="Mercedes":
+                    research=int(GAME.Sanitise(c.execute("SELECT Research FROM Cars WHERE Team='Mercedes'").fetchall()[0]))*3
+                    engineResearch=int(GAME.Sanitise(c.execute("SELECT Research FROM Engines WHERE Name='Mercedes'").fetchall()[0]))*3
+                    c.execute("UPDATE Cars SET Research=? WHERE Team='Mercedes'",(research,))
+                    c.execute("UPDATE Engines SET Research=? WHERE Name='Mercedes'",(engineResearch,))
                 #Aerodynamic Changes
                 if GAME.team!="Red Bull" and GAME.team!="Racing Bulls":
                     if len(c.execute('''SELECT Name FROM Teams WHERE Name="Red Bull" OR Name="Racing Bulls"''').fetchall())==2:
@@ -11884,6 +11890,7 @@ class Game:
                 GAME.news.append("BREAKING NEWS! Sauber have ended their partnership with BMW.")
                 GAME.news.append("BREAKING NEWS! Toyota have left Formula 1.")
                 GAME.news.append("BREAKING NEWS! Lotus, Virgin and HRT have joined Formula 1.")
+                c.execute("UPDATE Drivers SET NewTeam='HRT', NewRole='1', ContractEnd=2011 WHERE Name='Daniel Ricciardo'")
                 for x in range(2):
                     for y in range(4):
                         if x==0:
@@ -11921,6 +11928,7 @@ class Game:
                 GAME.drs=1
                 GAME.news.append("BREAKING NEWS! A new system called DRS has been introduced.")
                 GAME.news.append("BREAKING NEWS! Formula 1 is now using Pirelli tyres.")
+                c.execute("UPDATE Drivers SET NewTeam='Toro Rosso', NewRole='1', ContractEnd=2013 WHERE Name='Daniel Ricciardo'")
             elif GAME.season==2012:
                 F1.commit()
                 F1.close()
@@ -11935,6 +11943,8 @@ class Game:
                 c.execute("UPDATE Cars SET Engine='Renault' WHERE Team='Caterham'")
             elif GAME.season==2013 and GAME.team!="Mercedes":
                 c.execute("UPDATE Teams SET Income=2000000 WHERE Name='Mercedes'")
+                if GAME.team!="Red Bull" and len(c.execute("SELECT Name FROM Drivers WHERE Team='Toro Rosso' AND Name='Daniel Ricciardo'").fetchall())>0:
+                    c.execute("UPDATE Drivers SET NewTeam='Red Bull', NewRole='2', NewSalary=1000000, ContractEnd=2016 WHERE Name='Daniel Ricciardo'")
             elif GAME.season==2015:
                 GAME.news.append("BREAKING NEWS! McLaren are now partnering with Honda for their engines.")
                 c.execute("UPDATE Cars SET Engine='Honda' WHERE Team='McLaren'")

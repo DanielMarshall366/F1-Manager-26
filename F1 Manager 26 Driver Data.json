@@ -1508,7 +1508,7 @@
           "Calmness": 70,
 	  "Age": 21,
 	  "Marketability": 88,
-          "DevelopmentRate": 88, 
+          "DevelopmentRate": 100, 
           "ContractEnd": 2014, 
           "Championships": 0,
           "Wins": 1
@@ -1888,6 +1888,27 @@
 	  "Marketability": 90,
           "DevelopmentRate": 80, 
           "ContractEnd": 0, 
+          "Championships": 0,
+          "Wins": 0
+        },
+	{
+          "Name": "Daniel Ricciardo",
+          "Team": "Toro Rosso", 
+          "Role": "Reserve", 
+          "Country": "Australia",
+          "Salary": 500000,       
+          "Rating": 84,
+	  "Overtaking": 90,
+	  "Defending": 90,
+	  "Pace": 92, 
+          "Experience": 20, 
+          "Control": 70,
+          "Reaction": 98,       
+          "Calmness": 94,
+	  "Age": 19,
+	  "Marketability": 95,
+          "DevelopmentRate": 120, 
+          "ContractEnd": 2010, 
           "Championships": 0,
           "Wins": 0
         }
