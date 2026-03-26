@@ -12754,51 +12754,54 @@ steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine
 xDif=[90,82,88,95,110,95,92,100,95,90,105,98,92,85,95,97,95,98,95,88]
 yDif=[115,90,95,108,105,87,90,70,122,80,108,135,112,105,80,100,85,50,88,60]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
-GAME.suits=[tk.PhotoImage(file=path)]
-logos=[]
-for x in range(len(steam)-1):
-    path = os.path.join(os.path.dirname(__file__), "Suits", (steam[x+1]+" Suit.png"))
+if os.path.isfile(path):
+    GAME.suits=[tk.PhotoImage(file=path)]
+    logos=[]
+    for x in range(len(steam)-1):
+        path = os.path.join(os.path.dirname(__file__), "Suits", (steam[x+1]+" Suit.png"))
+        if os.path.isfile(path):
+            GAME.suits.append(tk.PhotoImage(file=path))
+        else:
+            GAME.suits.append(GAME.suits[0])
+        team=steam[x+1]
+        if "Ferrari" in team:
+            team="Ferrari"
+        elif "McLaren" in team and team!="McLaren":
+            team="Classic McLaren"
+        path = os.path.join(os.path.dirname(__file__), "Logos", (team+" Logo.png"))
+        if os.path.isfile(path):
+            logos.append(tk.PhotoImage(file=path))
+        else:
+            missingFiles=1
+    steam.append("Sonny Hayes")
+    path = os.path.join(os.path.dirname(__file__), "Suits", ("Sonny Hayes.png"))
     if os.path.isfile(path):
         GAME.suits.append(tk.PhotoImage(file=path))
     else:
-        GAME.suits.append(GAME.suits[0])
-    team=steam[x+1]
-    if "Ferrari" in team:
-        team="Ferrari"
-    elif "McLaren" in team and team!="McLaren":
-        team="Classic McLaren"
-    path = os.path.join(os.path.dirname(__file__), "Logos", (team+" Logo.png"))
+        missingFiles=1
+    steam.append("Joshua Pearce")
+    path = os.path.join(os.path.dirname(__file__), "Suits", ("Joshua Pearce.png"))
     if os.path.isfile(path):
-        logos.append(tk.PhotoImage(file=path))
+        GAME.suits.append(tk.PhotoImage(file=path))
     else:
         missingFiles=1
-steam.append("Sonny Hayes")
-path = os.path.join(os.path.dirname(__file__), "Suits", ("Sonny Hayes.png"))
-if os.path.isfile(path):
-    GAME.suits.append(tk.PhotoImage(file=path))
+    sponsors=["HP","Oracle","Petronas","Aramco","BWT","MoneyGram","Visa & Cash App","Atlassian","Adidas","Microsoft","Tesco","EA","Games Workshop","Disney","Opera GX","Coca Cola",
+              "NVIDIA","Google","Netflix","IBM","McDonald","Uber","Virgin","Vodafone","Mastercard","Visa","Revolut","Apple","Gazoo Racing","Marlboro","ING","Panasonic","AT&T","Kingfisher"]
+    sponsorLogos=[]
+    sponsorSuits=[]
+    for x in range(len(sponsors)):
+        path = os.path.join(os.path.dirname(__file__), "Suits", (sponsors[x]+" Suit.png"))
+        if os.path.isfile(path):
+            sponsorSuits.append(tk.PhotoImage(file=path))
+        else:
+            sponsorSuits.append(GAME.suits[0])
+        path = os.path.join(os.path.dirname(__file__), "Logos", (sponsors[x]+" Logo.png"))
+        if os.path.isfile(path):
+            sponsorLogos.append(tk.PhotoImage(file=path))
+        else:
+            missingFiles=1
 else:
     missingFiles=1
-steam.append("Joshua Pearce")
-path = os.path.join(os.path.dirname(__file__), "Suits", ("Joshua Pearce.png"))
-if os.path.isfile(path):
-    GAME.suits.append(tk.PhotoImage(file=path))
-else:
-    missingFiles=1
-sponsors=["HP","Oracle","Petronas","Aramco","BWT","MoneyGram","Visa & Cash App","Atlassian","Adidas","Microsoft","Tesco","EA","Games Workshop","Disney","Opera GX","Coca Cola",
-          "NVIDIA","Google","Netflix","IBM","McDonald","Uber","Virgin","Vodafone","Mastercard","Visa","Revolut","Apple","Gazoo Racing","Marlboro","ING","Panasonic","AT&T","Kingfisher"]
-sponsorLogos=[]
-sponsorSuits=[]
-for x in range(len(sponsors)):
-    path = os.path.join(os.path.dirname(__file__), "Suits", (sponsors[x]+" Suit.png"))
-    if os.path.isfile(path):
-        sponsorSuits.append(tk.PhotoImage(file=path))
-    else:
-        sponsorSuits.append(GAME.suits[0])
-    path = os.path.join(os.path.dirname(__file__), "Logos", (sponsors[x]+" Logo.png"))
-    if os.path.isfile(path):
-        sponsorLogos.append(tk.PhotoImage(file=path))
-    else:
-        missingFiles=1
 Buttons=["Next","Quit","Qualifying","Prepare for Race","Tyre Aggression","Fuel Aggression","ERS Deployment","Pause","Play","Helmet","Box","Back","Team Orders","Stop Team Orders",
          "Drive in Clean Air","Use Racing Line","Maintain Position","Overtake","Tyre Data","Results","Upgrade Car","Research","Standings","Data","Scouting","Team Data","Car Data",
          "Calendar","Achievements","History","Switch Engine 1","Switch Engine 2","Next Race","Upgrade Attribute","Upgrade","Aerodynamic Regulations","Engine Regulations",
@@ -12818,18 +12821,21 @@ tracks=["Australia","China","Japan","Bahrain","Saudi Arabia","Miami","Imola","Mo
         "Portugal","2021 Abu Dhabi","Malaysia","Valencia","South Korea"]
 layouts=[]
 path=os.path.join(os.path.dirname(__file__), "Race Images", "Lights.png")
-raceImages=[tk.PhotoImage(file=path)]
-for x in range(len(tracks)):
-    path = os.path.join(os.path.dirname(__file__), "Layouts", (tracks[x]+" Layout.png"))
-    if os.path.isfile(path):
-        layouts.append(tk.PhotoImage(file=path))
-    i=1
-    for y in range(2):
-        path=os.path.join(os.path.dirname(__file__), "Race Images", (f"{tracks[x]} {y+1}.png"))
+if os.path.isfile(path):
+    raceImages=[tk.PhotoImage(file=path)]
+    for x in range(len(tracks)):
+        path = os.path.join(os.path.dirname(__file__), "Layouts", (tracks[x]+" Layout.png"))
         if os.path.isfile(path):
-            raceImages.append(tk.PhotoImage(file=path))
-        else:
-            missingFiles=1
+            layouts.append(tk.PhotoImage(file=path))
+        i=1
+        for y in range(2):
+            path=os.path.join(os.path.dirname(__file__), "Race Images", (f"{tracks[x]} {y+1}.png"))
+            if os.path.isfile(path):
+                raceImages.append(tk.PhotoImage(file=path))
+            else:
+                missingFiles=1
+else:
+    missingFiles=1
 Tyres=["Soft","Medium","Hard","Intermediate","Wet"]
 tyres=[]
 for x in range(len(Tyres)):
