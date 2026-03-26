@@ -8806,6 +8806,9 @@ class Game:
                 root.after(400, lambda: GAME.ReplayScreen())
             elif event.x>=1295 and event.x<=1345 and event.y>=710 and event.y<=760:
                 GAME.Settings()
+            else:
+                GAME.ChangeScreen("Grey Screen")
+                GAME.DisplayDriver("Kimi Raikkonen",500,500)
         elif GAME.screen=="Welcome screen":
             if event.x>=54 and event.x<=250 and event.y>=718 and event.y<=765:
                 GAME.ChangeScreen("Get Name")
@@ -11272,6 +11275,12 @@ class Game:
             colour="#006E3C"
         elif team=="Racing Point":
             colour="#FF69B4"
+        elif team=="Kick sauber":
+            colour="#00FF78"
+        elif team=="Sauber" or team=="Alfa Romeo":
+            colour="#D11B3F"
+        elif "BMW" in team:
+            colour="#0078C8"
         else:
             colour="white"
         return colour
@@ -11649,7 +11658,9 @@ class Game:
                 canvas.create_text(950-(650-(650*x)), 340, text=driver, fill="black", font=("Arial", 20), anchor="nw")
     def DisplayDriver(self,driver,x,y):
             with sqlite3.connect(GAME.database) as c:
-                if GAME.screen=="Contract":
+                if True:
+                    team="Sauber"
+                elif GAME.screen=="Contract":
                     team=GAME.team
                 elif GAME.replay>0:
                     team=GAME.teams[GAME.drivers.index(driver)]
@@ -11660,8 +11671,6 @@ class Game:
                         team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall())
                 if driver=="Sonny Hayes" or driver=="Joshua Pearce":
                     team=driver
-                elif team=="AlphaTauri" or team=="Toro Rosso":
-                    team="Racing Bulls"
                 elif team=="McLaren":
                     if GAME.replay==3 or GAME.replay==4 or GAME.season<2026:
                         team="Vodafone McLaren"
@@ -11670,8 +11679,8 @@ class Game:
                 elif team=="Ferrari":
                     if GAME.replay==5 or GAME.replay==4 or GAME.season<2026:
                         team="Marlboro Ferrari"
-                elif team=="Toyota":
-                    team="Gazoo Racing"
+                elif team=="Force India" and GAME.season==2018:
+                    team="Racing Point"
             if team in steam:
                 if os.path.isfile(os.path.join(os.path.dirname(__file__), "Suits", (f"{team} Suit.png"))):
                     index=steam.index(team)
@@ -12099,11 +12108,11 @@ class Game:
                 c.execute("UPDATE Teams SET Appearance='Aston Martin', Sponsor='Aramco' WHERE Name='Aston Martin'")
                 c.execute("UPDATE Teams SET Appearance='Alpine' WHERE Name='Alpine'")
             elif GAME.season==2024:
-                GAME.news.append("BREAKING NEWS! Alfa Romeo have rebranded as KICK Sauber")
+                GAME.news.append("BREAKING NEWS! Alfa Romeo have rebranded as Kick Sauber")
                 GAME.news.append("BREAKING NEWS! AlphaTauri have rebranded as RB.")
                 F1.commit()
                 F1.close()
-                GAME.TeamAcquired("Alfa Romeo","KICK Sauber")
+                GAME.TeamAcquired("Alfa Romeo","Kick Sauber")
                 GAME.TeamAcquired("AlphaTauri","RB")
                 F1=sqlite3.connect(GAME.database)
                 c=F1.cursor()
@@ -12111,7 +12120,7 @@ class Game:
                 c.execute("UPDATE Sponsors SET Team='None' WHERE Team='RB'")
                 c.execute("UPDATE Sponsors SET Team='RB' WHERE Name='Visa & Cash App'")
                 c.execute("UPDATE Teams SET Appearance='Racing Bulls', Sponsor='Visa & Cash App' WHERE Name='RB'")
-                c.execute("UPDATE Teams SET Appearance='KICK Sauber' WHERE Name='KICK Sauber'")
+                c.execute("UPDATE Teams SET Appearance='Kick Sauber' WHERE Name='Kick Sauber'")
             elif GAME.season==2025:
                 GAME.news.append("BREAKING NEWS! RB have rebranded as Racing Bulls.")
                 F1.commit()
@@ -12121,14 +12130,14 @@ class Game:
                 c=F1.cursor()
             elif GAME.season==2026:
                 if GAME.startYear<2026:
-                    GAME.news.append("BREAKING NEWS! Audi have bought KICK Sauber.")
+                    GAME.news.append("BREAKING NEWS! Audi have bought Kick Sauber.")
                     GAME.news.append("BREAKING NEWS! Cadillac have joined Formula 1.")
                     GAME.news.append("BREAKING NEWS! Formula 1 have removed the fastest lap point.")
                     c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Cadillac", "Cadillac", "Cadillac", 11, 0, 32000000, 1400000, "Graeme Lowdon", "United States of America", 40, 0, 0, 0,))
                     c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Cadillac", "Ferrari", 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 1, 10, 15)''')
                     F1.commit()
                     F1.close()
-                    GAME.TeamAcquired("KICK Sauber","Audi")
+                    GAME.TeamAcquired("Kick Sauber","Audi")
                     F1=sqlite3.connect(GAME.database)
                     c=F1.cursor()
                     c.execute("UPDATE Teams SET Appearance='Audi' WHERE Name='Audi'")
@@ -12718,7 +12727,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "2009 Renault Display","2009 Toyota Upgrade","2009 Toyota Display","2009 Toro Rosso Upgrade","2009 Toro Rosso Display","2009 Red Bull Upgrade","2009 Red Bull Display",
         "2009 Williams Upgrade","2009 Williams Display","2009 Brawn GP Upgrade","Brawn GP Display","2009 Force India Upgrade","2009 Mercedes Upgrade","Suzuka Haas Upgrade",
         "Virgin Upgrade","HRT Upgrade","Lotus Upgrade","Sauber Display","Virgin Display","HRT Display","Lotus Renault Display","Lotus Renault Upgrade","Caterham Display",
-        "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","KICK Sauber Display"]
+        "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
@@ -12749,10 +12758,10 @@ for x in range(len(driverHeads)):
     else:
         missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
-       "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Toro Rosso","Toyota","BMW","Amazon","Ford","Tesla","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
-       "Alfa Romeo","Sauber","HRT","Manor","Racing Point","AlphaTauri","KICK Sauber"]
-xDif=[90,82,88,95,110,95,92,100,95,90,105,98,92,85,95,97,95,98,95,88]
-yDif=[115,90,95,108,105,87,90,70,122,80,108,135,112,105,80,100,85,50,88,60]
+       "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","Amazon","Ford","Tesla",
+       "Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","Alfa Romeo","HRT","Manor"]
+xDif=[90,82,88,95,110,95,92,100,95,90,105,98,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99]
+yDif=[115,90,95,108,105,87,90,70,122,80,108,135,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 if os.path.isfile(path):
     GAME.suits=[tk.PhotoImage(file=path)]
