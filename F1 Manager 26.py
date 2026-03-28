@@ -204,6 +204,7 @@ class Game:
         self.homeWin=0
         self.startYear=2026
         self.refueling=0
+        self.costCap=135000000
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -429,7 +430,7 @@ class Game:
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("William Joseph", "McLaren", "Race Engineer 2", 86, 2000000, 95, "United Kingdom", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Tom Stallard", "McLaren", "Race Engineer 1", 85, 2000000, 95, "United Kingdom", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Bryan Bozzi", "Ferrari", "Race Engineer 1", 85, 2000000, 90, "Italy", 0, 0, 0))
-            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Cédric Grosjean", "Ferrari", "Race Engineer 2", 95, 2000000, 90, "France", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Carlo Santi", "Ferrari", "Race Engineer 2", 82, 2000000, 90, "Italy", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Gianpiero Lambiase", "Red Bull", "Race Engineer 1", 91, 2000000, 75, "Italy", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Richard Wood", "Red Bull", "Race Engineer 2", 85, 2000000, 70, "United Kingdom", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Marcus Dudley", "Mercedes", "Race Engineer 1", 90, 1800000, 70, "United Kingdom", 0, 0, 0))
@@ -464,10 +465,12 @@ class Game:
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Old Points System", 0)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 1)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Refueling", 0)''')
+            c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Cost Cap", 1)''')
         else:
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Old Points System", 1)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 2)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Refueling", 1)''')
+            c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Cost Cap", 0)''')
 
         #Engines
         if GAME.startYear==2026:
@@ -598,7 +601,7 @@ class Game:
             regulationChange=2029
         else:
             regulationChange=2014
-        c.execute('''INSERT into Player (Name, Country, Team, newTeam, Season, Race, RegulationChange, Points, Wins, Championships, NextYearEngine, Actions, Financial, Management, Warnings, TyreWear, MovingTo, StartYear) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.name, GAME.country, GAME.team, GAME.newTeam, GAME.startYear, -1, regulationChange, 0, 0, 0, 0, 3, 5, 3, 0, 0, 0, GAME.startYear))
+        c.execute('''INSERT into Player (Name, Country, Team, newTeam, Season, Race, RegulationChange, Points, Wins, Championships, NextYearEngine, Actions, Financial, Management, Warnings, TyreWear, MovingTo, StartYear, CostCap) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.name, GAME.country, GAME.team, GAME.newTeam, GAME.startYear, -1, regulationChange, 0, 0, 0, 0, 3, 5, 3, 0, 0, 0, GAME.startYear, 135000000))
         
         #History
         c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2001, "Michael Schumacher", "Ferrari")''')
@@ -764,7 +767,7 @@ class Game:
         f=c.fetchall()
         if len(f)==1:
             sponsorPay=int(GAME.Sanitise(f[0]))
-            sponsorPay=sponsorPay*marketability
+            sponsorPay=sponsorPay*marketability//2
             totalIncome=baseIncome+sponsorPay
         else:
             totalIncome=baseIncome+(marketability*20000)
@@ -1842,6 +1845,7 @@ class Game:
                         manufacturedEngine=GAME.Sanitise(manufacturedEngine[0])
                     if (manufacturedEngine!=0 and(nextEngine=="0" or nextEngine==manufacturedEngine)) or nextEngine=="Honda" or GAME.action==0:
                         GAME.Button("Research",870,580)
+                costCap=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Cost Cap'").fetchall()[0]))
                 if GAME.team=="Red Bull":
                     if len(c.execute("SELECT Name FROM Teams WHERE Name='Racing Bulls'").fetchall())==1 or len(c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team='Red Bull'").fetchall())>0:
                         GAME.swappable=1
@@ -1852,7 +1856,7 @@ class Game:
                     if len(c.execute("SELECT Name FROM Drivers WHERE Role='Reserve' AND Team='Alpine'").fetchall())>0:
                         GAME.swappable=1
                 if GAME.action==0:
-                    if GAME.money>0:
+                    if GAME.money>0 and not(costCap==1 and GAME.costCap<500000):
                         GAME.Button("Upgrade Car",820,510)
                     GAME.Button("Scouting",350,580)
                     GAME.actions=1
@@ -1877,6 +1881,8 @@ class Game:
                         if financial>2:
                             financial=3
                     c.execute("UPDATE Player SET Financial=?",(financial,))
+                if costCap==1 and GAME.costCap<0:
+                    c.execute("UPDATE Players SET Financial=1")
             GAME.Button("Next Race",620,412)
             GAME.Button("Quit",5,730)
             GAME.DisplayMoney()
@@ -6033,6 +6039,9 @@ class Game:
                                 cursor.execute('''UPDATE Teams SET Money=? WHERE Name=?''',(money,team,))
                                 if team==GAME.team:
                                     GAME.money-=10000000
+                                    if len(cursor.execute("SELECT Regulation FROM Regulations WHERE Regulation='Cost Cap' AND True=1").fetchall())>0:
+                                        GAME.costCap-=10000000
+                                        c.execute("UPDATE Player SET CostCap=?",(GAME.costCap,))
                         elif car==1:
                             cursor.execute('''UPDATE Cars SET car1EngineDurability=? WHERE Team=?''',(durability,team,))
                         else:
@@ -8256,7 +8265,8 @@ class Game:
         GAME.WinterHiring()
         with sqlite3.connect(GAME.database) as c:
             GAME.race+=1
-            c.execute("UPDATE Player SET Race=?",(GAME.race,))
+            GAME.costCap=135000000
+            c.execute("UPDATE Player SET Race=?, CostCap=135000000",(GAME.race,))
     def Age(self,name):
         with sqlite3.connect(GAME.database) as c:
             age=int(GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))+1
@@ -9282,12 +9292,12 @@ class Game:
                         message=f"{wins}th Win"
                 else:
                     if random.randint(1,2)==1:
-                        best=[-1,0]
+                        best=[-2,0]
                         for x in range(10):
                             if len(GAME.positions)>x:
                                 index=GAME.positions[x]
                                 gained=GAME.startingPositions.index(index)-x
-                                if gained>best[0]+1:
+                                if gained>best[0]+2:
                                     best=[gained,index]
                     else:
                         best=[0,0,-1]
@@ -9547,6 +9557,23 @@ class Game:
                 d=0
                 u=0
                 with sqlite3.connect(GAME.database) as c:
+                    if len(c.execute("SELECT Regulation FROM Regulations WHERE Regulation='Cost Cap' AND True=1").fetchall()[0])>0:
+                        if GAME.costCap>0:
+                            canvas.create_text(40, 520, text="Cost Cap Remaining:", fill="white", font=("Arial", 40), anchor="nw")
+                            if GAME.costCap>=70000000:
+                                colour="#00FF00"
+                            elif GAME.costCap>=50000000:
+                                colour="#DADADA"
+                            elif GAME.costCap>=30000000:
+                                colour="#FF8000"
+                            elif GAME.costCap>=10000000:
+                                colour="#FF0000"
+                            else:
+                                colour="#CC0000"
+                            canvas.create_text(560, 520, text=f"${'{:,}'.format(GAME.costCap)}", fill=colour, font=("Arial", 40), anchor="nw")
+                        else:
+                            canvas.create_text(40, 520, text="Cost Cap Spent", fill="#A60000", font=("Arial", 40), anchor="nw")
+                    
                     position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                     previousPosition=int(GAME.Sanitise(c.execute("SELECT PreviousPosition FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                     last=len(c.execute("SELECT Name FROM Teams").fetchall())
@@ -9622,21 +9649,25 @@ class Game:
                 engine=2
             if engine!=0:
                 with sqlite3.connect(GAME.database) as c:
+                    costCap=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Cost Cap'").fetchall()[0]))
                     if engine==1:
                         if int(GAME.Sanitise(c.execute("SELECT car1EngineDurability FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))==100:
                             num=0
-                        else:
+                        elif costCap==0 or GAME.costCap>=10000000:
                             num=int(GAME.Sanitise(c.execute("SELECT car1Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))+1
                             c.execute("UPDATE Cars SET car1Engine=?, car1EngineDurability=100 WHERE Team=?",(num,GAME.team,))
                     else:
                         if int(GAME.Sanitise(c.execute("SELECT car2EngineDurability FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))==100:
                             num=0
-                        else:
+                        elif costCap==0 or GAME.costCap>=10000000:
                             num=int(GAME.Sanitise(c.execute("SELECT car2Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))+1
                             c.execute("UPDATE Cars SET car2Engine=?, car2EngineDurability=100 WHERE Team=?",(num,GAME.team,))
-                    if num>4:
+                    if num>4 and (costCap==0 or GAME.costCap>=10000000):
                         GAME.money-=10000000
                         c.execute("UPDATE Teams SET Money=? WHERE Name=?",(GAME.money,GAME.team,))
+                        if costCap==1:
+                            GAME.costCap-=10000000
+                            c.execute("UPDATE Player SET CostCap=?",(GAME.costCap,))
                 GAME.CarData()
         elif GAME.screen=="Upgrade":
             if event.x>=1150 and event.x<=1650 and event.y>=500 and event.y<=550:
@@ -9646,6 +9677,9 @@ class Game:
                     GAME.money-=(GAME.maximumUpgradePoints-GAME.remainingUpgradePoints)*500000
                     with sqlite3.connect(GAME.database) as c:
                         rating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Team=? AND Role="Technical Director"''',(GAME.team,)).fetchall()[0]))
+                        if len(c.execute("SELECT Regulation FROM Regulations WHERE Regulation='Cost Cap' AND True=1").fetchall())>0:
+                            GAME.costCap-=(GAME.maximumUpgradePoints-GAME.remainingUpgradePoints)*500000
+                            c.execute("UPDATE Player SET CostCap=?",(GAME.costCap,))
                         c.execute("UPDATE Teams SET Money=? WHERE Name=?",(GAME.money,GAME.team,))
                     for x in range(len(GAME.upgradePoints)):
                         if GAME.upgradePoints[x]>0:
@@ -11295,6 +11329,7 @@ class Game:
         GAME.drivers=[]
         GAME.database=1
         GAME.season=GAME.startYear
+        GAME.costCap=135000000
         while True:
             database=f"F1 Manager 26 Save Data {GAME.database}.db"
             try:
@@ -11334,7 +11369,7 @@ class Game:
         c.execute('''CREATE TABLE Sponsors(Name str, Team str, Pay int)''')
         c.execute('''CREATE TABLE Calendar(ID int, Track str)''')
         c.execute('''CREATE TABLE Tracks(Name str, Country str, Length float, Laps int, Risk int, RainChance int, Temperature int, Corners str, Straights int, Sprint int, Street int, Overtakeability int)''')
-        c.execute('''CREATE TABLE Player(Name str, Country str, Team str, newTeam int, Season int, Race int, RegulationChange int, Points int, Wins int, Championships int, NextYearEngine str, Actions int, Financial int, Management int, Warnings int, TyreWear int, MovingTo str, StartYear int)''')
+        c.execute('''CREATE TABLE Player(Name str, Country str, Team str, newTeam int, Season int, Race int, RegulationChange int, Points int, Wins int, Championships int, NextYearEngine str, Actions int, Financial int, Management int, Warnings int, TyreWear int, MovingTo str, StartYear int, CostCap int)''')
         c.execute('''CREATE TABLE History(Year int, Driver str, Constructor str)''')
         c.execute('''CREATE TABLE Buyers(Name str, Country str)''')
         c.execute('''CREATE TABLE TeamPrincipals(Name str, Team str)''')
@@ -11631,6 +11666,7 @@ class Game:
             GAME.actions=int(GAME.Sanitise(c.execute("SELECT Actions FROM Player").fetchall()[0]))
             GAME.startYear=int(GAME.Sanitise(c.execute("SELECT StartYear FROM Player").fetchall()))
             GAME.refueling=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Refueling'").fetchall()[0]))
+            GAME.costCap=int(GAME.Sanitise(c.execute("SELECT CostCap FROM Player").fetchall()[0]))
             GAME.races=len(c.execute("SELECT Track FROM Calendar").fetchall())
             if GAME.races==0:
                 GAME.races=24
@@ -12028,17 +12064,19 @@ class Game:
                             teams.append(GAME.Sanitise(f[0]))
                             position-=1
                     for x in range(len(teams)):
-                        c.execute("UPDATE Teams SET PreviousPosition=? WHERE Name=?",(11-x,teams[x],))
+                        c.execute("UPDATE Teams SET Position=?, PreviousPosition=? WHERE Name=?",(11-x, 11-x,teams[x],))
             elif GAME.season==2014 and GAME.team!="Ferrari" and GAME.team!="Red Bull":
                 c.execute("UPDATE Drivers SET NewTeam='Ferrari', NewRole='1', NewSalary=28000000, ContractEnd=2017 WHERE Name='Sebastian Vettel'")
             elif GAME.season==2015:
                 if GAME.team!="Caterham":
                     GAME.news.append("BREAKING NEWS! Caterham have left Formula 1.")
                     c.execute("DELETE FROM Teams WHERE Name='Caterham'")
-                    c.execute("DELETE FROM Cars WHERE Name='Caterham'")
+                    c.execute("DELETE FROM Cars WHERE Team='Caterham'")
                     c.execute("UPDATE Drivers SET Team='Free Agent', Role='Free Agent', ContractEnd=0 WHERE Team='Caterham'")
                     c.execute("UPDATE Staff SET Team='Free Agent' WHERE Team='Caterham'")
-                    position=len(c.execute("SELECT Name FROM Teams").fetchall())+1
+                    teams=[]
+                    maximum=len(c.execute("SELECT Name FROM Teams").fetchall())
+                    position=maximum+1
                     while True:
                         f=c.execute("SELECT Name FROM Teams WHERE PreviousPosition=?",(position,)).fetchall()
                         if len(f)==0:
@@ -12047,20 +12085,22 @@ class Game:
                             teams.append(GAME.Sanitise(f[0]))
                             position-=1
                     for x in range(len(teams)):
-                        c.execute("UPDATE Teams SET PreviousPosition=? WHERE Name=?",(11-x,teams[x],))
+                        c.execute("UPDATE Teams SET Position=?, PreviousPosition=? WHERE Name=?",(maximum-x, maximum-x,teams[x],))
                 GAME.news.append("BREAKING NEWS! McLaren are now partnering with Honda for their engines.")
                 c.execute("UPDATE Cars SET Engine='Honda' WHERE Team='McLaren'")
-                c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "McLaren", 3, 1, 5, 1)''')
+                c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "McLaren", 1, 1, 5, 1)''')
             elif GAME.season==2016:
                 if len(c.execute("SELECT Name FROM Teams").fetchall())>11:
                     f=c.execute("SELECT Name FROM Teams WHERE (Name='HRT' OR Name='Caterham') AND Name!=?",(GAME.team,)).fetchall()
                     leavingTeam=GAME.Sanitise(random.choice(f))
                     GAME.news.append(f"BREAKING NEWS! {leavingTeam} is leaving Formula 1.")
                     c.execute("DELETE FROM Teams WHERE Name=?",(leavingTeam,))
-                    c.execute("DELETE FROM Cars WHERE Name=?",(leavingTeam,))
+                    c.execute("DELETE FROM Cars WHERE Team=?",(leavingTeam,))
                     c.execute("UPDATE Drivers SET Team='Free Agent', Role='Free Agent', ContractEnd=0 WHERE Team=?",(leavingTeam,))
                     c.execute("UPDATE Staff SET Team='Free Agent' WHERE Team=?",(leavingTeam,))
-                    position=len(c.execute("SELECT Name FROM Teams").fetchall())+1
+                    teams=[]
+                    maximum=len(c.execute("SELECT Name FROM Teams").fetchall())
+                    position=maximum+1
                     while True:
                         f=c.execute("SELECT Name FROM Teams WHERE PreviousPosition=?",(position,)).fetchall()
                         if len(f)==0:
@@ -12069,7 +12109,7 @@ class Game:
                             teams.append(GAME.Sanitise(f[0]))
                             position-=1
                     for x in range(len(teams)):
-                        c.execute("UPDATE Teams SET PreviousPosition=? WHERE Name=?",(11-x,teams[x],))
+                        c.execute("UPDATE Teams SET Position=?, PreviousPosition=? WHERE Name=?",(maximum-x, maximum-x,teams[x],))
                 GAME.news.append("BREAKING NEWS! Marussia has now become the Manor Formula 1 team.")
                 GAME.news.append("BREAKING NEWS! Haas has joined Formula 1.")
                 GAME.news.append("BREAKING NEWS! Lotus Renault has rebranded back to Renault.")
