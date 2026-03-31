@@ -488,7 +488,7 @@ class Game:
 
         #Cars
         if GAME.startYear==2026:
-            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("McLaren", "Mercedes", 60, 60, 60, 60, 45, 60, 1, 100, 1, 100, 1, 4, 11)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("McLaren", "Mercedes", 70, 70, 70, 70, 60, 60, 1, 100, 1, 100, 1, 4, 11)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Ferrari", "Ferrari", 70, 80, 80, 80, 60, 62, 1, 100, 1, 100, 1, 2, 15)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Red Bull", "Red Bull", 68, 62, 62, 62, 35, 62, 1, 100, 1, 100, 1, 3, 15)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Mercedes", "Mercedes", 85, 80, 80, 80, 60, 55, 1, 100, 1, 100, 1, 1, 15)''')
@@ -3102,7 +3102,8 @@ class Game:
                     #Run out of fuel
                     GAME.AddToLog(GAME.drivers[index]+" has run out of fuel.")
                     GAME.crashMessage.append(GAME.drivers[index]+" has run out of fuel.")
-                    GAME.safety=3
+                    if GAME.replay==0:
+                        GAME.safety=3
                     runOutOfFuel.append(index)
                     if index in GAME.pitting:
                         GAME.pitting.remove(index)
@@ -3136,7 +3137,7 @@ class Game:
                                     GAME.fuelAggression.pop(index)
                                     GAME.fuelAggression.insert(index, 2)
                             else:
-                                if GAME.refueling==0 or GAME.pitLap[index]<GAME.lap[index]:
+                                if GAME.refueling==0 or GAME.pitLap[index]<GAME.lap[index] or GAME.wet==1:
                                     lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
                                 else:
                                     lapsLeft=GAME.pitLap[index]-GAME.lap[index]
@@ -3720,7 +3721,7 @@ class Game:
                                 break
                         GAME.positions.remove(driverIndex)
                         GAME.positions.insert(newPos,driverIndex)
-                    if GAME.replay==5 or GAME.season<2011:
+                    if GAME.replay==4 or GAME.replay==5 or GAME.season<2011:
                         if GAME.pitTyre[driverIndex]=="Medium":
                             if GAME.tyre[driverIndex]=="Hard":
                                 GAME.pitTyre[driverIndex]="Soft"
@@ -4611,7 +4612,7 @@ class Game:
             for x in range(5):
                 if Tyres[x]=="Wet":
                     text=f"{GAME.expectedTyreLife[3]} Laps"
-                elif Tyres[x]=="Medium" and GAME.season<2011:
+                elif Tyres[x]=="Medium" and (GAME.season<2011 or GAME.replay==4):
                     text="Pirelli \U0001F512"
                 else:
                     text=f"{GAME.expectedTyreLife[x]} Laps"
@@ -4781,7 +4782,7 @@ class Game:
                 tyre=tyres[x]
                 canvas.image=tyre
                 canvas.create_image(510+(300*x), 230, anchor=tk.NW, image=tyre)
-                if x==1 and GAME.season<2011:
+                if x==1 and (GAME.season<2011 or GAME.replay==4):
                     canvas.create_text(650+(300*x), 260, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
                 else:
                     canvas.create_text(650+(300*x), 260, text=(f"{GAME.expectedTyreLife[x]} Laps"), fill="black", font=("Arial", 20), anchor="nw")
@@ -4865,7 +4866,7 @@ class Game:
                 tyre=tyres[x]
                 canvas.image=tyre
                 canvas.create_image(510+(300*x), 230, anchor=tk.NW, image=tyre)
-                if x==1 and GAME.season<2011:
+                if x==1 and (GAME.replay==4 or GAME.season<2011):
                     canvas.create_text(650+(300*x), 260, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
                 else:
                     canvas.create_text(650+(300*x), 260, text=(f"{GAME.expectedTyreLife[x]} Laps"), fill="black", font=("Arial", 20), anchor="nw")
@@ -5090,8 +5091,8 @@ class Game:
         GAME.RefreshScreen()
         GAME.NextMove()
     def Leaderboard(self):
-        if GAME.season<2011:
-            colours=["#29E9D0","Not Real","#B4B9C3","#00B4DC","#0046FF"]
+        if GAME.season<2011 or (GAME.replay>3 and GAME.replay<7):
+            colours=["#29E9D0","yellow","#B4B9C3","#00B4DC","#0046FF"]
         else:
             colours=["red","yellow","white","green","blue"]
         for x in range(len(GAME.positions)):
@@ -6056,6 +6057,9 @@ class Game:
                         c.execute("UPDATE Teams SET Money=? WHERE Name=?",(money,team,))
                     if team==GAME.team:
                         GAME.money=money
+                        if len(c.execute("SELECT Regulation FROM Regulations WHERE Regulation='Cost Cap' AND True=1").fetchall())>0:
+                            GAME.costCap-=repairBill[x]
+                            c.execute("UPDATE Player SET CostCap=?",(GAME.costCap,))
                         
             GAME.race+=1
             with sqlite3.connect(GAME.database) as conn:
@@ -7419,7 +7423,7 @@ class Game:
                 valid=1
                 GAME.tyreWear=[]
                 for x in range(4):
-                    if x<2 and (GAME.replay==5 or GAME.season<2011):
+                    if x<2 and (GAME.replay==4 or GAME.replay==5 or GAME.season<2011):
                         wear=round(GAME.wearConstant/1.2)
                     elif x==0:
                         wear=GAME.wearConstant
@@ -7707,7 +7711,7 @@ class Game:
         if GAME.replay==5:
             canvas.create_text(230, 420, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(1180, 380, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
-        elif GAME.season<2011:
+        elif GAME.replay==4 or GAME.season<2011:
             canvas.create_text(230, 420, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(1180, 380, text=("Estimated: "+str(GAME.expectedTyreLife[3])+" Laps"), fill="black", font=("Arial", 20), anchor="nw")
         else:
@@ -9557,7 +9561,7 @@ class Game:
                 d=0
                 u=0
                 with sqlite3.connect(GAME.database) as c:
-                    if len(c.execute("SELECT Regulation FROM Regulations WHERE Regulation='Cost Cap' AND True=1").fetchall()[0])>0:
+                    if len(c.execute("SELECT Regulation FROM Regulations WHERE Regulation='Cost Cap' AND True=1").fetchall())>0:
                         if GAME.costCap>0:
                             canvas.create_text(40, 520, text="Cost Cap Remaining:", fill="white", font=("Arial", 40), anchor="nw")
                             if GAME.costCap>=70000000:
@@ -11264,7 +11268,7 @@ class Game:
         GAME.Button("Name Selector",250,100)
         canvas.create_text(350, 170, text=GAME.options[GAME.displayed], fill="black", font=("Arial", 40), anchor="nw")
     def TeamColour(self,team,season):
-        if team=="McLaren" and season>2025:
+        if team=="McLaren" and season>2025 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5:
             colour="#FFA100"
         elif team=="Mercedes":
             colour="#1AE2CE"
@@ -11289,7 +11293,7 @@ class Game:
         elif "Cadillac" in team:
             colour="#E6E6E6"
         elif "McLaren" in team:
-            colour="#DADADA"
+            colour="#C8CDD2"
         elif team=="Brawn GP":
             colour="#CDFF00"
         elif team=="Toro Rosso":
@@ -12088,7 +12092,7 @@ class Game:
                         c.execute("UPDATE Teams SET Position=?, PreviousPosition=? WHERE Name=?",(maximum-x, maximum-x,teams[x],))
                 GAME.news.append("BREAKING NEWS! McLaren are now partnering with Honda for their engines.")
                 c.execute("UPDATE Cars SET Engine='Honda' WHERE Team='McLaren'")
-                c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "McLaren", 1, 1, 5, 1)''')
+                c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "McLaren", 3, 1, 5, 1)''')
             elif GAME.season==2016:
                 if len(c.execute("SELECT Name FROM Teams").fetchall())>11:
                     f=c.execute("SELECT Name FROM Teams WHERE (Name='HRT' OR Name='Caterham') AND Name!=?",(GAME.team,)).fetchall()
