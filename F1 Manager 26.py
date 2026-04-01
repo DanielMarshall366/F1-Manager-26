@@ -6058,7 +6058,7 @@ class Game:
                     if team==GAME.team:
                         GAME.money=money
                         if len(c.execute("SELECT Regulation FROM Regulations WHERE Regulation='Cost Cap' AND True=1").fetchall())>0:
-                            GAME.costCap-=repairBill[x]
+                            GAME.costCap-=GAME.repairBill[x]
                             c.execute("UPDATE Player SET CostCap=?",(GAME.costCap,))
                         
             GAME.race+=1
