@@ -3018,11 +3018,17 @@ class Game:
                 if grip<0:
                     grip=0
                 GAME.grip.append(grip)
-                grip=10-(GAME.water*1.25)
+                if GAME.water>=3.5:
+                    grip=10-(GAME.water*2.25)
+                else:
+                    grip=10-(GAME.water*1.25)
                 if grip<0:
                     grip=0
                 GAME.grip.append(grip)
-                grip=10-(GAME.water*0.5)
+                if GAME.water>5:
+                    grip=10-(GAME.water*1.25)
+                else:
+                    grip=10-(GAME.water*0.5)
                 if grip<0:
                     grip=0
                 GAME.grip.append(grip)
@@ -4219,11 +4225,15 @@ class Game:
                 for x in range(len(GAME.positions)):
                     if mistake==0 and not (GAME.replay==6 and GAME.positions[x]==11):
                         try:
-                            if (GAME.tyre[driverID]=="Soft" or GAME.tyre[driverID]=="Medium" or GAME.tyre[driverID]=="Hard") and GAME.water>=1.4 and random.randint(1,20)==20:
+                            if GAME.tyre[driverID]=="Soft" or GAME.tyre[driverID]=="Medium" or GAME.tyre[driverID]=="Hard":
+                                grip=GAME.grip[0]
+                            elif GAME.tyre[driverID]=="Intermediate":
+                                grip=GAME.grip[1]
+                            else:
+                                grip=GAME.grip[2]
+                            if grip==0 and random.randint(1,5)==5:
                                 mistake=1
-                            elif GAME.tyre[driverID]!="Wet" and GAME.water>=4.3 and random.randint(1,20)==20:
-                                mistake=1
-                            elif GAME.water>=5 and random.randint(1,50)==50:
+                            elif grip<3 and random.randint(1,20)==20:
                                 mistake=1
                             driverID=GAME.positions[x]
                             driver=GAME.drivers[driverID]
@@ -5250,7 +5260,7 @@ class Game:
                         image=icons[6]
                     canvas.create_image(600+(x*430), 700, anchor=tk.NW, image=image)
                 if GAME.penalties[indexes[x]]>0:
-                    canvas.create_text(620+(x*430), 600, text=f"{GAME.penalties[indexes[x]]}s", fill="red", font=("Arial", 22), anchor="nw")
+                    canvas.create_text(620+(x*430), 585, text=f"{GAME.penalties[indexes[x]]}s", fill="red", font=("Arial", 22), anchor="nw")
         if GAME.pause==0:
             GAME.Button("Pause",670,630)
         else:
@@ -7836,12 +7846,8 @@ class Game:
                         colour="#DADADA"
                     else:
                         colour="#B60000"
-                elif x==1:
-                    colour="#C8CDD2"
-                elif x==2:
-                    colour="#D79B5A"
                 else:
-                    colour="white"
+                    colour=GAME.TeamColour(name,GAME.season)
                 engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
                 if engine=="Red Bull":
                     engine="Ford RBPT"
@@ -7868,6 +7874,8 @@ class Game:
         won=0
         for x in range(len(f)):
             if x<26:
+                name=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
+                team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
                 points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0]))
                 if x==0:
                     colour="#F5C939"
@@ -7879,14 +7887,8 @@ class Game:
                         colour="#DADADA"
                     else:
                         colour="#B60000"
-                elif x==1:
-                    colour="#C8CDD2"
-                elif x==2:
-                    colour="#D79B5A"
                 else:
-                    colour="white"
-                name=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
-                team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
+                    colour=GAME.TeamColour(team,GAME.season)
                 if team=="Free Agent":
                     team=""
                 if team=="Dead":
@@ -11269,11 +11271,11 @@ class Game:
         canvas.create_text(350, 170, text=GAME.options[GAME.displayed], fill="black", font=("Arial", 40), anchor="nw")
     def TeamColour(self,team,season):
         if team=="McLaren" and season>2025 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5:
-            colour="#FFA100"
+            colour="#FF8700"
         elif team=="Mercedes":
             colour="#1AE2CE"
-        elif team=="Red Bull":
-            colour="#2400B2"
+        elif team=="Red Bull" or "Ford" in team:
+            colour="#0600EF"
         elif "Aston Martin" in team:
             colour="#49C18D"
         elif "Alpine" in team:
@@ -11297,7 +11299,7 @@ class Game:
         elif team=="Brawn GP":
             colour="#CDFF00"
         elif team=="Toro Rosso":
-            colour="#1F009A"
+            colour="#1E5BFF"
         elif team=="Toyota":
             colour="#B40000"
         elif team=="Force India":
@@ -11316,13 +11318,25 @@ class Game:
             colour="#D11B3F"
         elif "BMW" in team:
             colour="#0078C8"
+        elif "Racing Bulls" in team:
+            colour="#0033A0"
+        elif team=="Free Agent" or team=="Retired":
+            colour="#DADADA"
+        elif "Lamborghini" in team:
+            colour="#FFD700"
+        elif "Amazon" in team:
+            colour="#FF9900"
+        elif "Benneton" in team:
+            colour="#00B140"
+        elif "JLR" in team:
+            colour="#196B4D"
         else:
             colour="white"
         return colour
     def BackgroundColour(self):
         if GAME.team==0:
             root.configure(background="black")
-        elif "Racing Bulls" in GAME.team or "Honda" in GAME.team or GAME.team=="AlphaTauri":
+        elif "Honda" in GAME.team or GAME.team=="AlphaTauri":
             root.configure(background="White")
         else:
             colour=GAME.TeamColour(GAME.team,GAME.season)
@@ -11390,8 +11404,9 @@ class Game:
     def CreateTeam(self):
         GAME.ChangeScreen("Get Team Name")
         GAME.team=GAME.Sanitise(simpledialog.askstring(" ", "Limit: 20 characters"))
-        teams=["mclaren","ferrari","red bull","mercedes","aston martin","alpine","haas","racing bulls","williams","audi","honda","cadillac","renault","gazoo racing","ford","create new team",
-               "legend","hp","oracle","petronas","aramco","bwt","visa & cash app","atlassian","revolut","Gazoo Racing","placeholder","team principal","dead","player"]
+        teams=["mclaren","ferrari","red bull","mercedes","aston martin","alpine","haas","racing bulls","williams","audi","honda","cadillac","renault","gazoo racing","ford",
+               "create new team","legend","hp","oracle","petronas","aramco","bwt","visa & cash app","atlassian","revolut","Gazoo Racing","placeholder","team principal","dead",
+               "player","retired"]
         valid=GAME.Validate(GAME.team)
         if valid==1:
             with sqlite3.connect(GAME.database) as c:
@@ -11604,7 +11619,7 @@ class Game:
                     valid=0
                 else:
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Player").fetchall()[0])
-                    if "Racing Bulls" in team or "Honda" in team or team=="AlphaTauri":
+                    if "Honda" in team or team=="AlphaTauri":
                         colour="white"
                     else:
                         colour=GAME.TeamColour(team,season)
@@ -12835,7 +12850,7 @@ steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","Amazon","Ford","Tesla",
        "Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","Alfa Romeo","HRT","Manor"]
 xDif=[90,82,88,95,110,95,92,100,95,90,105,98,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99]
-yDif=[115,90,95,108,105,87,90,70,122,80,108,135,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75]
+yDif=[115,90,95,108,105,80,90,70,122,80,108,135,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75]
 path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 if os.path.isfile(path):
     GAME.suits=[tk.PhotoImage(file=path)]
