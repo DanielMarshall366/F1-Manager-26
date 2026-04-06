@@ -474,9 +474,9 @@ class Game:
 
         #Engines
         if GAME.startYear==2026:
-            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Mercedes", "Mercedes", 9, 8, 7, 1)''')
-            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ferrari", "Ferrari", 8, 10, 6, 1)''')
-            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Red Bull", "Red Bull", 7, 8, 7, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Mercedes", "Mercedes", 9, 8, 6, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ferrari", "Ferrari", 7, 10, 6, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ford RBPT", "Red Bull", 8, 8, 7, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Audi", "Audi", 7, 8, 5, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "Aston Martin", 4, 1, 3, 1)''')
         else:
@@ -488,14 +488,14 @@ class Game:
 
         #Cars
         if GAME.startYear==2026:
-            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("McLaren", "Mercedes", 70, 70, 70, 70, 60, 60, 1, 100, 1, 100, 1, 4, 11)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("McLaren", "Mercedes", 67, 67, 67, 67, 60, 60, 1, 100, 1, 100, 1, 4, 11)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Ferrari", "Ferrari", 70, 80, 80, 80, 60, 62, 1, 100, 1, 100, 1, 2, 15)''')
-            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Red Bull", "Red Bull", 68, 62, 62, 62, 35, 62, 1, 100, 1, 100, 1, 3, 15)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Red Bull", "Ford RBPT", 65, 60, 60, 60, 35, 62, 1, 100, 1, 100, 1, 3, 15)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Mercedes", "Mercedes", 85, 80, 80, 80, 60, 55, 1, 100, 1, 100, 1, 1, 15)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Aston Martin", "Honda", 30, 30, 30, 30, 25, 34, 1, 100, 1, 100, 1, 7, 14)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Alpine", "Mercedes", 47, 47, 47, 47, 33, 38, 1, 100, 1, 100, 1, 6, 12)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Haas", "Ferrari", 47, 47, 47, 47, 35, 40, 1, 100, 1, 100, 1, 5, 15)''')
-            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Racing Bulls", "Red Bull", 50, 45, 45, 45, 40, 45, 1, 100, 1, 100, 1, 7, 20)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Racing Bulls", "Ford RBPT", 50, 45, 45, 45, 40, 45, 1, 100, 1, 100, 1, 7, 20)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Williams", "Mercedes", 40, 40, 40, 40, 30, 35, 1, 100, 1, 100, 1, 8, 12)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Audi", "Audi", 48, 48, 48, 48, 33, 40, 1, 100, 1, 100, 1, 9, 15)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Cadillac", "Ferrari", 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 1, 10, 15)''')
@@ -637,7 +637,6 @@ class Game:
         c.execute('''INSERT into Buyers(Name, Country) VALUES("Amazon", "United States of America")''')
         c.execute('''INSERT into Buyers(Name, Country) VALUES("Force India", "India")''')
         c.execute('''INSERT into Buyers(Name, Country) VALUES("Ford", "United States of America")''')
-        c.execute('''INSERT into Buyers(Name, Country) VALUES("Tesla", "United States of America")''')
         c.execute('''INSERT into Buyers(Name, Country) VALUES("Benneton", "Italy")''')
         c.execute('''INSERT into Buyers(Name, Country) VALUES("Honda", "Japan")''')
         c.execute('''INSERT into Buyers(Name, Country) VALUES("Alfa Romeo", "Italy")''')
@@ -783,7 +782,7 @@ class Game:
         salary=round(salary/12)
         totalIncome=totalIncome-salary
         engine=GAME.Sanitise(c.execute("SELECT Engine FROM Cars WHERE Team=?",(team,)).fetchall()[0])
-        if team!="Racing Bulls" or engine!="Red Bull":
+        if team!="Racing Bulls" or engine!="Ford RBPT":
             manufacturer=len(c.execute("SELECT Name FROM Engines WHERE Name=? AND Manufacturer=?",(engine,team,)).fetchall())
             if manufacturer>0:
                 customers=len(c.execute("SELECT Team FROM Cars WHERE Engine=? AND Team!='Racing Bulls' AND Team!=?",(engine,team,)).fetchall())
@@ -839,11 +838,9 @@ class Game:
         c.execute('''UPDATE Engines SET Manufacturer=? WHERE Manufacturer=?''',(newTeam, oldTeam))
         if GAME.season>2026:
             c.execute("UPDATE Engines SET Manufacturer='None' WHERE Manufacturer=? AND Name='Audi'",(newTeam,))
-        if len(c.execute("SELECT Name FROM Engines WHERE Name=? AND Manufacturer=?",(oldTeam,oldTeam,)).fetchall())>0:
+        if len(c.execute("SELECT Name FROM Engines WHERE Name=? AND Manufacturer=? AND Name!='Renault'",(oldTeam,newTeam,)).fetchall())>0:
             c.execute("UPDATE Engines SET Name=? WHERE Manufacturer=? AND Name=?",(newTeam, newTeam, oldTeam,))
-            c.execute("UPDATE Engines SET Manufacturer='None' WHERE Name='Red Bull' AND Manufacturer!='Red Bull'")
-            if oldTeam!="Audi":
-                c.execute("UPDATE Cars SET Engine=? WHERE Engine=?",(newTeam,oldTeam,))
+            c.execute("UPDATE Engines SET Manufacturer='None' WHERE Name='Ford RBPT' AND Manufacturer!='Red Bull'")
         if GAME.team==oldTeam:
             GAME.team=newTeam
         F1.commit()
@@ -1628,7 +1625,7 @@ class Game:
                     GAME.options=["No Change"]
                     if len(c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(GAME.team,)).fetchall())==0 and regulationChange==1:
                         GAME.options.append(GAME.team)
-                    c.execute('''SELECT Name FROM Engines WHERE ((Name!="Red Bull" AND Name!=? AND Name!='Honda' AND Name!=? AND Manufacturer!=?) OR Manufacturer="None") AND Power>0''',(GAME.engine,best[0],GAME.team))
+                    c.execute('''SELECT Name FROM Engines WHERE ((Name!="Ford RBPT" AND Name!=? AND Name!='Honda' AND Name!=? AND Manufacturer!=?) OR Manufacturer="None") AND Power>0''',(GAME.engine,best[0],GAME.team))
                     engines=c.fetchall()
                     for x in range(len(engines)):
                         engine=GAME.Sanitise(engines[x])
@@ -3014,7 +3011,10 @@ class Game:
             driversUsed=[]
             overtakes=0
             if GAME.wet==1:
-                grip=10-(GAME.water*5)
+                if GAME.water>1:
+                    grip=10-(GAME.water*5.5)
+                else:
+                    grip=10-(GAME.water*5)
                 if grip<0:
                     grip=0
                 GAME.grip.append(grip)
@@ -3101,15 +3101,11 @@ class Game:
                         GAME.fastest=[index,speed,GAME.water]
                         GAME.AddToLog(f"{GAME.drivers[index]} has set the fastest lap of the race so far.")
                     
-                    if GAME.time[index]>20 and GAME.teams[index]!=GAME.team:
-                        speed=round(speed*1.6)
                     distance+=speed
                 if GAME.fuel[index]<=0:
                     #Run out of fuel
                     GAME.AddToLog(GAME.drivers[index]+" has run out of fuel.")
                     GAME.crashMessage.append(GAME.drivers[index]+" has run out of fuel.")
-                    if GAME.replay==0:
-                        GAME.safety=3
                     runOutOfFuel.append(index)
                     if index in GAME.pitting:
                         GAME.pitting.remove(index)
@@ -4756,10 +4752,13 @@ class Game:
                     GAME.tyre.insert(x,tyre)
             else:
                 GAME.distance.append(0)
-        if GAME.car1ID in GAME.positions or GAME.car2ID in GAME.positions:
-            GAME.displayed=1
-            GAME.RedFlagMenu()
-        else:
+        try:
+            if GAME.car1ID in GAME.positions or GAME.car2ID in GAME.positions:
+                GAME.displayed=1
+                GAME.RedFlagMenu()
+            else:
+                GAME.Start()
+        except:
             GAME.Start()
     def RedFlagMenu(self):
         GAME.ChangeScreen("Red Flag Menu")
@@ -7849,8 +7848,6 @@ class Game:
                 else:
                     colour=GAME.TeamColour(name,GAME.season)
                 engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
-                if engine=="Red Bull":
-                    engine="Ford RBPT"
                 if engine in name:
                     engine=""
                 fullName=f"{name} {engine}"
@@ -8533,12 +8530,6 @@ class Game:
                                 name="Audi Revolut F1 Team"
                             else:
                                 engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
-                                if engine=="Red Bull":
-                                    engine="Ford RBPT"
-                                    if "ford" in name.lower():
-                                        engine=""
-                                    else:
-                                        engine="Ford RBPT"
                                 if engine in name:
                                     engine=""
                                 sponsor=GAME.Sanitise(c.execute("SELECT Sponsor FROM Teams WHERE Position=?",(x+1,)).fetchall()[0])
@@ -10945,22 +10936,13 @@ class Game:
             for x in range(len(f)):
                 team=GAME.Sanitise(c.execute("SELECT Team FROM Cars WHERE Ranking=?",(x+1,)).fetchall()[0])
                 engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(team,)).fetchall()[0])
-                if engine=="Red Bull":
-                    if "ford" in team.lower():
-                        engine=""
-                    else:
-                        engine="Ford RBPT"
                 if engine in team:
                      engine=""
                 if x<9:
                     canvas.create_text(40, 150+(x*45), text=f"{x+1}. {team} {engine}", fill="white", font=("Arial", 30), anchor="nw")
                 else:
                     canvas.create_text(35, 150+(x*45), text=f"{x+1}. {team} {engine}", fill="white", font=("Arial", 30), anchor="nw")
-        if GAME.engine=="Red Bull":
-            engine="Ford RBPT"
-        else:
-            engine=GAME.engine
-        canvas.create_text(870, 150, text=f"Engine: {engine}", fill="white", font=("Arial", 40), anchor="nw")
+        canvas.create_text(870, 150, text=f"Engine: {GAME.engine}", fill="white", font=("Arial", 40), anchor="nw")
         with sqlite3.connect(GAME.database) as c:
             EN1=int(GAME.Sanitise(c.execute("SELECT car1Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
             EN2=int(GAME.Sanitise(c.execute("SELECT car2Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
@@ -11006,8 +10988,6 @@ class Game:
                         highest=scores[y]
                         highestIndex=y
                 engine=GAME.Sanitise(f[highestIndex])
-                if engine=="Red Bull":
-                    engine="Ford RBPT"
                 engines.append(engine)
                 f.pop(highestIndex)
                 scores.pop(highestIndex)
@@ -11279,15 +11259,15 @@ class Game:
         elif "Aston Martin" in team:
             colour="#49C18D"
         elif "Alpine" in team:
-            colour="#FF58FF"
+            colour="#1583FF"
         elif "Williams" in team:
-            colour="#5196FF"
+            colour="#72ABFF"
         elif "Ferrari" in team:
             colour="#EE1818"
         elif "Lotus" in team:
             colour="#C8A028"
         elif "Renault" in team:
-            colour="yellow"
+            colour="#FFD500"
         elif "Audi" in team:
             colour="#AFB8C1"
         elif "Haas" in team:
@@ -11330,6 +11310,14 @@ class Game:
             colour="#00B140"
         elif "JLR" in team:
             colour="#196B4D"
+        elif "Porsche" in team:
+            colour="#D5001C"
+        elif "Mazda" in team:
+            colour="#A50021"
+        elif "Volkswagen" in team:
+            colour="#003A8F"
+        elif "Volvo" in team:
+            colour="#002F6C"
         else:
             colour="white"
         return colour
@@ -12053,12 +12041,15 @@ class Game:
                 F1.close()
                 GAME.TeamAcquired("Virgin","Marussia")
                 GAME.TeamAcquired("Lotus","Caterham")
-                GAME.TeamAcquired("Renault","Lotus Renault")
+                GAME.TeamAcquired("Renault","Lotus")
+                GAME.news.append("BREAKING NEWS! Virgin is now the Marussia Formula 1 team.")
+                GAME.news.append("BREAKING NEWS! Lotus is now the Caterham Formula 1 team.")
+                GAME.news.append("BREAKING NEWS! Renault is now the Lotus Formula 1 team.")
                 F1=sqlite3.connect(GAME.database)
                 c=F1.cursor()
                 c.execute("UPDATE Teams SET Appearance='Marussia' WHERE Name='Marussia'")
                 c.execute("UPDATE Teams SET Appearance='Caterham' WHERE Name='Caterham'")
-                c.execute("UPDATE Teams SET Appearance='Lotus' WHERE Name='Lotus Renault'")
+                c.execute("UPDATE Teams SET Appearance='Lotus' WHERE Name='Lotus'")
                 c.execute("UPDATE Cars SET Engine='Renault' WHERE Team='Caterham'")
                 if GAME.team!="Mercedes" and GAME.team!="McLaren":
                     c.execute("UPDATE Drivers SET NewTeam='Mercedes', NewRole='2', NewSalary=20000000, ContractEnd=2015 WHERE Name='Lewis Hamilton'")
@@ -12131,11 +12122,11 @@ class Game:
                         c.execute("UPDATE Teams SET Position=?, PreviousPosition=? WHERE Name=?",(maximum-x, maximum-x,teams[x],))
                 GAME.news.append("BREAKING NEWS! Marussia has now become the Manor Formula 1 team.")
                 GAME.news.append("BREAKING NEWS! Haas has joined Formula 1.")
-                GAME.news.append("BREAKING NEWS! Lotus Renault has rebranded back to Renault.")
+                GAME.news.append("BREAKING NEWS! Lotus has rebranded back to Renault.")
                 F1.commit()
                 F1.close()
                 GAME.TeamAcquired("Marussia","Manor")
-                GAME.TeamAcquired("Lotus Renault","Renault")
+                GAME.TeamAcquired("Lotus","Renault")
                 F1=sqlite3.connect(GAME.database)
                 c=F1.cursor()
                 c.execute("UPDATE Teams SET Appearance='Manor' WHERE Name='Manor'")
@@ -12291,7 +12282,7 @@ class Game:
                                 c.execute('''DELETE FROM Sponsors WHERE Name=?''',(buyer,))
                                 c.execute('''INSERT into Buyers (Name, Country) VALUES (?, 0)''',(buyer,))
                             else:
-                                buyers=["BMW","Lotus","Amazon","Force India","Ford","Tesla","Benneton","Honda","Alfa Romeo","Renault","Porsche","Kia","Mazda","Lamborghini","Volkswagen"]
+                                buyers=["BMW","Lotus","Amazon","Force India","Ford","Benneton","Honda","Alfa Romeo","Renault","Porsche","Kia","Mazda","Lamborghini","Volkswagen"]
                                 c.execute('''SELECT Name FROM Teams''')
                                 f=c.fetchall()
                                 buyer=random.choice(buyers)
@@ -12348,7 +12339,7 @@ class Game:
                                     country=GAME.Sanitise(f[0])
                                     c.execute('''INSERT into Buyers (Name, Country) VALUES (?, ?)''',(buyer, country))
                                 else:
-                                    buyers=["BMW","Lotus","Amazon","Force India","Ford","Tesla","Benneton","Honda","Alfa Romeo","Renault","Porsche","Kia","Mazda","Lamborghini","Volkswagen"]
+                                    buyers=["BMW","Lotus","Amazon","Force India","Ford","Benneton","Honda","Alfa Romeo","Renault","Porsche","Kia","Mazda","Lamborghini","Volkswagen"]
                                     c.execute('''SELECT Name FROM Teams''')
                                     f=c.fetchall()
                                     buyer=random.choice(buyers)
@@ -12410,7 +12401,7 @@ class Game:
                                 c.execute('''DELETE FROM Sponsors WHERE Name=?''',(buyer,))
                                 c.execute('''INSERT into Buyers (Name, Country) VALUES (?, 0)''',(buyer,))
                             else:
-                                buyers=["BMW","Lotus","Amazon","Force India","Ford","Tesla","Benneton","Honda","Alfa Romeo","Renault","Porsche","Kia","Mazda","Lamborghini","Volkswagen"]
+                                buyers=["BMW","Lotus","Amazon","Force India","Ford","Benneton","Honda","Alfa Romeo","Renault","Porsche","Kia","Mazda","Lamborghini","Volkswagen"]
                                 f=c.execute('''SELECT Name FROM Teams''').fetchall()
                                 buyer=random.choice(buyers)
                                 buy=1
@@ -12525,8 +12516,6 @@ class Game:
                             if len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
                                 rb=1
                         if rb==0:
-                            if old=="Red Bull":
-                                old="Ford RBPT"
                             honda=1-len(c.execute("SELECT Team FROM Cars WHERE Engine='Honda'").fetchall())
                             if honda==0:
                                 engine=GAME.Sanitise(random.choice(c.execute('''SELECT Name FROM Engines WHERE Name!="Red Bull" AND Name!=? AND Name!="Honda" AND Power>0''',(old,)).fetchall()))
@@ -12804,7 +12793,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Haas Display","Racing Bulls Display","Williams Display","Generic Display","Save Screen","Practice","Breaking News","Q1 Eliminations","Q2 Eliminations",
         "Q3 Results","Choose Tyres","Choose Aggression","Race Screen","Instructions","Board Room","History","Upgrade","Select Research Type","Research","Driver List","Minimum Rating",
         "Contract Name","Contract Parameters","Contract","Contract Rejected","Press Conference","Championships","Rule Vote","Red Flag","Safety Car","Audi Display","Cadillac Display",
-        "BMW Display","Amazon Display","Force India Display","Ford Display","Tesla Display","Benneton Display","Honda Display","Renault Display","Porsche Display","Kia Display",
+        "BMW Display","Amazon Display","Force India Display","Ford Display","Benneton Display","Honda Display","Renault Display","Porsche Display","Kia Display",
         "Mazda Display","Lamborghini Display","Volkswagen Display","Volvo Display","JLR Display","Gazoo Racing Display","Lotus Display","Replay Screen","F1 Movie 1","F1 Movie 2",
         "F1 Movie 3","F1 Movie 4","F1 Movie 5","F1 Movie 6","F1 Movie 7","F1 Movie 8","F1 Movie 9","F1 Movie 10","Safety Car Menu","Red Flag Menu","Choose a Team 2021","Latifi Crash",
         "Hamilton Wins","Verstappen Wins","Canada 2011 Victory","Canada 2011 Defeat","Choose a Team 2000","Schumacher Victory","Hakkinen Victory","Senna Celebration",
@@ -12847,7 +12836,7 @@ for x in range(len(driverHeads)):
     else:
         missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
-       "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","Amazon","Ford","Tesla",
+       "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","Amazon","Ford",
        "Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","Alfa Romeo","HRT","Manor"]
 xDif=[90,82,88,95,110,95,92,100,95,90,105,98,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99]
 yDif=[115,90,95,108,105,80,90,70,122,80,108,135,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75]
