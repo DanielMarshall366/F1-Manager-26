@@ -205,6 +205,7 @@ class Game:
         self.startYear=2026
         self.refueling=0
         self.costCap=135000000
+        self.fuelTank=100
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -7520,10 +7521,6 @@ class Game:
                 GAME.lapPittedTo.append(1)
                 GAME.battery.append(8)
                 GAME.DRS.append(30)
-                if GAME.wet==1 or GAME.refueling==0:
-                    GAME.fuel.append(100)
-                else:
-                    GAME.fuel.append(70)
                 #Strategy
                 if team==GAME.team:
                     GAME.tyre.append("Placeholder")
@@ -7533,6 +7530,7 @@ class Game:
                     GAME.pitLap.append(0)
                     GAME.pitTyre.append(0)
                     GAME.strategy.append(0)
+                    GAME.fuel.append(100)
                 else:
                     GAME.tyreAggression.append(random.randint(3,5))
                     GAME.fuelAggression.append(3)
@@ -7702,6 +7700,10 @@ class Game:
                         GAME.tyre.append(tyre)
                         GAME.pitLap.append(pitLap)
                         GAME.pitTyre.append(pitTyre)
+                    if GAME.wet==1 or GAME.refueling==0:
+                        GAME.fuel.append(100)
+                    else:
+                        GAME.fuel.append(round(105*GAME.pitLap[x]/GAME.laps))
         GAME.driver=1
         GAME.ChooseStartingTyres()
     def ChooseStartingTyres(self):
@@ -7749,6 +7751,8 @@ class Game:
                 else:
                     aggressions=["Harvest","Neutral","Deployed"]
                 canvas.create_text(300,132+(260*x), text=aggressions[GAME.aggressions[x]-1], fill="black", font=("Arial", 20), anchor="nw")
+            GAME.Button("Select Fuel",600,310)
+            canvas.create_text(615, 392, text=f"{GAME.fuelTank}kg", fill="black", font=("Arial", 20), anchor="nw")
         if GAME.driver==1 and GAME.car1ID in GAME.positions:
             driver=GAME.driver1
         else:
@@ -9022,6 +9026,7 @@ class Game:
                 else:
                     GAME.aggressions=[3,2,2]
                     GAME.driver=1
+                    GAME.fuelTank=100
                     GAME.ChooseStartingAggression()
         elif GAME.screen=="Choose Aggression":
             modify=0
@@ -9059,11 +9064,19 @@ class Game:
                 GAME.fuelAggression.insert(index,GAME.aggressions[1])
                 GAME.ERSdeployment.pop(index)
                 GAME.ERSdeployment.insert(index,GAME.aggressions[2])
+                GAME.fuel[index]=GAME.fuelTank
                 if GAME.driver==1 and GAME.driver2 in GAME.drivers:
                     GAME.driver=2
                     GAME.ChooseStartingAggression()
                 else:
                     GAME.StartRace()
+            elif event.x>=625 and event.x<=670:
+                if event.y>=315 and event.y<=340 and GAME.fuelTank<100:
+                    GAME.fuelTank+=5
+                    GAME.ChooseStartingAggression()
+                elif event.x>=475 and event.y<=500 and GAME.fuelTank>20:
+                    GAME.fuelTank-=5
+                    GAME.ChooseStartingAggression()
         elif GAME.screen=="Race Screen":
             if GAME.car1ID in GAME.positions:
                 #Driver 1
@@ -12895,7 +12908,7 @@ Buttons=["Next","Quit","Qualifying","Prepare for Race","Tyre Aggression","Fuel A
          "View Contracts","Scout Drivers","Scout Technical Directors","Scout Sporting Directors","Scout Race Engineers","Renew","Reserve & Junior Drivers","Other Contracts",
          "Promote","Propose Contract","Name Selector","Hire","Choose Driver","Choose Engine","Choose","Swap Drivers","End Season","Vote For","Vote Against","Start Season",
          "Length Selector","Stay","Move","Create","Accept","Decline","Team Management","Fired","Stay Out","Start Race","ERS Disabled","Banned","Hire Reserve","Canada 2011",
-         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career"]
+         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career","Select Fuel"]
 buttons=[]
 for x in range(len(Buttons)):
     path = os.path.join(os.path.dirname(__file__), "Buttons", (Buttons[x]+" Button.png"))
