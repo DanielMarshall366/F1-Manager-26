@@ -1239,14 +1239,15 @@ class Game:
         c.execute("UPDATE Player SET Actions=1")
         message=[]
         retirement=0
-        if GAME.team!="Aston Martin" and GAME.season==2026 and GAME.race==3 and False:
-            #Jonathan Wheatley - Aston Martin
-            GAME.ChangeScreen("Aston Martin Press Conference")
-            c.execute("UPDATE Teams SET TeamPrincipal='Jonathan Wheatley' WHERE Name='Aston Martin'")
-            c.execute("UPDATE TeamPrincipals SET Team='Aston Martin' WHERE Name='Jonathan Wheatley'")
-            c.execute("DELETE FROM TeamPrincipals WHERE Name='Adrian Newey'")
+        if GAME.team!="Audi" and GAME.season==2026 and GAME.race==3:
+            #Jonathan Wheatley Leaving
+            GAME.ChangeScreen("Wheatley Leaving")
+            c.execute("UPDATE TeamPrincipals SET Team='None' WHERE Name='Jonathan Wheatley'")
             c.execute("UPDATE Teams SET TeamPrincipal='Mattia Binotto' WHERE Name='Audi'")
             c.execute("INSERT into TeamPrincipals (Name, Team) VALUES ('Mattia Binotto', 'Audi')")
+            F1.commit()
+            F1.close()
+            root.after(7500, lambda: GAME.Menu())
         else:
             GAME.ChangeScreen("Press Conference")
             if objective=="Upgrade":
@@ -2786,6 +2787,8 @@ class Game:
                 elif pressConferences>GAME.races:
                     GAME.PressConference(0)
                 elif GAME.race>round((GAME.races-pressConferences)/2) and GAME.race<GAME.races-round((23-pressConferences)/2):
+                    GAME.PressConference(0)
+                elif GAME.season==2026 and GAME.race==3:
                     GAME.PressConference(0)
                 else:
                     GAME.Menu()
