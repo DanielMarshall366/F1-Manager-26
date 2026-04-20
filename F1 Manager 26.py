@@ -3452,6 +3452,8 @@ class Game:
                                         GAME.ERSdeployment.pop(index)
                                         GAME.ERSdeployment.insert(index, random.randint(1,2))
                             elif GAME.ers==2:
+                                if GAME.season==2009 and GAME.teams[index]!="Ferrari" and GAME.teams[index]!="Renault" and GAME.teams[index]!="BMW Sauber" and GAME.teams[index]!="McLaren":
+                                    GAME.ERSdeployment[index]==2
                                 if GAME.ERSdeployment[index]==1:
                                     ERS=GAME.ERS[index]+random.randint(20,30)
                                     if ERS>100:
@@ -3473,6 +3475,8 @@ class Game:
                                     if ERS<50 and GAME.teams[index]!=GAME.team:
                                         GAME.ERSdeployment.pop(index)
                                         GAME.ERSdeployment.insert(index, random.randint(1,2))
+                                if (GAME.season<2014 or GAME.replay==3) and GAME.ERSdeployment[index]==1:
+                                    GAME.ERSdeployment[index]=2
                             else:
                                 if GAME.teams[index]!=GAME.team and GAME.lap[index]>GAME.startLap and GAME.time[index]<0.5 and x>0 and GAME.ERS[index]>=60 and random.randint(1,2)==2 and GAME.water<1:
                                     GAME.ERSdeployment[index]=4
@@ -5204,7 +5208,15 @@ class Game:
                 GAME.Button("Tyre Aggression",5+(x*1132),585)
                 GAME.Button("Fuel Aggression",5+(x*1132),650)
                 if GAME.ers>0:
-                    GAME.Button("ERS Deployment",5+(x*1132),715)
+                    if GAME.season<2014 or GAME.replay==3:
+                        if GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren":
+                            if GAME.ERSdeployment[indexes[x]]==2:
+                                kers="Off"
+                            else:
+                                kers="On"
+                            GAME.Button(f"KERS {kers}",5+(x*1132),715)
+                    else:
+                        GAME.Button("ERS Deployment",5+(x*1132),715)
                 for y in range(3):
                     if y==0:
                         aggressions=["Conserve","Light","Balanced","Aggressive","Attack"]
@@ -5212,8 +5224,7 @@ class Game:
                     elif y==1:
                         aggressions=["Conserve","Balanced","Push"]
                         aggression=aggressions[GAME.fuelAggression[indexes[x]]-1]
-                    elif GAME.ers>0:
-                        
+                    elif GAME.ers>0 and GAME.season>2013 and GAME.replay!=3:
                         if GAME.ers==1:
                             if GAME.ERSdeployment[indexes[x]]==4 and (GAME.ERS[indexes[x]]<50 or GAME.water>=1 or GAME.positions[0]==indexes[x] or GAME.time[indexes[x]]>=1):
                                 GAME.ERSdeployment[indexes[x]]=3
@@ -7741,8 +7752,14 @@ class Game:
     def ChooseStartingAggression(self):
         GAME.ChangeScreen("Choose Aggression")
         for x in range(3):
-            if GAME.ers==0 and x==2:
+            if (GAME.ers==0 and x==2) or (GAME.season==2009 and not (GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren")):
                 GAME.Button("ERS Disabled",210,645)
+            elif x==2 and (GAME.season<2014 or GAME.replay==3):
+                if GAME.aggressions[x]==2:
+                    kers="Off"
+                else:
+                    kers="On"
+                GAME.Button(f"KERS {kers}",210,645)
             else:
                 GAME.Button("Length Selector",210,125+(260*x))
                 if x==0:
@@ -9044,7 +9061,11 @@ class Game:
                 attribute=1
             elif event.y>=645 and event.y<=695:
                 attribute=2
-            if modify!=0 and attribute!=-1:
+            if GAME.ers==2 and (GAME.season<2014 or GAME.replay==3) and event.x>=210 and event.x<=510 and event.y>=645 and event.y<=720:
+                if not (GAME.season==2009 and (GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren")):
+                    GAME.aggressions[2]=5-GAME.aggressions[2]
+                    GAME.ChooseStartingAggression()
+            elif modify!=0 and attribute!=-1:
                 aggression=GAME.aggressions[attribute]
                 aggression+=modify
                 if aggression<1:
@@ -9083,7 +9104,10 @@ class Game:
         elif GAME.screen=="Race Screen":
             if GAME.car1ID in GAME.positions:
                 #Driver 1
-                if event.x>=5 and event.x<=30:
+                if GAME.ers==2 and (GAME.season<2014 or GAME.replay==3) and event.x>=5 and event.x<=305 and event.y>=715 and event.y<=790 and (GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren"):
+                    GAME.ERSdeployment[GAME.car1ID]=5-GAME.ERSdeployment[GAME.car1ID]
+                    GAME.RefreshScreen()
+                elif event.x>=5 and event.x<=30:
                     #Down
                     if event.y>=585 and event.y<=650:
                         #Tyre Aggression
@@ -9133,7 +9157,10 @@ class Game:
                             GAME.RefreshScreen()
             if GAME.car2ID in GAME.positions:
                 #Driver 2
-                if event.x>=1135 and event.x<=1160:
+                if GAME.ers==2 and (GAME.season<2014 or GAME.replay==3) and event.x>=1137 and event.x<=1437 and event.y>=715 and event.y<=790 and (GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren"):
+                    GAME.ERSdeployment[GAME.car2ID]=5-GAME.ERSdeployment[GAME.car2ID]
+                    GAME.RefreshScreen()
+                elif event.x>=1135 and event.x<=1160:
                     #Down
                     if event.y>=585 and event.y<=650:
                         #Tyre Aggression
@@ -12012,8 +12039,9 @@ class Game:
                 GAME.news.append("BREAKING NEWS! Toyota have left Formula 1.")
                 GAME.news.append("BREAKING NEWS! Lotus, Virgin and HRT have joined Formula 1.")
                 c.execute("UPDATE Drivers SET NewTeam='HRT', NewRole='1', ContractEnd=2011 WHERE Name='Daniel Ricciardo'")
-                c.execute("UPDATE Regulations SET True=0 WHERE Regulation='Refueling'")
+                c.execute("UPDATE Regulations SET True=0 WHERE Regulation='Refueling' OR Regulation='ERS'")
                 GAME.refueling=0
+                GAME.ers=0
                 for x in range(2):
                     for y in range(4):
                         if x==0:
@@ -12049,8 +12077,11 @@ class Game:
                 c.execute("UPDATE Cars SET DragReduction=?, LowSpeed=?, MediumSpeed=?, HighSpeed=? WHERE Team='Lotus'",(dragReduction-10,lowSpeed-10,mediumSpeed-10,highSpeed-10,))
             elif GAME.season==2011:
                 GAME.drs=1
+                GAME.ers=2
                 GAME.news.append("BREAKING NEWS! A new system called DRS has been introduced.")
+                GAME.news.append("BREAKING NEWS! The KERS system is no longer being used.")
                 GAME.news.append("BREAKING NEWS! Formula 1 is now using Pirelli tyres.")
+                c.execute("UPDATE Regulations SET True=2 WHERE Regulation='ERS'")
                 c.execute("UPDATE Drivers SET NewTeam='Toro Rosso', NewRole='1', ContractEnd=2013 WHERE Name='Daniel Ricciardo'")
             elif GAME.season==2012:
                 F1.commit()
@@ -12058,6 +12089,7 @@ class Game:
                 GAME.TeamAcquired("Virgin","Marussia")
                 GAME.TeamAcquired("Lotus","Caterham")
                 GAME.TeamAcquired("Renault","Lotus")
+                GAME.news.append("BREAKING NEWS! The KERS system is now being used again.")
                 GAME.news.append("BREAKING NEWS! Virgin is now the Marussia Formula 1 team.")
                 GAME.news.append("BREAKING NEWS! Lotus is now the Caterham Formula 1 team.")
                 GAME.news.append("BREAKING NEWS! Renault is now the Lotus Formula 1 team.")
@@ -12911,7 +12943,7 @@ Buttons=["Next","Quit","Qualifying","Prepare for Race","Tyre Aggression","Fuel A
          "View Contracts","Scout Drivers","Scout Technical Directors","Scout Sporting Directors","Scout Race Engineers","Renew","Reserve & Junior Drivers","Other Contracts",
          "Promote","Propose Contract","Name Selector","Hire","Choose Driver","Choose Engine","Choose","Swap Drivers","End Season","Vote For","Vote Against","Start Season",
          "Length Selector","Stay","Move","Create","Accept","Decline","Team Management","Fired","Stay Out","Start Race","ERS Disabled","Banned","Hire Reserve","Canada 2011",
-         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career","Select Fuel"]
+         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career","Select Fuel","KERS Off","KERS On"]
 buttons=[]
 for x in range(len(Buttons)):
     path = os.path.join(os.path.dirname(__file__), "Buttons", (Buttons[x]+" Button.png"))
