@@ -3045,6 +3045,8 @@ class Game:
                 index=GAME.positions[x]
                 if GAME.ERSdeployment[index]==4 and (GAME.time[index]>=1 or x==0 or GAME.ERS[index]<1 or GAME.water>=1):
                     GAME.ERSdeployment[index]=3
+                if GAME.ers==1 and GAME.ERSdeployment[index]==3 and GAME.water>=1:
+                    GAME.ERSdeployment[index]=2
                 tyreRemaining=GAME.tyreRemaining[index]
                 distance=GAME.distance[index]
                 if GAME.safety==0:
@@ -9151,6 +9153,8 @@ class Game:
                         deployment=GAME.ERSdeployment[GAME.car1ID]+1
                         if deployment==4 and (GAME.positions.index(GAME.car1ID)==0 or GAME.ERS[GAME.car1ID]<50 or GAME.time[GAME.car1ID]>=1 or GAME.lap[GAME.car1ID]==GAME.startLap or GAME.ers==2 or GAME.water>=1):
                             deployment=3
+                        if deployment==3 and GAME.ers==1 and GAME.water>=1:
+                            deployment=2
                         if deployment<=4:
                             GAME.ERSdeployment.pop(GAME.car1ID)
                             GAME.ERSdeployment.insert(GAME.car1ID,deployment)
@@ -12853,7 +12857,8 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "2009 Renault Display","2009 Toyota Upgrade","2009 Toyota Display","2009 Toro Rosso Upgrade","2009 Toro Rosso Display","2009 Red Bull Upgrade","2009 Red Bull Display",
         "2009 Williams Upgrade","2009 Williams Display","2009 Brawn GP Upgrade","Brawn GP Display","2009 Force India Upgrade","2009 Mercedes Upgrade","Suzuka Haas Upgrade",
         "Virgin Upgrade","HRT Upgrade","Lotus Upgrade","Sauber Display","Virgin Display","HRT Display","Lotus Renault Display","Lotus Renault Upgrade","Caterham Display",
-        "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display"]
+        "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display",
+        "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
