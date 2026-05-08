@@ -11366,7 +11366,7 @@ class Game:
         elif "Mazda" in team:
             colour="#A50021"
         elif "Volkswagen" in team:
-            colour="#003A8F"
+            colour="#002A69"
         elif "Volvo" in team:
             colour="#002F6C"
         else:
