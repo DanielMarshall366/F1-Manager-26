@@ -2009,29 +2009,30 @@ class Game:
                 gap="Reserve"
             elif len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole='Reserve'",(team,)).fetchall())<3:
                 f=c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="Reserve"''',(team,)).fetchall()
-                driver=GAME.Sanitise(random.choice(f))
-                c.execute('''SELECT NewTeam FROM Drivers WHERE Name=?''',(driver,))
-                newTeam=GAME.Sanitise(c.fetchall()[0])
-                if newTeam=="0":
-                    contractEnd=int(GAME.Sanitise(c.execute('''SELECT ContractEnd FROM Drivers WHERE Name=?''',(driver,)).fetchall()[0]))
-                    if random.randint(1,2)==2 and contractEnd==GAME.season:
-                        #Rehired
-                        c.execute('''SELECT Salary FROM Drivers WHERE Name=?''',(driver,))
-                        currentSalary=int(GAME.Sanitise(c.fetchall()[0]))
-                        c.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(driver,))
-                        rating=int(GAME.Sanitise(c.fetchall()[0]))
-                        minimumSalary=rating*30000
-                        if minimumSalary<currentSalary:
-                            minimumSalary=currentSalary
-                        newSalary=random.randint(minimumSalary,round(minimumSalary*1.1))
-                        length=random.randint(1,3)
-                        GAME.news.append(f"BREAKING NEWS! {team} has extended their contract with")
-                        if length==1:
-                            GAME.news.append(f"{driver} as a Reserve driver for another season.")
-                        else:
-                            GAME.news.append(f"{driver} as a Reserve driver for another "+str(length)+" seasons.")
-                        c.execute('''UPDATE Drivers SET ContractEnd=?, NewSalary=?, NewTeam=?, NewRole="Reserve" WHERE Name=?''',(GAME.season+length,newSalary,team,driver,))
-                        gap="Rehired"
+                if len(f)>0:
+                    driver=GAME.Sanitise(random.choice(f))
+                    c.execute('''SELECT NewTeam FROM Drivers WHERE Name=?''',(driver,))
+                    newTeam=GAME.Sanitise(c.fetchall()[0])
+                    if newTeam=="0":
+                        contractEnd=int(GAME.Sanitise(c.execute('''SELECT ContractEnd FROM Drivers WHERE Name=?''',(driver,)).fetchall()[0]))
+                        if random.randint(1,2)==2 and contractEnd==GAME.season:
+                            #Rehired
+                            c.execute('''SELECT Salary FROM Drivers WHERE Name=?''',(driver,))
+                            currentSalary=int(GAME.Sanitise(c.fetchall()[0]))
+                            c.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(driver,))
+                            rating=int(GAME.Sanitise(c.fetchall()[0]))
+                            minimumSalary=rating*30000
+                            if minimumSalary<currentSalary:
+                                minimumSalary=currentSalary
+                            newSalary=random.randint(minimumSalary,round(minimumSalary*1.1))
+                            length=random.randint(1,3)
+                            GAME.news.append(f"BREAKING NEWS! {team} has extended their contract with")
+                            if length==1:
+                                GAME.news.append(f"{driver} as a Reserve driver for another season.")
+                            else:
+                                GAME.news.append(f"{driver} as a Reserve driver for another "+str(length)+" seasons.")
+                            c.execute('''UPDATE Drivers SET ContractEnd=?, NewSalary=?, NewTeam=?, NewRole="Reserve" WHERE Name=?''',(GAME.season+length,newSalary,team,driver,))
+                            gap="Rehired"
 
         if gap==0 and redBull!=1 and GAME.race<=11:
             #Junior drivers
@@ -2041,27 +2042,28 @@ class Game:
                 gap="Junior"
             elif len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole='Junior'",(team,)).fetchall())<3:
                 f=c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="Junior" AND NewTeam="0"''',(team,)).fetchall()
-                driver=GAME.Sanitise(random.choice(f))
-                c.execute('''SELECT NewTeam FROM Drivers WHERE Name=?''',(driver,))
-                contractEnd=int(GAME.Sanitise(c.execute('''SELECT ContractEnd FROM Drivers WHERE Name=?''',(driver,)).fetchall()[0]))
-                if random.randint(1,2)==2 and contractEnd==GAME.season:
-                    #Rehired
-                    c.execute('''SELECT Salary FROM Drivers WHERE Name=?''',(driver,))
-                    currentSalary=int(GAME.Sanitise(c.fetchall()[0]))
-                    c.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(driver,))
-                    rating=int(GAME.Sanitise(c.fetchall()[0]))
-                    minimumSalary=rating*25000
-                    if minimumSalary<currentSalary:
-                        minimumSalary=currentSalary
-                    newSalary=random.randint(minimumSalary,round(minimumSalary*1.1))
-                    length=random.randint(1,3)
-                    GAME.news.append(f"BREAKING NEWS! {team} has extended their contract with")
-                    if length==1:
-                        GAME.news.append(f"{driver} as a Junior driver for another season.")
-                    else:
-                        GAME.news.append(f"{driver} as a Junior driver for another "+str(length)+" seasons.")
-                    c.execute('''UPDATE Drivers SET ContractEnd=?, NewSalary=?, NewTeam=?, NewRole="Junior" WHERE Name=?''',(GAME.season+length,newSalary,team,driver,))
-                    gap="Rehired"
+                if len(f)>0:
+                    driver=GAME.Sanitise(random.choice(f))
+                    c.execute('''SELECT NewTeam FROM Drivers WHERE Name=?''',(driver,))
+                    contractEnd=int(GAME.Sanitise(c.execute('''SELECT ContractEnd FROM Drivers WHERE Name=?''',(driver,)).fetchall()[0]))
+                    if random.randint(1,2)==2 and contractEnd==GAME.season:
+                        #Rehired
+                        c.execute('''SELECT Salary FROM Drivers WHERE Name=?''',(driver,))
+                        currentSalary=int(GAME.Sanitise(c.fetchall()[0]))
+                        c.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(driver,))
+                        rating=int(GAME.Sanitise(c.fetchall()[0]))
+                        minimumSalary=rating*25000
+                        if minimumSalary<currentSalary:
+                            minimumSalary=currentSalary
+                        newSalary=random.randint(minimumSalary,round(minimumSalary*1.1))
+                        length=random.randint(1,3)
+                        GAME.news.append(f"BREAKING NEWS! {team} has extended their contract with")
+                        if length==1:
+                            GAME.news.append(f"{driver} as a Junior driver for another season.")
+                        else:
+                            GAME.news.append(f"{driver} as a Junior driver for another "+str(length)+" seasons.")
+                        c.execute('''UPDATE Drivers SET ContractEnd=?, NewSalary=?, NewTeam=?, NewRole="Junior" WHERE Name=?''',(GAME.season+length,newSalary,team,driver,))
+                        gap="Rehired"
 
         if gap==0:
             #Technical Director
@@ -4242,7 +4244,7 @@ class Game:
                             if confidence<15:
                                 confidence=15
                             if GAME.water==0:
-                                risk=GAME.risk-10
+                                risk=GAME.risk
                             else:
                                 if GAME.tyre[driverID]=="Soft" or GAME.tyre[driverID]=="Medium" or GAME.tyre[driverID]=="Hard":
                                     grip=GAME.grip[0]
@@ -4250,7 +4252,7 @@ class Game:
                                     grip=GAME.grip[1]
                                 else:
                                     grip=GAME.grip[2]
-                                risk=GAME.risk-grip
+                                risk=GAME.risk+round(((11-grip)**2)/2)
                             if GAME.tyreRemaining[driverID]<30:
                                 risk+=30-GAME.tyreRemaining[driverID]
                                 if GAME.tyreRemaining[driverID]==0:
@@ -5115,6 +5117,10 @@ class Game:
             time=GAME.time[GAME.positions[x]]
             if GAME.positions[x]==GAME.fastest[0]:
                 colour="#B400FF"
+            elif team==GAME.team:
+                colour=GAME.TeamColour(GAME.team,GAME.season)
+                if colour=="white":
+                    colour="#DADADA"
             else:
                 colour="white"
             if GAME.safety==0:
@@ -5233,7 +5239,11 @@ class Game:
                         aggression=0
                     if aggression!=0:
                         canvas.create_text(100+(x*1120), 615+(y*65), text=aggression, fill="black", font=("Arial", 20), anchor="nw")
-                canvas.create_text(315+(x*430), 585, text=f"{GAME.positions.index(indexes[x])+1}. {drivers[x]}", fill="black", font=("Arial", 25), anchor="nw")
+                if GAME.fastest[0]==indexes[x]:
+                    colour="#B400FF"
+                else:
+                    colour="black"
+                canvas.create_text(315+(x*430), 585, text=f"{GAME.positions.index(indexes[x])+1}. {drivers[x]}", fill=colour, font=("Arial", 25), anchor="nw")
                 if GAME.replay==9:
                     lap=58
                 else:
@@ -9512,7 +9522,6 @@ class Game:
                     sponsor=GAME.Sanitise(c.execute("SELECT Sponsor FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
                     if sponsor=="0":
                         sponsor="None"
-                        sponsorColour=colour
                     else:
                         logo=sponsorLogos[sponsors.index(sponsor)]
                         canvas.image=logo
@@ -10926,8 +10935,17 @@ class Game:
             elif event.x>=1210 and event.x<=1325 and event.y>=330 and event.y<=480:
                 GAME.database+=1
                 GAME.ViewSave()
-            elif event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
-                GAME.ChangeScreen("Title Screen")
+            elif event.y>=730 and event.y<=780:
+                if event.x>=5 and event.x<=205:
+                    GAME.ChangeScreen("Title Screen")
+                elif event.x>=1230 and event.x<=1430:
+                    os.remove(f"F1 Manager 26 Save Data {GAME.database}.db")
+                    database=GAME.database+1
+                    if os.path.isfile(f"F1 Manager 26 Save Data {database}.db"):
+                        while os.path.isfile(f"F1 Manager 26 Save Data {database}.db"):
+                            os.rename(f"F1 Manager 26 Save Data {database}.db",f"F1 Manager 26 Save Data {database-1}.db")
+                            database+=1
+                    GAME.ChangeScreen("Title Screen")
         elif GAME.screen=="Calendar":
             if event.x>=5 and event.x<=205 and event.y>=720 and event.y<=770:
                 GAME.Menu()
@@ -11322,8 +11340,8 @@ class Game:
         elif "Audi" in team:
             colour="#AFB8C1"
         elif "Haas" in team:
-            colour="#D70000"
-        elif "Cadillac" in team:
+            colour="#C70000"
+        elif "Cadillac" in team or "General Motors" in team:
             colour="#E6E6E6"
         elif "McLaren" in team:
             colour="#C8CDD2"
@@ -11703,6 +11721,7 @@ class Game:
             GAME.SelectSave()
         else:
             GAME.Button("Back",5,730)
+            GAME.Button("Delete",1230,730)
             root.after(300, lambda: GAME.SaveReady())
     def SaveReady(self):
         GAME.loaded=1
@@ -12644,7 +12663,7 @@ class Game:
                     canvas.create_text(1050, 150+(x*60), text=contractEnd, fill="black", font=("Arial", 20), anchor="nw")
                     GAME.Button("Hire",1150,140+(x*60))
     def TeamData(self):
-        #Team Data
+        
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         GAME.driversChosen=[GAME.driver1,GAME.driver2]
@@ -12954,7 +12973,7 @@ Buttons=["Next","Quit","Qualifying","Prepare for Race","Tyre Aggression","Fuel A
          "View Contracts","Scout Drivers","Scout Technical Directors","Scout Sporting Directors","Scout Race Engineers","Renew","Reserve & Junior Drivers","Other Contracts",
          "Promote","Propose Contract","Name Selector","Hire","Choose Driver","Choose Engine","Choose","Swap Drivers","End Season","Vote For","Vote Against","Start Season",
          "Length Selector","Stay","Move","Create","Accept","Decline","Team Management","Fired","Stay Out","Start Race","ERS Disabled","Banned","Hire Reserve","Canada 2011",
-         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career","Select Fuel","KERS Off","KERS On"]
+         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career","Select Fuel","KERS Off","KERS On","Delete"]
 buttons=[]
 for x in range(len(Buttons)):
     path = os.path.join(os.path.dirname(__file__), "Buttons", (Buttons[x]+" Button.png"))
