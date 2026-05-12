@@ -206,6 +206,7 @@ class Game:
         self.refueling=0
         self.costCap=135000000
         self.fuelTank=100
+        self.crashScore=0
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -3008,6 +3009,26 @@ class Game:
                     GAME.lap.pop(index)
                     GAME.lap.insert(index,lap)
                     GAME.cycles=0
+            GAME.grip=[]
+            if GAME.wet==1:
+                grip=10-(GAME.water*7)
+                if grip<0:
+                    grip=0
+                GAME.grip.append(grip)
+                if GAME.water<=1:
+                    grip=10
+                else:
+                    grip=10-((GAME.water-1)*3)
+                GAME.grip.append(grip)
+                if GAME.water<=1.5:
+                    grip=10
+                elif GAME.water<4:
+                    grip=10-(GAME.water*0.8)
+                else:
+                    grip=8-GAME.water
+                GAME.grip.append(grip)
+            else:
+                GAME.grip=[10,10,10]
             driversUsed=[]
             overtakes=0
             if GAME.wet==1:
@@ -4252,7 +4273,7 @@ class Game:
                                     grip=GAME.grip[1]
                                 else:
                                     grip=GAME.grip[2]
-                                risk=GAME.risk+round(((11-grip)**2)/2)
+                                risk=GAME.risk+(((11-grip)**2)//2)
                             if GAME.tyreRemaining[driverID]<30:
                                 risk+=30-GAME.tyreRemaining[driverID]
                                 if GAME.tyreRemaining[driverID]==0:
@@ -4261,7 +4282,7 @@ class Game:
                                 risk=risk*3
                             elif GAME.replay==3 and GAME.tyre[driverID]!="Intermediate" and GAME.tyre[driverID]!="Wet":
                                 risk=risk*2
-                            if random.randint(1,confidence*1500)<=risk or random.randint(1,GAME.control[driverID]*1500)<=risk or mistake>0:
+                            if (random.randint(1,confidence*1500)<=risk or random.randint(1,GAME.control[driverID]*1500)<=risk or mistake>0) and (GAME.replay>0 or GAME.crashScore<20 or grip<1):
                                 #Mistake
                                 if GAME.replay==3 and GAME.tyre[driverID]!="Intermediate" and GAME.tyre[driverID]!="Wet":
                                     mistake=random.randint(2,5)
@@ -4274,6 +4295,7 @@ class Game:
                                         mistake-=2
                                 if mistake<=1 and not ((driver=="Ayrton Senna" or driver=="Alain Prost" or driver=="Nigel Mansell" or driver=="Niki Lauda") and GAME.replay==6):
                                     #Crashed into wall
+                                    GAME.crashScore+=2
                                     if GAME.playing==0 and GAME.sound==1:
                                         if crasher=="Isack Hadjar":
                                             GAME.Voice(0,"Destroyed The Car")
@@ -4300,6 +4322,7 @@ class Game:
                                     GAME.engineDurability.pop(driverID)
                                     GAME.engineDurability.insert(driverID,engineDurability)
                                 else:
+                                    GAME.crashScore+=1
                                     if mistake>5:
                                         #Lock up
                                         GAME.AddToLog(f"{driver} locked up.")
@@ -5302,23 +5325,7 @@ class Game:
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
         driversUsed=[]
-        if GAME.wet==1:
-            grip=10-(GAME.water*7)
-            if grip<0:
-                grip=0
-            GAME.grip.append(grip)
-            if GAME.water<=1:
-                grip=10
-            else:
-                grip=10-((GAME.water-1)*2.6)
-            GAME.grip.append(grip)
-            if GAME.water<=1.5:
-                grip=10
-            else:
-                grip=10-(GAME.water*0.8)
-            GAME.grip.append(grip)
-        else:
-            GAME.grip=[10,10,10]
+        GAME.grip=[10,10,10]
         driversRemoved=0
         for x in range(len(GAME.positions)):
             reaction=random.randint(GAME.reaction[GAME.positions[x-driversRemoved]]-5,GAME.reaction[GAME.positions[x-driversRemoved]]+5)/100
@@ -6274,6 +6281,7 @@ class Game:
         self.fuel=[]
         self.battery=[]
         self.fastest=[-1,0,10]
+        self.crashScore=0
         if GAME.replay==2:
             GAME.team="APX GP"
             GAME.car1="Sonny Hayes"
@@ -7201,6 +7209,7 @@ class Game:
         self.battery=[]
         self.rainStopped=0
         self.fastest=[-1,0,10]
+        self.crashScore=0
         GAME.ChangeScreen("Practice")
         GAME.DisplayLayout(race)
         canvas.create_text(20, 125, text=race, fill="white", font=("Arial", 50), anchor="nw")
@@ -12562,7 +12571,7 @@ class Game:
                     c.execute("UPDATE Engines SET Manufacturer=? WHERE Name='Honda'",(name,))
                 if GAME.season!=2014 and GAME.season!=2015:
                     #New Engine
-                    f=c.execute('''SELECT Name FROM Teams WHERE Name!="Cadillac"''').fetchall()
+                    f=c.execute('''SELECT Name FROM Teams WHERE Name!="Cadillac" AND Name!="Red Bull"''').fetchall()
                     regulationChange=int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))
                     if regulationChange==GAME.season+1 and GAME.season>2026 and len(c.execute("SELECT Name FROM Engines").fetchall())<6:
                         if random.randint(1,4)>1:
