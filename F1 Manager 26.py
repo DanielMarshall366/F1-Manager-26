@@ -2826,6 +2826,25 @@ class Game:
                 GAME.water+=GAME.rain
                 if GAME.water>GAME.maxWater:
                     GAME.water=GAME.maxWater
+
+        #Grip
+        GAME.grip=[]
+        grip=10-(GAME.water*7)
+        if grip<0:
+            grip=0
+        GAME.grip.append(grip)
+        if GAME.water<=1:
+            grip=10
+        else:
+            grip=10-((GAME.water-1)*3)
+        GAME.grip.append(grip)
+        if GAME.water<=1.5:
+            grip=10
+        elif GAME.water<4:
+            grip=10-(GAME.water*0.8)
+        else:
+            grip=8-GAME.water
+        GAME.grip.append(grip)
     def Move(self):
         if GAME.replay==2 and GAME.lap[GAME.positions[0]]>54:
             GAME.pause=3
@@ -3009,52 +3028,8 @@ class Game:
                     GAME.lap.pop(index)
                     GAME.lap.insert(index,lap)
                     GAME.cycles=0
-            GAME.grip=[]
-            if GAME.wet==1:
-                grip=10-(GAME.water*7)
-                if grip<0:
-                    grip=0
-                GAME.grip.append(grip)
-                if GAME.water<=1:
-                    grip=10
-                else:
-                    grip=10-((GAME.water-1)*3)
-                GAME.grip.append(grip)
-                if GAME.water<=1.5:
-                    grip=10
-                elif GAME.water<4:
-                    grip=10-(GAME.water*0.8)
-                else:
-                    grip=8-GAME.water
-                GAME.grip.append(grip)
-            else:
-                GAME.grip=[10,10,10]
             driversUsed=[]
             overtakes=0
-            if GAME.wet==1:
-                if GAME.water>1:
-                    grip=10-(GAME.water*5.5)
-                else:
-                    grip=10-(GAME.water*5)
-                if grip<0:
-                    grip=0
-                GAME.grip.append(grip)
-                if GAME.water>=3.5:
-                    grip=10-(GAME.water*2.25)
-                else:
-                    grip=10-(GAME.water*1.25)
-                if grip<0:
-                    grip=0
-                GAME.grip.append(grip)
-                if GAME.water>5:
-                    grip=10-(GAME.water*1.25)
-                else:
-                    grip=10-(GAME.water*0.5)
-                if grip<0:
-                    grip=0
-                GAME.grip.append(grip)
-            else:
-                GAME.grip=[10,10,10]
             driversRemoved=0
             runOutOfFuel=[]
             GAME.pitting=[]
@@ -7061,7 +7036,7 @@ class Game:
                     GAME.driver1=0
                 elif unableToRace[x]==GAME.car2:
                     GAME.driver2=0
-            root.after(8000, lambda: GAME.RaceStart())
+            root.after(4000, lambda: GAME.RaceStart())
         else:
             GAME.RaceStart()
     def RaceStart(self):
@@ -13043,4 +13018,3 @@ if missingFiles==1:
         GAME.ChangeScreen("Missing Required Files")
 canvas.bind("<Button-1>", GAME.OnClick)
 root.mainloop()
-c
