@@ -589,7 +589,7 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Las Vegas", "United States of America", 6.201, 50, 65, 5, 10, "Low", 70, 0, 1, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Qatar", "Qatar", 5.419, 57, 60, 0, 22, "High", 38, 1, 0, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Abu Dhabi", "Abu Dhabi", 5.281, 58, 50, 0, 20, "Medium", 65, 0, 0, 3)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Madrid", "Spain", 5.474, 57, 50, 5, 25, "Medium", 45, 0, 1, 3)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Madring", "Spain", 5.474, 57, 50, 5, 25, "Medium", 45, 0, 1, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Istanbul Park", "Turkey", 5.338, 58, 55, 20, 25, "Medium", 40, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Nürburgring", "Germany", 5.148, 60, 95, 23, 20, "High", 45, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Hockenheim", "Germany", 4.574, 67, 68, 23, 20, "Medium", 65, 0, 0, 4)''')
@@ -5196,7 +5196,7 @@ class Game:
             track="2021 Abu Dhabi"
         elif GAME.track=="Nürburgring":
             track="Nurburgring"
-        elif GAME.track=="Imola" or GAME.track=="Miami" or GAME.track=="Las Vegas" or GAME.track=="Madrid" or GAME.track=="Hockenheim" or GAME.track=="Valencia":
+        elif GAME.track=="Imola" or GAME.track=="Miami" or GAME.track=="Las Vegas" or GAME.track=="Madring" or GAME.track=="Hockenheim" or GAME.track=="Valencia":
             track=GAME.track
         else:
             track=GAME.raceCountry
@@ -6179,7 +6179,7 @@ class Game:
         else:
             GAME.ChangeScreen("Missing Required Files")
     def DisplayLayout(self,track):
-        if track!="Imola" and track!="Miami" and track!="Las Vegas" and track!="Madrid":
+        if track!="Imola" and track!="Miami" and track!="Las Vegas" and track!="Madring":
             with sqlite3.connect(GAME.database) as c:
                 track=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(track,)).fetchall())
         try:
@@ -12683,7 +12683,7 @@ class Game:
                 if GAME.season==2026:
                     GAME.races=22
                     calendar=["Albert Park","Shanghai","Suzuka","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
-                              "Spa","Hungaroring","Zandvoort","Monza","Madrid","Baku","Marina Bay","Austin","Mexico City","Interlagos",
+                              "Spa","Hungaroring","Zandvoort","Monza","Madring","Baku","Marina Bay","Austin","Mexico City","Interlagos",
                               "Las Vegas","Qatar","Abu Dhabi"]
                 elif GAME.season==2009:
                     GAME.races=17
@@ -12966,7 +12966,7 @@ for x in range(len(Buttons)):
     else:
         missingFiles=1
 tracks=["Australia","China","Japan","Bahrain","Saudi Arabia","Miami","Imola","Monaco","Spain","Canada","Austria","United Kingdom","Belgium","Hungary","Netherlands","Italy",
-        "Azerbaijan","Singapore","United States of America","Mexico","Brazil","Las Vegas","Qatar","Abu Dhabi","Madrid","Turkey","Nurburgring","Hockenheim","1984 Monaco","2008 Brazil",
+        "Azerbaijan","Singapore","United States of America","Mexico","Brazil","Las Vegas","Qatar","Abu Dhabi","Madring","Turkey","Nurburgring","Hockenheim","1984 Monaco","2008 Brazil",
         "Portugal","2021 Abu Dhabi","Malaysia","Valencia","South Korea"]
 layouts=[]
 path=os.path.join(os.path.dirname(__file__), "Race Images", "Lights.png")
