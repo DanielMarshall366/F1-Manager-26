@@ -1134,7 +1134,8 @@ class Game:
                                     c.execute('''UPDATE Drivers SET ContractEnd=?, NewTeam=? WHERE Name=?''',(GAME.season+length, team, drivers[x],))
                                 elif random.randint(1,10)==10 and age>16:
                                     length=random.randint(1,3)
-                                    GAME.news.append("BREAKING NEWS! "+team+" is promoting "+driver+" to replace "+drivers[x]+" with a "+str(length)+" season contract.")
+                                    GAME.news.append(f"BREAKING NEWS! {team} is promoting {driver}")
+                                    GAME.news.append(f"to replace {drivers[x]} with a {length} season contract.")
                                     c.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(driver,))
                                     rating=int(GAME.Sanitise(c.fetchall()[0]))
                                     salary=random.randint(rating*37500,rating*250000)
@@ -1882,7 +1883,7 @@ class Game:
                             financial=3
                     c.execute("UPDATE Player SET Financial=?",(financial,))
                 if costCap==1 and GAME.costCap<0:
-                    c.execute("UPDATE Players SET Financial=1")
+                    c.execute("UPDATE Player SET Financial=1")
             GAME.Button("Next Race",620,412)
             GAME.Button("Quit",5,730)
             GAME.DisplayMoney()
@@ -5667,7 +5668,9 @@ class Game:
                                             else:
                                                 GAME.safety=3
                                         GAME.damage.insert(index, damage)
-                                    
+
+        if GAME.safety==3 and GAME.street==0 and random.randint(1,3)<3:
+            GAME.safety=2
         if GAME.safety==2:
             GAME.safetyLaps=random.randint(3,6)
             GAME.thingHappened=1
