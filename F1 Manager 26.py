@@ -411,16 +411,16 @@ class Game:
         #Sporting Directors
         if GAME.startYear==2026:
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Will Courtenay", "McLaren", "Sporting Director", 90, 4000000, 95, "United Kingdom", 0, 0, 0))
-            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Diego Ioverno", "Ferrari", "Sporting Director", 95, 4000000, 85, "Italy", 0, 0, 0))
-            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Steve Knowles", "Red Bull", "Sporting Director", 87, 4000000, 66, "United Kingdom", 0, 0, 0))
-            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Ron Meadows", "Mercedes", "Sporting Director", 90, 4000000, 70, "United Kingdom", 0, 0, 0))
-            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Andy Stevenson", "Aston Martin", "Sporting Director", 89, 4000000, 85, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Diego Ioverno", "Ferrari", "Sporting Director", 98, 4000000, 85, "Italy", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Steve Knowles", "Red Bull", "Sporting Director", 92, 4000000, 66, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Ron Meadows", "Mercedes", "Sporting Director", 95, 4000000, 70, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Andy Stevenson", "Aston Martin", "Sporting Director", 75, 4000000, 85, "United Kingdom", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Steve Nielsen", "Alpine", "Sporting Director", 82, 2500000, 70, "United Kingdom", 0, 0, 0))
-            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Mark Lowe", "Haas", "Sporting Director", 80, 2000000, 85, "United Kingdom", 0, 0, 0))
-            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Marco Perrone", "Racing Bulls", "Sporting Director", 78, 1500000, 70, "Italy", 0, 0, 0))
-            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Sven Smeets", "Williams", "Sporting Director", 79, 1500000, 80, "Belgium", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Mark Lowe", "Haas", "Sporting Director", 74, 2000000, 85, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Marco Perrone", "Racing Bulls", "Sporting Director", 90, 2000000, 70, "Italy", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Sven Smeets", "Williams", "Sporting Director", 77, 1500000, 80, "Belgium", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Inaki Rueda", "Audi", "Sporting Director", 85, 2000000, 80, "Spain", 0, 0, 0))
-            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Rob White", "Cadillac", "Sporting Director", 85, 2000000, 80, "United Kingdom", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Rob White", "Cadillac", "Sporting Director", 75, 2000000, 80, "United Kingdom", 0, 0, 0))
         else:
             teams=["Brawn GP","Red Bull","McLaren","Ferrari","Toyota","BMW Sauber","Williams","Renault","Toro Rosso","Force India"]
             sportingDirectors=["Ron Meadows","Jonathan Wheatley","Dave Ryan","Massimo Rivola","Yoshiaki Kinoshita","Walter Riedl","Patrick Head","Jean-Francois Caubet",
@@ -6032,6 +6032,8 @@ class Game:
                                 if team in zeroPoints:
                                     found=1
                                     position=len(f)-len(zeroPoints)+1
+                                    if position>len(f):
+                                        position=len(f)
                                     c.execute("UPDATE Teams SET Position=? WHERE Name=?",(position,team,))
                                     zeroPoints.remove(team)
                             if found==0 and pos==0:
@@ -6040,6 +6042,8 @@ class Game:
                         for x in range(len(f)):
                             team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(x+1,)).fetchall()[0])
                             if team in zeroPoints:
+                                if pos>len(f):
+                                    pos=len(f)
                                 c.execute("UPDATE Teams SET Position=? WHERE Name=?",(pos,team,))
                                 pos+=1
             #Development
