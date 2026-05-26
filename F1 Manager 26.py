@@ -8430,6 +8430,8 @@ class Game:
                 c.execute("UPDATE Teams SET Points=0, PressConferences=0")
                 c.execute("UPDATE Drivers SET Points=0, Position=0")
                 c.execute("UPDATE Cars SET Car1Engine=1, Car1EngineDurability=100, Car2Engine=1, Car2EngineDurability=100")
+                c.execute("UPDATE PitStops SET Points=0")
+                c.execute("UPDATE Player SET PitStop=1000")
 
                 #Engines
                 nextEngine=GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])
