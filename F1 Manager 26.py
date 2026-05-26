@@ -8080,6 +8080,8 @@ class Game:
                     name="Atlassian Williams F1 Team"
                 elif name=="Audi":
                     name="Audi Revolut F1 Team"
+                elif name=="Alpine":
+                    name="BWT Alpine F1 Team"
                 else:
                     engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
                     if engine in name:
@@ -11117,6 +11119,8 @@ class Game:
                         while os.path.isfile(f"F1 Manager 26 Save Data {database}.db"):
                             os.rename(f"F1 Manager 26 Save Data {database}.db",f"F1 Manager 26 Save Data {database-1}.db")
                             database+=1
+                    if not os.path.isfile("F1 Manager 26 Save Data 1.db"):
+                        GAME.newGame=1
                     GAME.ChangeScreen("Title Screen")
         elif GAME.screen=="Calendar":
             if event.x>=5 and event.x<=205 and event.y>=720 and event.y<=770:
