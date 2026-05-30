@@ -10136,7 +10136,7 @@ class Game:
                                 drivers.append(GAME.Sanitise(f[x]))
                                 roles.append("Racing Bulls Driver")
                         if GAME.team=="Ferrari":
-                            f=c.execute("SELECT Name FROM Drivers WHERE Team='Haas'").fetchall()
+                            f=c.execute("SELECT Name FROM Drivers WHERE Team='Haas' AND (Role='1' OR Role='2')").fetchall()
                             for x in range(len(f)):
                                 drivers.append(GAME.Sanitise(f[x]))
                                 roles.append("Haas Driver")
