@@ -479,7 +479,7 @@ class Game:
         if GAME.startYear==2026:
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Mercedes", "Mercedes", 9, 8, 6, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ferrari", "Ferrari", 7, 10, 6, 1)''')
-            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ford RBPT", "Red Bull", 8, 7, 5, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ford RBPT", "Red Bull", 10, 6, 4, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Audi", "Audi", 6, 8, 5, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "Aston Martin", 4, 1, 3, 1)''')
         else:
@@ -852,6 +852,7 @@ class Game:
         c.execute('''UPDATE Player SET Team=? WHERE Team=?''',(newTeam, oldTeam))
         c.execute('''UPDATE TeamPrincipals SET Team=? WHERE Team=?''',(newTeam, oldTeam))
         c.execute('''UPDATE Engines SET Manufacturer=? WHERE Manufacturer=?''',(newTeam, oldTeam))
+        c.execute("UPDATE PitStops SET Team=? WHERE Team=?",(newTeam, oldTeam,))
         if GAME.season>2026:
             c.execute("UPDATE Engines SET Manufacturer='None' WHERE Manufacturer=? AND Name='Audi'",(newTeam,))
         if len(c.execute("SELECT Name FROM Engines WHERE Name=? AND Manufacturer=? AND Name!='Renault'",(oldTeam,newTeam,)).fetchall())>0:
@@ -3050,8 +3051,6 @@ class Game:
             GAME.pitting=[]
             for x in range(len(GAME.positions)):
                 index=GAME.positions[x]
-                if GAME.ERSdeployment[index]==4 and (GAME.time[index]>=1 or x==0 or GAME.ERS[index]<1 or GAME.water>=1):
-                    GAME.ERSdeployment[index]=3
                 if GAME.ers==1 and GAME.ERSdeployment[index]==3 and GAME.water>=1:
                     GAME.ERSdeployment[index]=2
                 tyreRemaining=GAME.tyreRemaining[index]
@@ -3487,19 +3486,19 @@ class Game:
                                 if (GAME.season<2014 or GAME.replay==3) and GAME.ERSdeployment[index]==1:
                                     GAME.ERSdeployment[index]=2
                             else:
-                                if GAME.teams[index]!=GAME.team and GAME.lap[index]>GAME.startLap and GAME.time[index]<0.5 and x>0 and GAME.ERS[index]>=60 and random.randint(1,2)==2 and GAME.water<1:
-                                    GAME.ERSdeployment[index]=4
+                                if GAME.teams[index]!=GAME.team and GAME.lap[index]>GAME.startLap and GAME.time[index]<0.5 and x>0 and GAME.ERS[index]>=30 and random.randint(1,2)==2 and GAME.water<1:
+                                    GAME.ERSdeployment[index]=3
                                 if GAME.ERSdeployment[index]==1:
                                     ERS=GAME.ERS[index]+random.randint(6,15)+(4*GAME.battery[index])
                                     if ERS>100:
                                         ERS=100
                                     if GAME.teams[index]!=GAME.team:
-                                        if ERS>90:
+                                        if (ERS>50 and GAME.time[index]<1 and x!=0) or ERS>90:
                                             GAME.ERSdeployment[index]=3
                                         elif ERS>60:
                                             GAME.ERSdeployment[index]=2
                                 elif GAME.ERSdeployment[index]==2:
-                                    ERS=GAME.ERS[index]+random.randint(-4,0)+(GAME.battery[index]//3)
+                                    ERS=GAME.ERS[index]+random.randint(-8,0)+(GAME.battery[index]//3)
                                     if ERS>100:
                                         ERS=100
                                     elif ERS<0:
@@ -3507,18 +3506,19 @@ class Game:
                                         if GAME.teams[index]!=GAME.team:
                                             GAME.ERSdeployment.pop(index)
                                             GAME.ERSdeployment.insert(index, 1)
-                                elif GAME.ERSdeployment[index]==3:
+                                    if GAME.teams[index]!=GAME.team and ERS>40 and GAME.water<1 and x!=0 and GAME.time[index]<1 and random.randint(1,2)==2:
+                                        GAME.ERSdeployment[index]=3
+                                elif GAME.time[index]<1:
                                     ERS=GAME.ERS[index]-random.randint(15,35)+GAME.battery[index]
                                     if ERS<0:
                                         ERS=0
                                     if ERS<50 and GAME.teams[index]!=GAME.team:
                                         GAME.ERSdeployment.pop(index)
                                         GAME.ERSdeployment.insert(index, round(random.randint(1,5)/2))
-                                elif GAME.ERS[index]<50:
-                                    if GAME.teams[index]!=GAME.team:
-                                        GAME.ERSdeployment[index]=1
-                                    else:
-                                        GAME.ERSdeployment[index]=3
+                                else:
+                                    ERS=GAME.ERS[index]+random.randint(-5,5)-(8*(13-GAME.battery[index]))
+                                    if ERS<0:
+                                        ERS=0
                             try:
                                 GAME.ERS[index]=ERS
                             except:
@@ -3904,7 +3904,7 @@ class Game:
                                         faster=2
                                     elif (GAME.tyreAggression[GAME.positions[x-1-driversRemoved]]<GAME.tyreAggression[driverID] and GAME.tyreRemaining[driverID]>=30) or GAME.tyreRemaining[GAME.positions[x-1-driversRemoved]]+10<=GAME.tyreRemaining[driverID]:
                                         faster=1
-                                if GAME.ERSdeployment[driverID]==4 and GAME.ERSdeployment[x-1-driversRemoved]<4:
+                                if GAME.ERSdeployment[driverID]==3 and GAME.ERSdeployment[x-1-driversRemoved]<3 and x!=0 and GAME.time[driverID]<1:
                                     faster+=1
                             aheadID=GAME.positions[x-1-driversRemoved]
                             ahead=GAME.drivers[aheadID]
@@ -4238,12 +4238,6 @@ class Game:
                                             else:
                                                 GAME.safety=3
                                         GAME.damage.insert(index, damage)
-                            #Overtake Mode
-                            if GAME.ers==1 and GAME.ERSdeployment[driverID]==4:
-                                ERS=GAME.ERS[driverID]+random.randint(-5,5)-(10*(13-GAME.battery[driverID]))
-                                if ERS<0:
-                                    ERS=0
-                                GAME.ERS[driverID]=ERS
                     else:
                         if GAME.distance[x-driversRemoved]>=GAME.distance[GAME.positions[x-1-driversRemoved]]:
                             distance=GAME.distance[GAME.positions[x-1-driversRemoved]]-(random.randint(100,200)/100)
@@ -4703,6 +4697,7 @@ class Game:
         GAME.tyreRemaining.clear()
         GAME.lapPittedTo.clear()
         GAME.distance.clear()
+        GAME.ERS.clear()
         for x in range(len(GAME.drivers)):
             GAME.lap.append(lap)
             GAME.time.append(0)
@@ -4711,6 +4706,7 @@ class Game:
             stops=GAME.stops[x]+1
             GAME.stops.pop(x)
             GAME.stops.insert(x,stops)
+            GAME.ERS.append(100)
             if x in GAME.positions:
                 GAME.distance.append(GAME.positions.index(x)*-2)
                 #Refueling
@@ -4939,6 +4935,7 @@ class Game:
         for x in range(len(GAME.positions)-1):
             pit=0
             index=GAME.positions[x]
+            GAME.ERS[index]=100
             if GAME.teams[index]!=GAME.team and not(GAME.replay==3 and GAME.lap[0]<10):
                 if GAME.replay==3 and GAME.lap[0]>50 and GAME.tyre[index]=="Intermediate":
                     pit=1
@@ -5278,9 +5275,7 @@ class Game:
                         aggression=aggressions[GAME.fuelAggression[indexes[x]]-1]
                     elif GAME.ers>0 and GAME.season>2013 and GAME.replay!=3:
                         if GAME.ers==1:
-                            if GAME.ERSdeployment[indexes[x]]==4 and (GAME.ERS[indexes[x]]<50 or GAME.water>=1 or GAME.positions[0]==indexes[x] or GAME.time[indexes[x]]>=1):
-                                GAME.ERSdeployment[indexes[x]]=3
-                            aggressions=["Recharge","Neutral","Boost","Overtake"]
+                            aggressions=["Recharge","Neutral","Boost"]
                         else:
                             aggressions=["Harvest","Neutral","Deployed"]
                         aggression=aggressions[GAME.ERSdeployment[indexes[x]]-1]
@@ -5331,6 +5326,9 @@ class Game:
                     canvas.create_image(600+(x*430), 700, anchor=tk.NW, image=image)
                 if GAME.penalties[indexes[x]]>0:
                     canvas.create_text(620+(x*430), 585, text=f"{GAME.penalties[indexes[x]]}s", fill="red", font=("Arial", 22), anchor="nw")
+                if GAME.ers==1 and GAME.time[indexes[x]]<1 and GAME.lap[0]>1 and GAME.positions.index(indexes[x])!=0 and GAME.water<1:
+                    #Overtake
+                    canvas.create_text(410+(x*430), 670, text="Overtake", fill="#1BB7DE", font=("Arial", 20), anchor="nw")
         if GAME.pause==0:
             GAME.Button("Pause",670,630)
         else:
@@ -5419,11 +5417,16 @@ class Game:
                         GAME.ERSdeployment.pop(index)
                         GAME.ERSdeployment.insert(index, 3)
                 elif GAME.ERSdeployment[index]==2:
-                    ERS=GAME.ERS[index]
-                else:
+                    ERS=GAME.ERS[index]-1
+                elif GAME.time[index]<1:
                     ERS=GAME.ERS[index]-random.randint(5,10)
                     if ERS<0:
                         ERS=0
+                else:
+                    ERS=GAME.ERS[index]+random.randint(-5,5)-(8*(13-GAME.battery[index]))
+                    if ERS<0:
+                        ERS=0
+                    GAME.ERS[index]=ERS
         for x in range(len(GAME.positions)):
             driverID=GAME.positions[x-driversRemoved]
             driver=GAME.drivers[driverID]
@@ -9332,11 +9335,9 @@ class Game:
                     elif event.y>=711:
                         #ERS Deployment
                         deployment=GAME.ERSdeployment[GAME.car1ID]+1
-                        if deployment==4 and (GAME.positions.index(GAME.car1ID)==0 or GAME.ERS[GAME.car1ID]<50 or GAME.time[GAME.car1ID]>=1 or GAME.lap[GAME.car1ID]==GAME.startLap or GAME.ers==2 or GAME.water>=1):
-                            deployment=3
                         if deployment==3 and GAME.ers==1 and GAME.water>=1:
                             deployment=2
-                        if deployment<=4:
+                        if deployment<=3:
                             GAME.ERSdeployment.pop(GAME.car1ID)
                             GAME.ERSdeployment.insert(GAME.car1ID,deployment)
                             GAME.RefreshScreen()
@@ -9387,11 +9388,9 @@ class Game:
                     elif event.y>=711:
                         #ERS Deployment
                         deployment=GAME.ERSdeployment[GAME.car2ID]+1
-                        if deployment==4 and (GAME.positions.index(GAME.car2ID)==0 or GAME.ERS[GAME.car2ID]<50 or GAME.time[GAME.car2ID]>=1 or GAME.lap[GAME.car2ID]==GAME.startLap or GAME.ers==2 or GAME.water>=1):
-                            deployment=3
                         if deployment==3 and GAME.ers==1 and GAME.water>=1:
                             deployment=2
-                        if deployment<=4:
+                        if deployment<=3:
                             GAME.ERSdeployment.pop(GAME.car2ID)
                             GAME.ERSdeployment.insert(GAME.car2ID,deployment)
                             GAME.RefreshScreen()
@@ -9883,16 +9882,16 @@ class Game:
                     if engine==1:
                         if int(GAME.Sanitise(c.execute("SELECT car1EngineDurability FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))==100:
                             num=0
-                        elif costCap==0 or GAME.costCap>=10000000:
+                        else:
                             num=int(GAME.Sanitise(c.execute("SELECT car1Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))+1
                             c.execute("UPDATE Cars SET car1Engine=?, car1EngineDurability=100 WHERE Team=?",(num,GAME.team,))
                     else:
                         if int(GAME.Sanitise(c.execute("SELECT car2EngineDurability FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))==100:
                             num=0
-                        elif costCap==0 or GAME.costCap>=10000000:
+                        else:
                             num=int(GAME.Sanitise(c.execute("SELECT car2Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))+1
                             c.execute("UPDATE Cars SET car2Engine=?, car2EngineDurability=100 WHERE Team=?",(num,GAME.team,))
-                    if num>4 and (costCap==0 or GAME.costCap>=10000000):
+                    if num>4:
                         GAME.money-=10000000
                         c.execute("UPDATE Teams SET Money=? WHERE Name=?",(GAME.money,GAME.team,))
                         if costCap==1:
