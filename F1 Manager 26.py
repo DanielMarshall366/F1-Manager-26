@@ -479,7 +479,7 @@ class Game:
         if GAME.startYear==2026:
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Mercedes", "Mercedes", 9, 8, 6, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ferrari", "Ferrari", 7, 10, 6, 1)''')
-            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ford RBPT", "Red Bull", 10, 6, 4, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ford RBPT", "Red Bull", 10, 7, 5, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Audi", "Audi", 6, 8, 5, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "Aston Martin", 4, 1, 3, 1)''')
         else:
@@ -574,7 +574,7 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Miami", "United States of America", 5.412, 57, 50, 5, 25, "Low", 50, 1, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Imola", "Italy", 4.909, 63, 70, 5, 20, "Medium", 30, 0, 0, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Monte Carlo", "Monaco", 3.337, 78, 88, 25, 15, "Low", 5, 0, 0, 1)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Catalunya", "Spain", 4.657, 66, 40, 5, 25, "Medium", 65, 0, 0, 3)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Barcelona-Catalunya", "Spain", 4.657, 66, 40, 5, 25, "Medium", 65, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Montreal", "Canada", 4.361, 70, 40, 10, -15, "Low", 48, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Red Bull Ring", "Austria", 4.318, 71, 65, 5, 15, "High", 75, 0, 0, 4)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Silverstone", "United Kingdom", 5.891, 52, 50, 65, 18, "High", 65, 0, 0, 4)''')
@@ -1621,7 +1621,7 @@ class Game:
                     regulationChange=1
                 else:
                     regulationChange=0
-                if GAME.engine not in GAME.team and not(GAME.team=="Cadillac" and GAME.season==2028):
+                if GAME.engine not in GAME.team and not(GAME.team=="Cadillac" and GAME.season==2028) and team!="Red Bull":
                     if team!="Racing Bulls" or len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==0:
                         engine=1
                 if GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])!="0" or GAME.team=="Cadillac":
@@ -3681,7 +3681,7 @@ class Game:
             if len(runOutOfFuel)>=1:
                 for x in range(len(runOutOfFuel)):
                     GAME.positions.remove(runOutOfFuel[x])
-            #Pit stops
+            #Pit Stops
             if len(GAME.pitting) >= 1:
                 baseTimeLost = {0: 20, 1: 15, 2: 10, 3: 0}[GAME.safety]
                 for driverIndex in GAME.pitting:
@@ -3736,6 +3736,8 @@ class Game:
                         if valid==1:
                             GAME.bestPitStop.insert(pos,pitStopTime)
                             GAME.bestPitStopper.insert(pos,driver)
+                    if pitStopTime>3.5 and pitStopTime>GAME.bestPitStop[0]:
+                        GAME.AddToLog(f"{GAME.drivers[driverIndex]} has had a slow pit stop that took {pitStopTime:.3f} seconds.")
                     if GAME.penalties[driverIndex]>0:
                         penalty=GAME.penalties[driverIndex]
                         GAME.penalties.pop(driverIndex)
@@ -4086,8 +4088,7 @@ class Game:
                                             elif driver==crasher:
                                                 #Penalty
                                                 penalty=GAME.penalties[index]+10
-                                                GAME.penalties.pop(index)
-                                                GAME.penalties.insert(index, penalty)
+                                                GAME.penalties[index]=penalty
                                                 GAME.AddToLog(crasher+" has a 10 second penalty.")
                                                 GAME.crashMessage.append(crasher+" has a 10 second penalty.")
                                             GAME.damage.insert(index, damage)
@@ -11938,6 +11939,7 @@ class Game:
             GAME.refueling=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Refueling'").fetchall()[0]))
             GAME.costCap=int(GAME.Sanitise(c.execute("SELECT CostCap FROM Player").fetchall()[0]))
             GAME.races=len(c.execute("SELECT Track FROM Calendar").fetchall())
+            GAME.ers=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='ERS'").fetchall()[0]))
             if GAME.races==0:
                 GAME.races=24
             if len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
@@ -12780,9 +12782,9 @@ class Game:
                     #Engine Change
                     team=GAME.Sanitise(random.choice(f))
                     old=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(team,)).fetchall()[0])
-                    if old not in team and team!=GAME.team and team not in newEngines:
+                    if old not in team and team!=GAME.team and team not in newEngines and team!="Red Bull":
                         rb=0
-                        if team=="Racing Bullls":
+                        if team=="Racing Bulls":
                             if len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
                                 rb=1
                         if rb==0:
@@ -12891,16 +12893,16 @@ class Game:
                 F1.execute("DELETE FROM Calendar")
                 if GAME.season==2026:
                     GAME.races=22
-                    calendar=["Albert Park","Shanghai","Suzuka","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
+                    calendar=["Albert Park","Shanghai","Suzuka","Miami","Montreal","Monte Carlo","Barcelona-Catalunya","Red Bull Ring","Silverstone",
                               "Spa","Hungaroring","Zandvoort","Monza","Madring","Baku","Marina Bay","Austin","Mexico City","Interlagos",
                               "Las Vegas","Qatar","Abu Dhabi"]
                 elif GAME.season==2009:
                     GAME.races=17
-                    calendar=["Albert Park","Sepang","Shanghai","Sakhir","Catalunya","Monte Carlo","Istanbul Park","Silverstone","Nürburgring","Hungaroring",
+                    calendar=["Albert Park","Sepang","Shanghai","Sakhir","Barcelona-Catalunya","Monte Carlo","Istanbul Park","Silverstone","Nürburgring","Hungaroring",
                               "Valencia","Spa","Monza","Marina Bay","Suzuka","Interlagos","Abu Dhabi"]
                 elif GAME.season==2010:
                     GAME.races=19
-                    calendar=["Sakhir","Albert Park","Sepang","Shanghai","Catalunya","Monte Carlo","Istanbul Park","Montreal","Valencia","Silverstone","Hockenheim",
+                    calendar=["Sakhir","Albert Park","Sepang","Shanghai","Barcelona-Catalunya","Monte Carlo","Istanbul Park","Montreal","Valencia","Silverstone","Hockenheim",
                               "Hungaroring","Spa","Monza","Marina Bay","Suzuka","South Korea","Interlagos","Abu Dhabi"]
                 else:
                     if random.randint(1,3)==3:
@@ -13077,7 +13079,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Virgin Upgrade","HRT Upgrade","Lotus Upgrade","Sauber Display","Virgin Display","HRT Display","Lotus Renault Display","Lotus Renault Upgrade","Caterham Display",
         "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display",
         "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade",
-        "Catalunya Racing Bulls Upgrade"]
+        "Barcelona-Catalunya Racing Bulls Upgrade"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
