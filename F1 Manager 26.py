@@ -433,7 +433,7 @@ class Game:
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("William Joseph", "McLaren", "Race Engineer 2", 86, 2000000, 95, "United Kingdom", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Tom Stallard", "McLaren", "Race Engineer 1", 85, 2000000, 95, "United Kingdom", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Bryan Bozzi", "Ferrari", "Race Engineer 1", 90, 2000000, 90, "Italy", 0, 0, 0))
-            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Carlo Santi", "Ferrari", "Race Engineer 2", 88, 2000000, 90, "Italy", 0, 0, 0))
+            c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Carlo Santi", "Ferrari", "Race Engineer 2", 91, 2000000, 90, "Italy", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Gianpiero Lambiase", "Red Bull", "Race Engineer 1", 91, 2000000, 75, "Italy", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Richard Wood", "Red Bull", "Race Engineer 2", 85, 2000000, 70, "United Kingdom", 0, 0, 0))
             c.execute('''INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',("Marcus Dudley", "Mercedes", "Race Engineer 1", 90, 1800000, 70, "United Kingdom", 0, 0, 0))
@@ -500,7 +500,7 @@ class Game:
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Haas", "Ferrari", 47, 47, 47, 47, 35, 40, 1, 100, 1, 100, 1, 5, 15)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Racing Bulls", "Ford RBPT", 50, 48, 48, 48, 40, 45, 1, 100, 1, 100, 1, 7, 20)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Williams", "Mercedes", 40, 40, 40, 40, 30, 35, 1, 100, 1, 100, 1, 8, 12)''')
-            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Audi", "Audi", 48, 48, 48, 48, 33, 40, 1, 100, 1, 100, 1, 9, 15)''')
+            c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Audi", "Audi", 45, 45, 45, 45, 33, 40, 1, 100, 1, 100, 1, 9, 15)''')
             c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Cadillac", "Ferrari", 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 1, 10, 15)''')
             if GAME.newTeam==1:
                 c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES (?, ?, 30, 30, 30, 30, 30, 30, 1, 100, 1, 100, 0, 12, 12)''',(GAME.team, GAME.engine))
@@ -1859,7 +1859,7 @@ class Game:
                         manufacturedEngine=0
                     else:
                         manufacturedEngine=GAME.Sanitise(manufacturedEngine[0])
-                    if (manufacturedEngine!=0 and(nextEngine=="0" or nextEngine==manufacturedEngine)) or nextEngine=="Honda" or GAME.action==0:
+                    if GAME.money>100000 and ((manufacturedEngine!=0 and(nextEngine=="0" or nextEngine==manufacturedEngine)) or nextEngine=="Honda" or GAME.action==0):
                         GAME.Button("Research",870,580)
                 costCap=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Cost Cap'").fetchall()[0]))
                 if GAME.team=="Red Bull":
@@ -6043,12 +6043,15 @@ class Game:
                                 pos=len(f)-len(zeroPoints)+1
                     if found==0:
                         for x in range(len(f)):
-                            team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(x+1,)).fetchall()[0])
-                            if team in zeroPoints:
-                                if pos>len(f):
-                                    pos=len(f)
-                                c.execute("UPDATE Teams SET Position=? WHERE Name=?",(pos,team,))
-                                pos+=1
+                            try:
+                                team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(x+1,)).fetchall()[0])
+                                if team in zeroPoints:
+                                    if pos>len(f):
+                                        pos=len(f)
+                                    c.execute("UPDATE Teams SET Position=? WHERE Name=?",(pos,team,))
+                                    pos+=1
+                            except:
+                                pass
             #Development
             with sqlite3.connect(GAME.database) as conn:
                 cursor = conn.cursor()
@@ -9614,7 +9617,7 @@ class Game:
                     GAME.BoardRoomLogo()
                 else:
                     GAME.ViewContracts()
-            elif event.x>=870 and event.x<=1070 and event.y>=580 and event.y<=630:
+            elif event.x>=870 and event.x<=1070 and event.y>=580 and event.y<=630 and GAME.money>100000:
                 #Research
                 with sqlite3.connect(GAME.database) as c:
                     if int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))==GAME.season+1:
