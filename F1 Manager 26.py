@@ -574,7 +574,7 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Miami", "United States of America", 5.412, 57, 50, 5, 25, "Low", 50, 1, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Imola", "Italy", 4.909, 63, 70, 5, 20, "Medium", 30, 0, 0, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Monte Carlo", "Monaco", 3.337, 78, 88, 25, 15, "Low", 5, 0, 0, 1)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Barcelona-Catalunya", "Spain", 4.657, 66, 40, 5, 25, "Medium", 65, 0, 0, 3)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Catalunya", "Spain", 4.657, 66, 40, 5, 25, "Medium", 65, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Montreal", "Canada", 4.361, 70, 40, 10, -15, "Low", 48, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Red Bull Ring", "Austria", 4.318, 71, 65, 5, 15, "High", 75, 0, 0, 4)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Silverstone", "United Kingdom", 5.891, 52, 50, 65, 18, "High", 65, 0, 0, 4)''')
@@ -5204,8 +5204,12 @@ class Game:
                         canvas.create_text(380, x*24, text="Finished", fill=colour, font=("Arial", 15), anchor="nw")
                     else:
                         canvas.create_text(380, x*24, text=f"Lap {lap}/{GAME.laps}", fill=colour, font=("Arial", 15), anchor="nw")
-                else:
+                elif time<60:
                     canvas.create_text(380, (x*24)+Y, text=f"+{time}s", fill=colour, font=("Arial", 15), anchor="nw")
+                elif time%60<10:
+                    canvas.create_text(380, (x*24)+Y, text=f"+{int(time//60)}:0{round(time%60,2)}", fill=colour, font=("Arial", 15), anchor="nw")
+                else:
+                    canvas.create_text(380, (x*24)+Y, text=f"+{int(time//60)}:{round(time%60,2)}", fill=colour, font=("Arial", 15), anchor="nw")
                 tyre=GAME.tyre[GAME.positions[x]]
                 canvas.create_text(475, (x*24)+Y, text=tyre[0], fill=colours[Tyres.index(tyre)], font=("Arial", 15), anchor="nw")
     def StartRace(self):
@@ -8547,6 +8551,11 @@ class Game:
                     message="bringing back Refueling for more interesting strategies."
                 else:
                     message="banning refueling for improved safety."
+            elif regulation=="Cost Cap":
+                if state==0:
+                    message="bringing back the cost cap."
+                else:
+                    message="removing the cost cap."
         GAME.ChangeScreen("Rule Vote")
         canvas.create_text(10, 150, text="The FIA is proposing", fill="#DADADA", font=("Arial", 20), anchor="nw")
         canvas.create_text(10, 180, text=message, fill="#DADADA", font=("Arial", 20), anchor="nw")
@@ -12893,16 +12902,16 @@ class Game:
                 F1.execute("DELETE FROM Calendar")
                 if GAME.season==2026:
                     GAME.races=22
-                    calendar=["Albert Park","Shanghai","Suzuka","Miami","Montreal","Monte Carlo","Barcelona-Catalunya","Red Bull Ring","Silverstone",
+                    calendar=["Albert Park","Shanghai","Suzuka","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
                               "Spa","Hungaroring","Zandvoort","Monza","Madring","Baku","Marina Bay","Austin","Mexico City","Interlagos",
                               "Las Vegas","Qatar","Abu Dhabi"]
                 elif GAME.season==2009:
                     GAME.races=17
-                    calendar=["Albert Park","Sepang","Shanghai","Sakhir","Barcelona-Catalunya","Monte Carlo","Istanbul Park","Silverstone","Nürburgring","Hungaroring",
+                    calendar=["Albert Park","Sepang","Shanghai","Sakhir","Catalunya","Monte Carlo","Istanbul Park","Silverstone","Nürburgring","Hungaroring",
                               "Valencia","Spa","Monza","Marina Bay","Suzuka","Interlagos","Abu Dhabi"]
                 elif GAME.season==2010:
                     GAME.races=19
-                    calendar=["Sakhir","Albert Park","Sepang","Shanghai","Barcelona-Catalunya","Monte Carlo","Istanbul Park","Montreal","Valencia","Silverstone","Hockenheim",
+                    calendar=["Sakhir","Albert Park","Sepang","Shanghai","Catalunya","Monte Carlo","Istanbul Park","Montreal","Valencia","Silverstone","Hockenheim",
                               "Hungaroring","Spa","Monza","Marina Bay","Suzuka","South Korea","Interlagos","Abu Dhabi"]
                 else:
                     if random.randint(1,3)==3:
@@ -13079,7 +13088,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Virgin Upgrade","HRT Upgrade","Lotus Upgrade","Sauber Display","Virgin Display","HRT Display","Lotus Renault Display","Lotus Renault Upgrade","Caterham Display",
         "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display",
         "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade",
-        "Barcelona-Catalunya Racing Bulls Upgrade"]
+        "Catalunya Racing Bulls Upgrade"]
 images=[]
 for x in range(len(Images)):
     path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
