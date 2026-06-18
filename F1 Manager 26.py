@@ -11288,10 +11288,23 @@ class Game:
         GAME.DisplayMoney()
         GAME.DisplayLogo()
         maxResearch=(round(GAME.money/3)//100000)*100000
+        research=simpledialog.askstring(" ", f"Maximum ${'{:,}'.format(maxResearch)}")
         try:
-            research=int(simpledialog.askstring(" ", f"Maximum ${'{:,}'.format(maxResearch)}"))
+            research=int(research)
         except:
-            research=0
+            research=research.lower()
+            if "m" in research or "k" in research:
+                if "m" in research:
+                    multiplier=1000000
+                else:
+                    multiplier=1000
+                research=research[:-1]
+                try:
+                    research=int(float(research)*multiplier)
+                except:
+                    research=0
+            else:
+                research=0
         if research<1 or research>maxResearch:
             GAME.Menu()
         else:
@@ -11310,10 +11323,23 @@ class Game:
         GAME.ChangeScreen("Research")
         GAME.DisplayMoney()
         GAME.DisplayLogo()
+        research=simpledialog.askstring(" ", "Engine Research")
         try:
-            research=int(simpledialog.askstring(" ", "Engine Research"))
+            research=int(research)
         except:
-            research=0
+            research=research.lower()
+            if "m" in research or "k" in research:
+                if "m" in research:
+                    multiplier=1000000
+                else:
+                    multiplier=1000
+                research=research[:-1]
+                try:
+                    research=int(float(research)*multiplier)
+                except:
+                    research=0
+            else:
+                research=0
         if research<1:
             GAME.Menu()
         else:
