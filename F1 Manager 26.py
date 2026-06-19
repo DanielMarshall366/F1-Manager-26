@@ -208,6 +208,7 @@ class Game:
         self.costCap=135000000
         self.fuelTank=100
         self.crashScore=0
+        self.disqualified=[]
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -5779,6 +5780,7 @@ class Game:
         #Disqualifications
         if GAME.wet==0:
             disqualified=[]
+            GAME.disqualified=[]
             for x in range(len(GAME.positions)):
                 if GAME.tyreCompoundsUsed[GAME.positions[x]]<2:
                     disqualified.append(x)
@@ -5787,6 +5789,7 @@ class Game:
                 for x in range(len(disqualified)):
                     canvas.create_text(150, 180+(x*50), text=f"{GAME.drivers[GAME.positions[disqualified[x]]]} is disqualified.", fill="white", font=("Arial", 30), anchor="nw")
                 for x in range(len(disqualified)):
+                    GAME.disqualified.append(GAME.positions[disqualified[x]])
                     GAME.positions.pop(disqualified[x]-x)
                 root.after(4000, lambda: GAME.Podium())
             else:
@@ -5881,6 +5884,18 @@ class Game:
                     canvas.create_text(690, 80+(x*28), text=f"{points} Points", fill=colour, font=("Arial", 20), anchor="nw")
                 else:
                     canvas.create_text(700, 80+(x*28), text=f"{points} Points", fill=colour, font=("Arial", 20), anchor="nw")
+            y=80+(x*28)
+            for x in range(len(GAME.disqualified)):
+                y+=28
+                colour=GAME.TeamColour(GAME.teams[GAME.disqualified[x]],GAME.season)
+                canvas.create_text(35, y, text=f"DSQ {GAME.drivers[GAME.disqualified[x]]}", fill=colour, font=("Arial", 20), anchor="nw")
+                canvas.create_text(700, y, text="0 Points", fill=colour, font=("Arial", 20), anchor="nw")
+            for x in range(len(GAME.drivers)):
+                if x not in GAME.positions and x not in GAME.disqualified:
+                    y+=28
+                    colour=GAME.TeamColour(GAME.teams[x],GAME.season)
+                    canvas.create_text(35, y, text=f"DNF {GAME.drivers[x]}", fill=colour, font=("Arial", 20), anchor="nw")
+                    canvas.create_text(700, y, text="0 Points", fill=colour, font=("Arial", 20), anchor="nw")
         GAME.DisplayDriver(GAME.drivers[GAME.positions[0]],950,500)
         GAME.Button("Next",1230,5)
     def SaveRace(self):
