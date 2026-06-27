@@ -209,6 +209,7 @@ class Game:
         self.fuelTank=100
         self.crashScore=0
         self.disqualified=[]
+        self.overtake=[]
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -239,9 +240,9 @@ class Game:
             c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Force India", "Force India", "Force India", 10, 0, 13000000, 1000000, "Vijay Mallya", "India", 55, "Kingfisher", 10, 0)''')
 
         #Drivers
-        path = "F1 Manager 26 Driver Data.json"
+        path="F1 Manager 26 Driver Data.json"
         with open(path, "r") as file:
-            jsonData = json.load(file)
+            jsonData=json.load(file)
         if GAME.startYear==2026:
             data=jsonData["Drivers"]["Standard"]
         else:
@@ -280,7 +281,7 @@ class Game:
                 0
             ))
         if GAME.legends==1:
-            data = jsonData["Drivers"]["Legends"]
+            data=jsonData["Drivers"]["Legends"]
             for driver in data:
                 c.execute("""
                 INSERT INTO Drivers (Name, Appearance, Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend) 
@@ -2704,14 +2705,15 @@ class Game:
                         c.execute("UPDATE Drivers SET ContractEnd=?, NewTeam='Aston Martin', NewRole='1' WHERE Name='Lance Stroll' AND NewTeam='0' AND Team='Aston Martin' AND Role='1'",(GAME.season+1,))
 
             #ADUO
-            if GAME.race==8 and GAME.team!="Ferrari":
-                with sqlite3.connect(GAME.database) as c:
-                    c.execute("UPDATE Engines SET Power=8 WHERE Name='Ferrari'")
-                GAME.news.append("BREAKING NEWS! Ferrari have brought an ADUO upgrade to their engine.")
-            elif GAME.race==13 and GAME.team!="Ferrari":
-                with sqlite3.connect(GAME.database) as c:
-                    c.execute("UPDATE Engines SET Power=9 WHERE Name='Ferrari'")
-                GAME.news.append("BREAKING NEWS! Ferrari have brought an ADUO upgrade to their engine.")
+            if GAME.season==2026:
+                if GAME.race==8 and GAME.team!="Ferrari":
+                    with sqlite3.connect(GAME.database) as c:
+                        c.execute("UPDATE Engines SET Power=8 WHERE Name='Ferrari'")
+                    GAME.news.append("BREAKING NEWS! Ferrari have brought an ADUO upgrade to their engine.")
+                elif GAME.race==13 and GAME.team!="Ferrari":
+                    with sqlite3.connect(GAME.database) as c:
+                        c.execute("UPDATE Engines SET Power=9 WHERE Name='Ferrari'")
+                    GAME.news.append("BREAKING NEWS! Ferrari have brought an ADUO upgrade to their engine.")
                 
             #Actions
             if GAME.race>=8:
@@ -2819,20 +2821,20 @@ class Game:
         else:
             GAME.Menu()
     def CalculateTime(self):
-        lead_driver = GAME.positions[0]
-        GAME.time[lead_driver] = 0.0
+        lead_driver=GAME.positions[0]
+        GAME.time[lead_driver]=0.0
         for x in range(1, len(GAME.positions)):
-            current = GAME.positions[x]
-            ahead = GAME.positions[x - 1]
+            current=GAME.positions[x]
+            ahead=GAME.positions[x - 1]
             if GAME.lap[current] > GAME.lap[ahead] or (
                GAME.lap[current] == GAME.lap[ahead] and GAME.distance[current] > GAME.distance[ahead]):
-                GAME.lap[current] = GAME.lap[ahead]
-                GAME.distance[current] = max(0, GAME.distance[ahead] - random.uniform(0.5, 1.5))
-            lead_total = GAME.lap[ahead] * GAME.length + GAME.distance[ahead]
-            current_total = GAME.lap[current] * GAME.length + GAME.distance[current]
-            distance_gap = lead_total - current_total
-            time_gap = round(distance_gap / 41.67, 3)
-            GAME.time[current] = max(0, time_gap)
+                GAME.lap[current]=GAME.lap[ahead]
+                GAME.distance[current]=max(0, GAME.distance[ahead] - random.uniform(0.5, 1.5))
+            lead_total=GAME.lap[ahead] * GAME.length + GAME.distance[ahead]
+            current_total=GAME.lap[current] * GAME.length + GAME.distance[current]
+            distance_gap=lead_total - current_total
+            time_gap=round(distance_gap / 41.67, 3)
+            GAME.time[current]=max(0, time_gap)
     def Raining(self):
         if GAME.rainStopped==0 and GAME.replay!=5:
             if GAME.rainStops<=GAME.lap[GAME.positions[0]] and GAME.rainStops!=0 and GAME.water>0 and GAME.replay==0:
@@ -3046,6 +3048,18 @@ class Game:
                         GAME.overtakeability=3
                     else:
                         GAME.overtakeability=2
+                        
+            #Overtake Mode
+            GAME.CalculateTime()
+            if GAME.ers==1:
+                for x in range(len(GAME.positions)):
+                    index=GAME.positions[x]
+                    if x==0:
+                        GAME.overtake[index]=0
+                    elif GAME.time[index]<1:
+                        GAME.overtake[index]=1
+                    else:
+                        GAME.overtake[index]=0
             GAME.RefreshScreen()
             GAME.cycles+=1
             if GAME.cycles>40:
@@ -3059,7 +3073,6 @@ class Game:
             overtakes=0
             driversRemoved=0
             runOutOfFuel=[]
-            GAME.pitting=[]
             for x in range(len(GAME.positions)):
                 index=GAME.positions[x]
                 if GAME.ers==1 and GAME.ERSdeployment[index]==3 and GAME.water>=1:
@@ -3509,7 +3522,7 @@ class Game:
                                         elif ERS>60:
                                             GAME.ERSdeployment[index]=2
                                 elif GAME.ERSdeployment[index]==2:
-                                    ERS=GAME.ERS[index]+random.randint(-8,0)+(GAME.battery[index]//3)
+                                    ERS=GAME.ERS[index]+GAME.battery[index]-10
                                     if ERS>100:
                                         ERS=100
                                     elif ERS<0:
@@ -3519,15 +3532,15 @@ class Game:
                                             GAME.ERSdeployment.insert(index, 1)
                                     if GAME.teams[index]!=GAME.team and ERS>40 and GAME.water<1 and x!=0 and GAME.time[index]<1 and random.randint(1,2)==2:
                                         GAME.ERSdeployment[index]=3
-                                elif GAME.time[index]<1:
-                                    ERS=GAME.ERS[index]-random.randint(15,35)+GAME.battery[index]
+                                elif GAME.overtake[index]==1:
+                                    ERS=GAME.ERS[index]+GAME.battery[index]-25
                                     if ERS<0:
                                         ERS=0
                                     if ERS<50 and GAME.teams[index]!=GAME.team:
                                         GAME.ERSdeployment.pop(index)
                                         GAME.ERSdeployment.insert(index, round(random.randint(1,5)/2))
                                 else:
-                                    ERS=GAME.ERS[index]+random.randint(-5,5)-(8*(13-GAME.battery[index]))
+                                    ERS=GAME.ERS[index]+GAME.battery[index]-40
                                     if ERS<0:
                                         ERS=0
                             try:
@@ -3567,244 +3580,6 @@ class Game:
                     GAME.tyreRemaining.insert(index, tyreRemaining)
                     GAME.fuel.pop(index)
                     GAME.fuel.insert(index, fuel)
-                    if GAME.lap[index]>GAME.laps and GAME.replay!=7 and GAME.replay!=8:
-                        GAME.raceFinished=1
-                    elif (GAME.replay==7 or GAME.replay==8) and GAME.lap[index]>66:
-                        GAME.raceFinished=1
-                    else:
-                        pitting=0
-                        if GAME.lap[index]>GAME.pitLap[index] and GAME.pitLap[index]!=0:
-                            pitting=1
-                        elif GAME.teams[index]!=GAME.team and not (GAME.drivers[index]=="Timo Glock" and GAME.lap[0]>40 and GAME.replay==4):
-                            #Pit now
-                            if GAME.tyreRemaining[index]==0 or GAME.strategy[index]==0 and (GAME.tyreRemaining[index]<10 or (GAME.tyreRemaining[index]<=25 and (GAME.lap[GAME.positions[0]]<GAME.laps-5 or GAME.lap[index]<GAME.pitLap[index]-5)) or (GAME.tyreRemaining[index]<=20 and (GAME.lap[GAME.positions[0]]<GAME.laps-3 or GAME.lap[index]<GAME.pitLap[index]-5))):
-                                pitting=1
-                                GAME.pitTyre.pop(index)
-                                if GAME.wet==0:
-                                    tyre="Slick"
-                                    lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
-                                elif GAME.water==0 and GAME.rainStarts-GAME.lap[GAME.positions[0]]<=6:
-                                    tyre="Slick"
-                                    lapsLeft=GAME.rainStarts-GAME.lap[GAME.positions[0]]
-                                elif GAME.water>0 and GAME.water<=1 and GAME.rain==0:
-                                    tyre="Slick"
-                                    lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
-                                elif GAME.water<2.5 or GAME.maxWater<4:
-                                    tyre="Intermediate"
-                                else:
-                                    tyre="Wet"
-                                if tyre=="Slick":
-                                    if lapsLeft<=GAME.expectedTyreLife[0]*0.8 and (GAME.tyreCompoundsUsed[index]>1 or GAME.tyre[index]!="Soft"):
-                                        GAME.pitTyre.insert(index,"Soft")
-                                    elif lapsLeft<=GAME.expectedTyreLife[1]*0.8 and (GAME.tyreCompoundsUsed[index]>1 or GAME.tyre[index]!="Medium"):
-                                        GAME.pitTyre.insert(index,"Medium")
-                                    elif GAME.tyreCompoundsUsed[index]>1 or GAME.tyre[index]!="Hard":
-                                        GAME.pitTyre.insert(index,"Hard")
-                                    else:
-                                        GAME.pitTyre.insert(index,"Medium")
-                                else:
-                                    GAME.pitTyre.insert(index,tyre)
-                            elif GAME.wet==1 and GAME.replay!=5:
-                                if GAME.water>=0.65 and GAME.water<2.5 and (GAME.tyre[index]=="Soft" or GAME.tyre[index]=="Medium" or GAME.tyre[index]=="Hard") and GAME.teams[index]!="Ferrari":
-                                    if GAME.water>=1:
-                                        pitting=1
-                                        GAME.pitTyre.pop(index)
-                                        GAME.pitTyre.insert(index,"Intermediate")
-                                    elif random.randint(round(GAME.water*100),100)>90:
-                                        pitting=1
-                                        GAME.pitTyre.pop(index)
-                                        GAME.pitTyre.insert(index,"Intermediate")
-                                elif GAME.teams[index]=="Ferrari" and GAME.water>=0.5 and (GAME.tyre[index]=="Soft" or GAME.tyre[index]=="Medium" or GAME.tyre[index]=="Hard"):
-                                    if GAME.water>=1.5:
-                                        num=random.randint(1,7)
-                                        if num==7:
-                                            GAME.pitTyre.pop(index)
-                                            GAME.pitTyre.insert(index,"Wet")
-                                        elif num>=3:
-                                            GAME.pitTyre.pop(index)
-                                            GAME.pitTyre.insert(index,"Intermediate")
-                                    elif random.randint(round(GAME.water*100),150)>=120:
-                                        pitting=1
-                                        GAME.pitTyre.pop(index)
-                                        if random.randint(1,100)==100:
-                                            GAME.pitTyre.insert(index,"Wet")
-                                        else:
-                                            GAME.pitTyre.insert(index,"Intermediate")
-                                elif GAME.water>=2.5 and GAME.tyre[index]!="Wet" and GAME.maxWater>=4 and (GAME.rain>0 or GAME.water>4) and GAME.rainStops-GAME.lap[GAME.positions[0]]>=5:
-                                    if GAME.water>=3.5:
-                                        pitting=1
-                                        GAME.pitTyre.pop(index)
-                                        GAME.pitTyre.insert(index,"Wet")
-                                    elif random.randint(round(GAME.water*100),350)>=315:
-                                        pitting=1
-                                        GAME.pitTyre.pop(index)
-                                        GAME.pitTyre.insert(index,"Wet")
-                                elif GAME.water<=1 and GAME.rain==0 and (GAME.tyre[index]=="Intermediate" or GAME.tyre[index]=="Wet"):
-                                    if GAME.teams[index]=="Ferrari" and random.randint(1,1000)==1000:
-                                        pitting=1
-                                        GAME.pitTyre.pop(index)
-                                        GAME.pitTyre.insert(index,"Wet")
-                                    elif GAME.tyre=="Wet" or random.randint(round(GAME.water*100),150)<=100:
-                                        pitting=1
-                                        GAME.pitTyre.pop(index)
-                                        lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
-                                        if lapsLeft<=GAME.expectedTyreLife[0]:
-                                            if random.randint(1,5)==5:
-                                                GAME.pitTyre.insert(index,"Medium")
-                                            else:
-                                                GAME.pitTyre.insert(index,"Soft")
-                                        elif lapsLeft<=GAME.expectedTyreLife[1]:
-                                            num=random.randint(1,10)
-                                            if num==1:
-                                                GAME.pitTyre.insert(index,"Soft")
-                                            elif num<=7:
-                                                GAME.pitTyre.insert(index,"Medium")
-                                            else:
-                                                GAME.pitTyre.insert(index,"Hard")
-                                        elif lapsLeft<=GAME.expectedTyreLife[2]:
-                                            if random.randint(1,8)==8:
-                                                GAME.pitTyre.insert(index,"Medium")
-                                            else:
-                                                GAME.pitTyre.insert(index,"Hard")
-                                        else:
-                                            num=random.randint(1,4)
-                                            if num==1:
-                                                GAME.pitTyre.insert(index,"Soft")
-                                            elif num<=3:
-                                                GAME.pitTyre.insert(index,"Medium")
-                                            else:
-                                                GAME.pitTyre.insert(index,"Hard")
-                                elif GAME.water<2.5 and GAME.tyre[index]=="Wet" and GAME.rain==0:
-                                    if GAME.teams[index]!="Ferrari" or random.randint(1,8)!=8:
-                                        pitting=1
-                                        GAME.pitTyre.pop(index)
-                                        GAME.pitTyre.insert(index,"Intermediate")
-                                if pitting==1:
-                                    GAME.pitLap.pop(index)
-                                    GAME.pitLap.insert(index,0)
-                        if pitting==1:
-                            GAME.AddToLog(GAME.drivers[index]+" is pitting.")
-                            GAME.pitting.append(index)
-                            GAME.pitLap.pop(index)
-                            GAME.pitLap.insert(index,0)
-                            GAME.lapPittedTo.pop(index)
-                            GAME.lapPittedTo.insert(index,GAME.lap[index])
-            if len(runOutOfFuel)>=1:
-                for x in range(len(runOutOfFuel)):
-                    GAME.positions.remove(runOutOfFuel[x])
-            #Pit Stops
-            if len(GAME.pitting) >= 1:
-                baseTimeLost = {0: 20, 1: 15, 2: 10, 3: 0}[GAME.safety]
-                for driverIndex in GAME.pitting:
-                    GAME.CalculateTime()
-                    pos=GAME.positions.index(driverIndex)
-                    team=GAME.teams[driverIndex]
-                    if GAME.replay==0:
-                        with sqlite3.connect(GAME.database) as c:
-                            pitStopRating = int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Role="Sporting Director" AND Team=?''', (team,)).fetchone()[0]))
-                            role = "Race Engineer 1" if GAME.cars[driverIndex] == 1 else "Race Engineer 2"
-                            result = c.execute('''SELECT Rating FROM Staff WHERE Role=? AND Team=?''', (role, team)).fetchone()
-                        engineerRating = int(GAME.Sanitise(result[0])) if result else 50
-                        pitStopRating += round(engineerRating / 2)
-                    else:
-                        pitStopRating=100
-                    pitStopScore = random.randint(1, pitStopRating)
-                    if pitStopScore <= 20:
-                        pitStopTime = random.uniform(4.0, 10.0)  # Terrible
-                    elif pitStopScore <= 50:
-                        pitStopTime = random.uniform(3.5, 5.0)   # Bad
-                    elif pitStopScore <= 80:
-                        pitStopTime = random.uniform(2.5, 3.5)   # Average
-                    elif pitStopScore <= 100:
-                        pitStopTime = random.uniform(2.2, 2.9)   # Good
-                    else:
-                        pitStopTime = random.uniform(1.8, 2.3)   # Amazing
-                    #Refueling
-                    if GAME.refueling==1:
-                        totalFuelNeeded=round(100*(GAME.laps-GAME.lap[GAME.positions[0]])/GAME.laps)
-                        if GAME.fuel[driverIndex]<totalFuelNeeded:
-                            fuelNeeded=totalFuelNeeded-GAME.fuel[driverIndex]
-                            pitStopTime+=fuelNeeded/10
-                            GAME.fuel[driverIndex]=totalFuelNeeded
-                    if pitStopTime<GAME.bestPitStop[9]:
-                        pos=9
-                        driver=GAME.drivers[driverIndex]
-                        while pitStopTime<GAME.bestPitStop[pos] and pos>-1:
-                            pos-=1
-                        pos+=1
-                        if pos==0:
-                            GAME.AddToLog(f"{GAME.drivers[driverIndex]} has just completed a {pitStopTime:.3f} second pit stop, the fastest of the race so far.")
-                        valid=1
-                        if driver in GAME.bestPitStopper:
-                            if GAME.bestPitStopper.index(driver)<pos:
-                                GAME.bestPitStop.pop(GAME.bestPitStopper.index(driver))
-                                GAME.bestPitStopper.remove(driver)
-                            else:
-                                valid=0
-                        else:
-                            GAME.bestPitStop.pop(9)
-                            GAME.bestPitStopper.pop(9)
-                        if valid==1:
-                            GAME.bestPitStop.insert(pos,pitStopTime)
-                            GAME.bestPitStopper.insert(pos,driver)
-                    if pitStopTime>3.5 and pitStopTime>GAME.bestPitStop[0]:
-                        GAME.AddToLog(f"{GAME.drivers[driverIndex]} has had a slow pit stop that took {pitStopTime:.3f} seconds.")
-                    if GAME.penalties[driverIndex]>0:
-                        penalty=GAME.penalties[driverIndex]
-                        GAME.penalties.pop(driverIndex)
-                        GAME.penalties.insert(driverIndex,0)
-                    else:
-                        penalty=0
-                    totalTimeLost = baseTimeLost + pitStopTime + penalty
-                    distanceLost = round(totalTimeLost*41.67,3)
-                    distance=GAME.distance[driverIndex]-distanceLost
-                    GAME.distance.pop(driverIndex)
-                    GAME.distance.insert(driverIndex,distance)
-                    if pos<len(GAME.positions)-1:
-                        newPos=pos
-                        while True:
-                            if distance<GAME.distance[GAME.positions[newPos+1]]:
-                                newPos+=1
-                                if newPos==len(GAME.positions)-1:
-                                    break
-                            else:
-                                break
-                        GAME.positions.remove(driverIndex)
-                        GAME.positions.insert(newPos,driverIndex)
-                    if GAME.replay==4 or GAME.replay==5 or GAME.season<2011:
-                        if GAME.pitTyre[driverIndex]=="Medium":
-                            if GAME.tyre[driverIndex]=="Hard":
-                                GAME.pitTyre[driverIndex]="Soft"
-                            else:
-                                GAME.pitTyre[driverIndex]="Hard"
-                        elif GAME.pitTyre[driverIndex]=="Intermediate" and GAME.replay==5:
-                            GAME.pitTyre[driverIndex]="Hard"
-                    if GAME.tyre[driverIndex]!=GAME.pitTyre[driverIndex]:
-                        GAME.tyre[driverIndex] = GAME.pitTyre[driverIndex]
-                        GAME.tyreCompoundsUsed[driverIndex]+=1
-                    GAME.tyreRemaining[driverIndex] = 100
-                    GAME.stops[driverIndex] += 1
-                    lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
-                    if GAME.strategy[driverIndex]>GAME.stops[driverIndex]:
-                        if lapsLeft<GAME.expectedTyreLife[0]:
-                            pitTyre="Soft"
-                        elif lapsLeft<GAME.expectedTyreLife[1] and random.randint(1,3)>1:
-                            pitTyre="Medium"
-                        else:
-                            pitTyre="Hard"
-                        if pitTyre=="Wet":
-                            tyreLife=GAME.expectedTyreLife[3]
-                        else:
-                            tyreLife=GAME.expectedTyreLife[Tyres.index(pitTyre)]
-                        if pitTyre=="Hard":
-                            length=tyreLife+GAME.expectedTyreLife[1]
-                        else:
-                            length=tyreLife+GAME.expectedTyreLife[2]
-                        pitLap=GAME.lap[driverIndex]+(lapsLeft*tyreLife/length)+random.randint(-3,3)
-                        GAME.pitLap.pop(driverIndex)
-                        GAME.pitLap.insert(driverIndex,pitLap)
-                        GAME.pitTyre.pop(driverIndex)
-                        GAME.pitTyre.insert(driverIndex,pitTyre)
                 GAME.CalculateTime()
             removed=0
             for x in range(len(GAME.positions)):
@@ -4256,6 +4031,242 @@ class Game:
                             GAME.distance.pop(x-driversRemoved)
                             GAME.distance.insert(x-driversRemoved, distance)
 
+            #Pit Stops
+            for x in range(len(GAME.positions)):
+                index=GAME.positions[x]
+                if GAME.lap[index]>GAME.laps and GAME.replay!=7 and GAME.replay!=8:
+                    GAME.raceFinished=1
+                elif (GAME.replay==7 or GAME.replay==8) and GAME.lap[index]>66:
+                    GAME.raceFinished=1
+                elif GAME.safety==0 and GAME.teams[index]!=GAME.team:
+                    pitting=0
+                    if GAME.lap[index]>GAME.pitLap[index] and GAME.pitLap[index]!=0:
+                        pitting=1
+                    elif not (GAME.drivers[index]=="Timo Glock" and GAME.lap[0]>40 and GAME.replay==4):
+                        #Pit now
+                        if GAME.tyreRemaining[index]==0 or GAME.strategy[index]==0 and (GAME.tyreRemaining[index]<10 or (GAME.tyreRemaining[index]<=25 and (GAME.lap[GAME.positions[0]]<GAME.laps-5 or GAME.lap[index]<GAME.pitLap[index]-5)) or (GAME.tyreRemaining[index]<=20 and (GAME.lap[GAME.positions[0]]<GAME.laps-3 or GAME.lap[index]<GAME.pitLap[index]-5))):
+                            pitting=1
+                            GAME.pitTyre.pop(index)
+                            if GAME.wet==0:
+                                tyre="Slick"
+                                lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
+                            elif GAME.water==0 and GAME.rainStarts-GAME.lap[GAME.positions[0]]<=6:
+                                tyre="Slick"
+                                lapsLeft=GAME.rainStarts-GAME.lap[GAME.positions[0]]
+                            elif GAME.water>0 and GAME.water<=1 and GAME.rain==0:
+                                tyre="Slick"
+                                lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
+                            elif GAME.water<2.5 or GAME.maxWater<4:
+                                tyre="Intermediate"
+                            else:
+                                tyre="Wet"
+                            if tyre=="Slick":
+                                if lapsLeft<=GAME.expectedTyreLife[0]*0.8 and (GAME.tyreCompoundsUsed[index]>1 or GAME.tyre[index]!="Soft"):
+                                    GAME.pitTyre.insert(index,"Soft")
+                                elif lapsLeft<=GAME.expectedTyreLife[1]*0.8 and (GAME.tyreCompoundsUsed[index]>1 or GAME.tyre[index]!="Medium"):
+                                    GAME.pitTyre.insert(index,"Medium")
+                                elif GAME.tyreCompoundsUsed[index]>1 or GAME.tyre[index]!="Hard":
+                                    GAME.pitTyre.insert(index,"Hard")
+                                else:
+                                    GAME.pitTyre.insert(index,"Medium")
+                            else:
+                                GAME.pitTyre.insert(index,tyre)
+                        elif GAME.wet==1 and GAME.replay!=5:
+                            if GAME.water>=0.65 and GAME.water<2.5 and (GAME.tyre[index]=="Soft" or GAME.tyre[index]=="Medium" or GAME.tyre[index]=="Hard") and GAME.teams[index]!="Ferrari":
+                                if GAME.water>=1:
+                                    pitting=1
+                                    GAME.pitTyre.pop(index)
+                                    GAME.pitTyre.insert(index,"Intermediate")
+                                elif random.randint(round(GAME.water*100),100)>90:
+                                    pitting=1
+                                    GAME.pitTyre.pop(index)
+                                    GAME.pitTyre.insert(index,"Intermediate")
+                            elif GAME.teams[index]=="Ferrari" and GAME.water>=0.5 and (GAME.tyre[index]=="Soft" or GAME.tyre[index]=="Medium" or GAME.tyre[index]=="Hard"):
+                                if GAME.water>=1.5:
+                                    num=random.randint(1,7)
+                                    if num==7:
+                                        GAME.pitTyre.pop(index)
+                                        GAME.pitTyre.insert(index,"Wet")
+                                    elif num>=3:
+                                        GAME.pitTyre.pop(index)
+                                        GAME.pitTyre.insert(index,"Intermediate")
+                                elif random.randint(round(GAME.water*100),150)>=120:
+                                    pitting=1
+                                    GAME.pitTyre.pop(index)
+                                    if random.randint(1,100)==100:
+                                        GAME.pitTyre.insert(index,"Wet")
+                                    else:
+                                        GAME.pitTyre.insert(index,"Intermediate")
+                            elif GAME.water>=2.5 and GAME.tyre[index]!="Wet" and GAME.maxWater>=4 and (GAME.rain>0 or GAME.water>4) and GAME.rainStops-GAME.lap[GAME.positions[0]]>=5:
+                                if GAME.water>=3.5:
+                                    pitting=1
+                                    GAME.pitTyre.pop(index)
+                                    GAME.pitTyre.insert(index,"Wet")
+                                elif random.randint(round(GAME.water*100),350)>=315:
+                                    pitting=1
+                                    GAME.pitTyre.pop(index)
+                                    GAME.pitTyre.insert(index,"Wet")
+                            elif GAME.water<=1 and GAME.rain==0 and (GAME.tyre[index]=="Intermediate" or GAME.tyre[index]=="Wet"):
+                                if GAME.teams[index]=="Ferrari" and random.randint(1,1000)==1000:
+                                    pitting=1
+                                    GAME.pitTyre.pop(index)
+                                    GAME.pitTyre.insert(index,"Wet")
+                                elif GAME.tyre=="Wet" or random.randint(round(GAME.water*100),150)<=100:
+                                    pitting=1
+                                    GAME.pitTyre.pop(index)
+                                    lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
+                                    if lapsLeft<=GAME.expectedTyreLife[0]:
+                                        if random.randint(1,5)==5:
+                                            GAME.pitTyre.insert(index,"Medium")
+                                        else:
+                                            GAME.pitTyre.insert(index,"Soft")
+                                    elif lapsLeft<=GAME.expectedTyreLife[1]:
+                                        num=random.randint(1,10)
+                                        if num==1:
+                                            GAME.pitTyre.insert(index,"Soft")
+                                        elif num<=7:
+                                            GAME.pitTyre.insert(index,"Medium")
+                                        else:
+                                            GAME.pitTyre.insert(index,"Hard")
+                                    elif lapsLeft<=GAME.expectedTyreLife[2]:
+                                        if random.randint(1,8)==8:
+                                            GAME.pitTyre.insert(index,"Medium")
+                                        else:
+                                            GAME.pitTyre.insert(index,"Hard")
+                                    else:
+                                        num=random.randint(1,4)
+                                        if num==1:
+                                            GAME.pitTyre.insert(index,"Soft")
+                                        elif num<=3:
+                                            GAME.pitTyre.insert(index,"Medium")
+                                        else:
+                                            GAME.pitTyre.insert(index,"Hard")
+                            elif GAME.water<2.5 and GAME.tyre[index]=="Wet" and GAME.rain==0:
+                                if GAME.teams[index]!="Ferrari" or random.randint(1,8)!=8:
+                                    pitting=1
+                                    GAME.pitTyre.pop(index)
+                                    GAME.pitTyre.insert(index,"Intermediate")
+                            if pitting==1:
+                                GAME.pitLap.pop(index)
+                                GAME.pitLap.insert(index,0)
+                    if pitting==1:
+                        GAME.AddToLog(GAME.drivers[index]+" is pitting.")
+                        GAME.pitting.append(index)
+                        GAME.pitLap[index]=0
+                if len(runOutOfFuel)>=1:
+                    for x in range(len(runOutOfFuel)):
+                        GAME.positions.remove(runOutOfFuel[x])
+                #Pit Stops
+                if len(GAME.pitting)>=1:
+                    for driverIndex in GAME.pitting:
+                        GAME.CalculateTime()
+                        pos=GAME.positions.index(driverIndex)
+                        team=GAME.teams[driverIndex]
+                        if GAME.replay==0:
+                            with sqlite3.connect(GAME.database) as c:
+                                pitStopRating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Role="Sporting Director" AND Team=?''', (team,)).fetchone()[0]))
+                                role="Race Engineer 1" if GAME.cars[driverIndex] == 1 else "Race Engineer 2"
+                                result=c.execute('''SELECT Rating FROM Staff WHERE Role=? AND Team=?''', (role, team)).fetchone()
+                            engineerRating=int(GAME.Sanitise(result[0])) if result else 50
+                            pitStopRating += round(engineerRating / 2)
+                        else:
+                            pitStopRating=100
+                        pitStopScore=random.randint(1, pitStopRating)
+                        if pitStopScore <= 20:
+                            pitStopTime=random.uniform(4.0, 10.0)  # Terrible
+                        elif pitStopScore <= 50:
+                            pitStopTime=random.uniform(3.5, 5.0)   # Bad
+                        elif pitStopScore <= 80:
+                            pitStopTime=random.uniform(2.5, 3.5)   # Average
+                        elif pitStopScore <= 100:
+                            pitStopTime=random.uniform(2.2, 2.9)   # Good
+                        else:
+                            pitStopTime=random.uniform(1.8, 2.3)   # Amazing
+                        #Refueling
+                        if GAME.refueling==1:
+                            totalFuelNeeded=round(100*(GAME.laps-GAME.lap[GAME.positions[0]])/GAME.laps)
+                            if GAME.fuel[driverIndex]<totalFuelNeeded:
+                                fuelNeeded=totalFuelNeeded-GAME.fuel[driverIndex]
+                                pitStopTime+=fuelNeeded/10
+                                GAME.fuel[driverIndex]=totalFuelNeeded
+                        if pitStopTime<GAME.bestPitStop[9]:
+                            pos=9
+                            driver=GAME.drivers[driverIndex]
+                            while pitStopTime<GAME.bestPitStop[pos] and pos>-1:
+                                pos-=1
+                            pos+=1
+                            if pos==0:
+                                GAME.AddToLog(f"{GAME.drivers[driverIndex]} has just completed a {pitStopTime:.3f} second pit stop, the fastest of the race so far.")
+                            valid=1
+                            if driver in GAME.bestPitStopper:
+                                if GAME.bestPitStopper.index(driver)<pos:
+                                    GAME.bestPitStop.pop(GAME.bestPitStopper.index(driver))
+                                    GAME.bestPitStopper.remove(driver)
+                                else:
+                                    valid=0
+                            else:
+                                GAME.bestPitStop.pop(9)
+                                GAME.bestPitStopper.pop(9)
+                            if valid==1:
+                                GAME.bestPitStop.insert(pos,pitStopTime)
+                                GAME.bestPitStopper.insert(pos,driver)
+                        if pitStopTime>3.5 and pitStopTime>GAME.bestPitStop[0]:
+                            GAME.AddToLog(f"{GAME.drivers[driverIndex]} has had a slow pit stop that took {pitStopTime:.3f} seconds.")
+                        elif GAME.teams[index]==GAME.team and pitStopTime>GAME.bestPitStop[0]:
+                            GAME.AddToLog(f"{GAME.drivers[driverIndex]} has completed a {pitStopTime:.3f} second pit stop.")
+                        penalty=GAME.penalties[driverIndex]
+                        GAME.penalties[driverIndex]=0
+                        totalTimeLost=20+pitStopTime+penalty
+                        distanceLost=round(totalTimeLost*41.67,3)
+                        GAME.distance[driverIndex]-=distanceLost
+                        if GAME.replay==4 or GAME.replay==5 or GAME.season<2011:
+                            if GAME.pitTyre[driverIndex]=="Medium":
+                                if GAME.tyre[driverIndex]=="Hard":
+                                    GAME.pitTyre[driverIndex]="Soft"
+                                else:
+                                    GAME.pitTyre[driverIndex]="Hard"
+                            elif GAME.pitTyre[driverIndex]=="Intermediate" and GAME.replay==5:
+                                GAME.pitTyre[driverIndex]="Hard"
+                        if GAME.tyre[driverIndex]!=GAME.pitTyre[driverIndex]:
+                            GAME.tyre[driverIndex]=GAME.pitTyre[driverIndex]
+                            GAME.tyreCompoundsUsed[driverIndex]+=1
+                        GAME.tyreRemaining[driverIndex]=100
+                        GAME.stops[driverIndex]+=1
+                        GAME.lapPittedTo[index]=GAME.lap[index]
+                        lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
+                        if GAME.strategy[driverIndex]>GAME.stops[driverIndex]:
+                            if lapsLeft<GAME.expectedTyreLife[0]:
+                                pitTyre="Soft"
+                            elif lapsLeft<GAME.expectedTyreLife[1] and random.randint(1,3)>1:
+                                pitTyre="Medium"
+                            else:
+                                pitTyre="Hard"
+                            if pitTyre=="Wet":
+                                tyreLife=GAME.expectedTyreLife[3]
+                            else:
+                                tyreLife=GAME.expectedTyreLife[Tyres.index(pitTyre)]
+                            if pitTyre=="Hard":
+                                length=tyreLife+GAME.expectedTyreLife[1]
+                            else:
+                                length=tyreLife+GAME.expectedTyreLife[2]
+                            pitLap=GAME.lap[driverIndex]+(lapsLeft*tyreLife/length)+random.randint(-3,3)
+                            GAME.pitLap.pop(driverIndex)
+                            GAME.pitLap.insert(driverIndex,pitLap)
+                            GAME.pitTyre.pop(driverIndex)
+                            GAME.pitTyre.insert(driverIndex,pitTyre)
+                #New Positions
+                for x in range(len(GAME.positions)):
+                    for y in range(len(GAME.positions)):
+                        if y<len(GAME.positions)-1:
+                            index=GAME.positions[y]
+                            nextIndex=GAME.positions[y+1]
+                            if GAME.lap[index]<GAME.lap[nextIndex] or (GAME.lap[index]==GAME.lap[nextIndex] and GAME.distance[index]<GAME.distance[nextIndex]):
+                                GAME.positions.pop(y)
+                                GAME.positions.insert(y+1,index)
+                GAME.pitting=[]
+            GAME.CalculateTime()
+            GAME.RefreshScreen()
+            
             #Mistakes
             if (GAME.replay==0 or GAME.replay==3 or GAME.replay==6) and GAME.safety==0:
                 mistake=0
@@ -4347,17 +4358,17 @@ class Game:
                                         GAME.tyreRemaining.pop(driverID)
                                         GAME.tyreRemaining.insert(driverID,tyreRemaining)
                                         timeLost=random.randint(5,40)/10
-                                        timeAccum = 0
+                                        timeAccum=0
                                         pos=x
-                                        i = 1
+                                        i=1
                                         while pos + i < len(GAME.positions):
-                                            next_driver = GAME.positions[pos + i]
+                                            next_driver=GAME.positions[pos + i]
                                             timeAccum += GAME.time[next_driver]
                                             if timeAccum > timeLost:
                                                 break
                                             i += 1
-                                        newPos = min(pos + i - 1, len(GAME.positions) - 1)
-                                        distanceLost = round(timeLost/41.67,3)
+                                        newPos=min(pos + i - 1, len(GAME.positions) - 1)
+                                        distanceLost=round(timeLost/41.67,3)
                                         GAME.positions.remove(driverID)
                                         GAME.positions.insert(newPos, driverID)
                                         GAME.distance[driverID] -= distanceLost
@@ -4371,19 +4382,19 @@ class Game:
                                         GAME.tyreRemaining.pop(driverID)
                                         GAME.tyreRemaining.insert(driverID,tyreRemaining)
                                         timeLost=random.randint(20,100)/10
-                                        distanceLost = round(timeLost/41.67,3)
+                                        distanceLost=round(timeLost/41.67,3)
                                         GAME.distance[driverID] -= distanceLost
                                         if random.randint(1,2)==2:
-                                            timeAccum = 0
+                                            timeAccum=0
                                             pos=x
-                                            i = 1
+                                            i=1
                                             while pos + i < len(GAME.positions):
-                                                next_driver = GAME.positions[pos + i]
+                                                next_driver=GAME.positions[pos + i]
                                                 timeAccum += GAME.time[next_driver]
                                                 if timeAccum > timeLost:
                                                     break
                                                 i += 1
-                                            newPos = min(pos + i - 1, len(GAME.positions) - 1)
+                                            newPos=min(pos + i - 1, len(GAME.positions) - 1)
                                             GAME.positions.remove(driverID)
                                             GAME.positions.insert(newPos, driverID)
                                     confidence=round(GAME.confidence[driverID]*random.randint(4,8)/10)
@@ -4410,7 +4421,7 @@ class Game:
             elif GAME.replay<9:
                 if GAME.displayed==1:
                     if GAME.sound==1:
-                        sound_path = os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 1.wav")
+                        sound_path=os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 1.wav")
                         if os.path.isfile(sound_path):
                             winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                     root.after(500, lambda: GAME.ChangeScreen("F1 Movie 1"))
@@ -4419,13 +4430,13 @@ class Game:
                     root.after(40700, lambda: GAME.MovieFinale())
                 elif GAME.displayed==2:
                     if GAME.sound==1:
-                        sound_path = os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 2.wav")
+                        sound_path=os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 2.wav")
                         if os.path.isfile(sound_path):
                             winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                     root.after(500, lambda: GAME.ChangeScreen("F1 Movie 4"))
                     root.after(10100, lambda: GAME.ChangeScreen("F1 Movie 5"))
                     if GAME.sound==1:
-                        sound_path = os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 3.wav")
+                        sound_path=os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 3.wav")
                         if os.path.isfile(sound_path):
                             root.after(16800, lambda: winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
                     root.after(16650, lambda: GAME.ChangeScreen("F1 Movie 6"))
@@ -4499,21 +4510,21 @@ class Game:
             if GAME.teams[GAME.positions[0]]=="APX GP":
                 #Win
                 if GAME.sound==1:
-                    sound_path = os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 4.wav")
+                    sound_path=os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 4.wav")
                     if os.path.isfile(sound_path):
                         winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                 root.after(500, lambda: GAME.ChangeScreen("F1 Movie 7"))
                 root.after(6500, lambda: GAME.ChangeScreen("F1 Movie 8"))
                 root.after(17700, lambda: GAME.ChangeScreen("F1 Movie 9"))
                 if GAME.sound==1:
-                    soundPath = os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 5.wav")
+                    soundPath=os.path.join(os.path.dirname(__file__), "Voicelines", "F1 Movie Audio 5.wav")
                     if os.path.isfile(soundPath):
                         root.after(17600, lambda: winsound.PlaySound(soundPath, winsound.SND_FILENAME | winsound.SND_ASYNC))
             else:
                 #Lose
                 GAME.ChangeScreen("F1 Movie 10")
                 if GAME.music==1:
-                    path = os.path.join(os.path.dirname(__file__), "Music", "Better Luck Next Time.wav")
+                    path=os.path.join(os.path.dirname(__file__), "Music", "Better Luck Next Time.wav")
                     if os.path.isfile(path):
                         winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
             time=54000
@@ -4533,10 +4544,10 @@ class Game:
         elif GAME.replay==3:
             if GAME.positions[0]==6:
                 GAME.ChangeScreen("Canada 2011 Victory")
-                SoundPath = os.path.join(os.path.dirname(__file__), "Music", "Podium Theme.wav")
+                SoundPath=os.path.join(os.path.dirname(__file__), "Music", "Podium Theme.wav")
             else:
                 GAME.ChangeScreen("Canada 2011 Defeat")
-                SoundPath = os.path.join(os.path.dirname(__file__), "Music", "Better Luck Next Time.wav")
+                SoundPath=os.path.join(os.path.dirname(__file__), "Music", "Better Luck Next Time.wav")
             if GAME.music==1 and os.path.isfile(SoundPath):
                 winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
             time=10000
@@ -4562,9 +4573,9 @@ class Game:
                     winner="Lewis Hamilton"
             GAME.ChangeScreen(f"{winner} Victory")
             if winner=="Lewis Hamilton":
-                SoundPath = os.path.join(os.path.dirname(__file__), "Music", "United Kingdom National Anthem.wav")
+                SoundPath=os.path.join(os.path.dirname(__file__), "Music", "United Kingdom National Anthem.wav")
             else:
-                SoundPath = os.path.join(os.path.dirname(__file__), "Music", "Brazil National Anthem.wav")
+                SoundPath=os.path.join(os.path.dirname(__file__), "Music", "Brazil National Anthem.wav")
             if GAME.music==1 and os.path.isfile(SoundPath):
                 winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
             time=10000
@@ -4577,9 +4588,9 @@ class Game:
                 GAME.ChangeScreen("Random Winner")
             time=10000
             if GAME.teams[GAME.positions[0]]==GAME.team:
-                SoundPath = os.path.join(os.path.dirname(__file__), "Music", "Podium Theme.wav")
+                SoundPath=os.path.join(os.path.dirname(__file__), "Music", "Podium Theme.wav")
             elif GAME.screen!="Random Winner":
-                SoundPath = os.path.join(os.path.dirname(__file__), "Music", "Better Luck Next Time.wav")
+                SoundPath=os.path.join(os.path.dirname(__file__), "Music", "Better Luck Next Time.wav")
             else:
                 time=0
                 SoundPath="Random"
@@ -4587,7 +4598,7 @@ class Game:
                 winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
         elif GAME.replay==6:
             if GAME.teams[GAME.positions[0]]=="Toleman":
-                SoundPath = os.path.join(os.path.dirname(__file__), "Music", "Brazil National Anthem.wav")
+                SoundPath=os.path.join(os.path.dirname(__file__), "Music", "Brazil National Anthem.wav")
                 GAME.ChangeScreen("Senna Celebration")
                 if os.path.isfile(SoundPath) and GAME.music==1:
                     winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
@@ -4597,7 +4608,7 @@ class Game:
             
         root.after(time, lambda: GAME.ChangeScreen("Title Screen"))
         if GAME.music==1:
-            SoundPath = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
+            SoundPath=os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
             if os.path.isfile(SoundPath):
                 root.after(time, lambda: winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC))
     def Instructions(self):
@@ -4650,10 +4661,8 @@ class Game:
                 index=GAME.car1ID
             else:
                 index=GAME.car2ID
-            GAME.pitLap.pop(index)
-            GAME.pitLap.insert(index,GAME.lap[index])
-            GAME.pitTyre.pop(index)
-            GAME.pitTyre.insert(index,tyre)
+            GAME.pitTyre[index]=tyre
+            GAME.pitting.append(index)
             GAME.pause=1
             GAME.RefreshScreen()
             GAME.NextMove()
@@ -5060,7 +5069,7 @@ class Game:
         GAME.positions.pop(len(GAME.positions)-1)
         if len(GAME.pitting)>0:
             for x in range(len(GAME.pitting)):
-                baseTimeLost = 10
+                baseTimeLost=10
                 driver=GAME.pitting[x]
                 try:
                     driver=int(driver)
@@ -5074,24 +5083,24 @@ class Game:
                         team=GAME.teams[driverIndex]
                         if GAME.replay==0:
                             with sqlite3.connect(GAME.database) as c:
-                                pitStopRating = int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Role="Sporting Director" AND Team=?''', (team,)).fetchone()[0]))
-                                role = "Race Engineer 1" if GAME.cars[driverIndex] == 1 else "Race Engineer 2"
-                                result = c.execute('''SELECT Rating FROM Staff WHERE Role=? AND Team=?''', (role, team)).fetchone()
-                            engineerRating = int(GAME.Sanitise(result[0])) if result else 50
+                                pitStopRating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Role="Sporting Director" AND Team=?''', (team,)).fetchone()[0]))
+                                role="Race Engineer 1" if GAME.cars[driverIndex] == 1 else "Race Engineer 2"
+                                result=c.execute('''SELECT Rating FROM Staff WHERE Role=? AND Team=?''', (role, team)).fetchone()
+                            engineerRating=int(GAME.Sanitise(result[0])) if result else 50
                             pitStopRating += round(engineerRating / 2)
                         else:
                             pitStopRating=120
-                        pitStopScore = random.randint(1, pitStopRating)
+                        pitStopScore=random.randint(1, pitStopRating)
                         if pitStopScore <= 20:
-                            pitStopTime = random.uniform(4.0, 10.0)  # Terrible
+                            pitStopTime=random.uniform(4.0, 10.0)  # Terrible
                         elif pitStopScore <= 50:
-                            pitStopTime = random.uniform(3.0, 5.0)   # Bad
+                            pitStopTime=random.uniform(3.0, 5.0)   # Bad
                         elif pitStopScore <= 80:
-                            pitStopTime = random.uniform(2.3, 3.0)   # Average
+                            pitStopTime=random.uniform(2.3, 3.0)   # Average
                         elif pitStopScore <= 100:
-                            pitStopTime = random.uniform(2.0, 2.6)   # Good
+                            pitStopTime=random.uniform(2.0, 2.6)   # Good
                         else:
-                            pitStopTime = random.uniform(1.7, 2.2)   # Amazing
+                            pitStopTime=random.uniform(1.7, 2.2)   # Amazing
                         #Refueling
                         if GAME.refueling==1:
                             totalFuelNeeded=round(100*(GAME.laps-lap)/GAME.laps)
@@ -5126,25 +5135,25 @@ class Game:
                             GAME.penalties.insert(driverIndex,0)
                         else:
                             penalty=0
-                        totalTimeLost = baseTimeLost + pitStopTime + penalty
-                        timeAccum = 0
-                        i = 1
+                        totalTimeLost=baseTimeLost + pitStopTime + penalty
+                        timeAccum=0
+                        i=1
                         while pos + i < len(GAME.positions):
-                            next_driver = GAME.positions[pos + i]
+                            next_driver=GAME.positions[pos + i]
                             timeAccum += GAME.time[next_driver]
                             if timeAccum > totalTimeLost:
                                 break
                             i += 1
                         if GAME.tyre[driverIndex]!=GAME.SCPitTyre[x]:
                             GAME.tyreCompoundsUsed[driverIndex]+=1
-                        newPos = min(pos + i - 1, len(GAME.positions) - 1)
-                        distanceLost = round(totalTimeLost/41.67,3)
+                        newPos=min(pos + i - 1, len(GAME.positions) - 1)
+                        distanceLost=round(totalTimeLost/41.67,3)
                         GAME.positions.remove(driverIndex)
                         GAME.positions.insert(newPos, driverIndex)
                         GAME.distance[driverIndex] -= distanceLost
                         GAME.tyre.pop(driverIndex)
                         GAME.tyre.insert(driverIndex,GAME.SCPitTyre[x])
-                        GAME.tyreRemaining[driverIndex] = 100
+                        GAME.tyreRemaining[driverIndex]=100
                         GAME.stops[driverIndex] += 1
                         GAME.lapPittedTo.pop(driverIndex)
                         GAME.lapPittedTo.insert(driverIndex,lap)
@@ -5153,6 +5162,15 @@ class Game:
                             GAME.pitLap.insert(driverIndex,0)
                             GAME.pitTyre.pop(driverIndex)
                             GAME.pitTyre.insert(driverIndex,0)
+        #New Positions
+        for x in range(len(GAME.positions)):
+            for y in range(len(GAME.positions)):
+                if y<len(GAME.positions)-1:
+                    index=GAME.positions[y]
+                    nextIndex=GAME.positions[y+1]
+                    if GAME.lap[index]<GAME.lap[nextIndex] or (GAME.lap[index]==GAME.lap[nextIndex] and GAME.distance[index]<GAME.distance[nextIndex]):
+                        GAME.positions.pop(y)
+                        GAME.positions.insert(y+1,index)
         GAME.distance=[]
         GAME.lap=[]
         GAME.pitting=[]
@@ -5229,7 +5247,7 @@ class Game:
         if GAME.sound==1:
             GAME.Voice(0,"Race Start")
         if GAME.replay==2 and GAME.music==1:
-            path = os.path.join(os.path.dirname(__file__), "Music", "F1 Movie Theme.wav")
+            path=os.path.join(os.path.dirname(__file__), "Music", "F1 Movie Theme.wav")
             if os.path.isfile(path):
                 root.after(3500, lambda: winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP))
         GAME.Leaderboard()
@@ -5434,12 +5452,8 @@ class Game:
                         GAME.ERSdeployment.insert(index, 3)
                 elif GAME.ERSdeployment[index]==2:
                     ERS=GAME.ERS[index]-1
-                elif GAME.time[index]<1:
-                    ERS=GAME.ERS[index]-random.randint(5,10)
-                    if ERS<0:
-                        ERS=0
                 else:
-                    ERS=GAME.ERS[index]+random.randint(-5,5)-(8*(13-GAME.battery[index]))
+                    ERS=GAME.ERS[index]+GAME.battery[index]-40
                     if ERS<0:
                         ERS=0
                     GAME.ERS[index]=ERS
@@ -5788,19 +5802,23 @@ class Game:
                     break
         GAME.CalculateTime()
         #Disqualifications
+        GAME.disqualified=[]
         if GAME.wet==0:
             disqualified=[]
-            GAME.disqualified=[]
             for x in range(len(GAME.positions)):
                 if GAME.tyreCompoundsUsed[GAME.positions[x]]<2:
                     disqualified.append(x)
             if len(disqualified)>0:
                 GAME.ChangeScreen("Breaking News")
+                i=0
                 for x in range(len(disqualified)):
-                    canvas.create_text(150, 180+(x*50), text=f"{GAME.drivers[GAME.positions[disqualified[x]]]} is disqualified.", fill="white", font=("Arial", 30), anchor="nw")
-                for x in range(len(disqualified)):
-                    GAME.disqualified.append(GAME.positions[disqualified[x]])
-                    GAME.positions.pop(disqualified[x]-x)
+                    try:
+                        GAME.disqualified.append(GAME.positions[disqualified[x]])
+                        GAME.positions.pop(disqualified[x]-i)
+                        canvas.create_text(150, 180+(x*50), text=f"{GAME.drivers[GAME.positions[disqualified[x]]]} is disqualified.", fill="white", font=("Arial", 30), anchor="nw")
+                        i+=1
+                    except:
+                        pass
                 root.after(4000, lambda: GAME.Podium())
             else:
                 GAME.Podium()
@@ -5854,7 +5872,7 @@ class Game:
         for x in range(len(GAME.drivers)):
             GAME.pointsScored.append(0)
         with sqlite3.connect(GAME.database) as conn:
-            cursor = conn.cursor()
+            cursor=conn.cursor()
             pointsSystem=int(GAME.Sanitise(cursor.execute("SELECT True FROM Regulations WHERE Regulation='Old Points System'").fetchall()))
             fastestLapPoint=int(GAME.Sanitise(cursor.execute("SELECT  True FROM Regulations WHERE Regulation='Fastest Lap Point'").fetchall()))
             double=0
@@ -5896,10 +5914,11 @@ class Game:
                     canvas.create_text(700, 80+(x*28), text=f"{points} Points", fill=colour, font=("Arial", 20), anchor="nw")
             y=80+(x*28)
             for x in range(len(GAME.disqualified)):
-                y+=28
-                colour=GAME.TeamColour(GAME.teams[GAME.disqualified[x]],GAME.season)
-                canvas.create_text(35, y, text=f"DSQ {GAME.drivers[GAME.disqualified[x]]}", fill=colour, font=("Arial", 20), anchor="nw")
-                canvas.create_text(700, y, text="0 Points", fill=colour, font=("Arial", 20), anchor="nw")
+                if GAME.disqualified[x] not in GAME.positions:
+                    y+=28
+                    colour=GAME.TeamColour(GAME.teams[GAME.disqualified[x]],GAME.season)
+                    canvas.create_text(35, y, text=f"DSQ {GAME.drivers[GAME.disqualified[x]]}", fill=colour, font=("Arial", 20), anchor="nw")
+                    canvas.create_text(700, y, text="0 Points", fill=colour, font=("Arial", 20), anchor="nw")
             for x in range(len(GAME.drivers)):
                 if x not in GAME.positions and x not in GAME.disqualified:
                     y+=28
@@ -5947,12 +5966,12 @@ class Game:
             if len(GAME.injured)>0:
                 for x in range(len(GAME.injured)):
                     with sqlite3.connect(GAME.database) as conn:
-                        cursor = conn.cursor()
+                        cursor=conn.cursor()
                         cursor.execute('''UPDATE Drivers SET Condition="Injured" WHERE Name=?''',(GAME.injured[x],))
             teams=[]
             teamPoints=[]
             with sqlite3.connect(GAME.database) as conn:
-                cursor = conn.cursor()
+                cursor=conn.cursor()
                 f=cursor.execute('''SELECT Name FROM Teams''').fetchall()
                 cursor.execute("UPDATE Player SET Actions=3")
                 if len(cursor.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
@@ -5961,13 +5980,13 @@ class Game:
                 team=GAME.Sanitise(f[x])
                 teams.append(team)
                 with sqlite3.connect(GAME.database) as conn:
-                    cursor = conn.cursor()
+                    cursor=conn.cursor()
                     teamPoints.append(int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Name=?''',(team,)).fetchall()[0])))
             for x in range(len(GAME.drivers)):
                 if x<len(GAME.positions):
                     index=GAME.positions[x]
                     with sqlite3.connect(GAME.database) as conn:
-                        cursor = conn.cursor()
+                        cursor=conn.cursor()
                         if GAME.pointsScored[index]!=0:
                             points=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))
                             points+=GAME.pointsScored[index]
@@ -5990,7 +6009,7 @@ class Game:
                         if y not in GAME.positions and y not in d:
                             d.append(y)
                             with sqlite3.connect(GAME.database) as conn:
-                                cursor = conn.cursor()
+                                cursor=conn.cursor()
                                 if int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))==0:
                                     position=len(cursor.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall())+1
                                     cursor.execute('''UPDATE Drivers SET Position=? WHERE Name=?''',(position, GAME.drivers[y],))
@@ -6006,21 +6025,21 @@ class Game:
                     with sqlite3.connect(GAME.database) as c:
                         c.execute("UPDATE Drivers SET Team='Dead', Role='Dead', Condition='Dead', NewTeam='Dead' WHERE Name=?",(driver,))
             with sqlite3.connect(GAME.database) as conn:
-                cursor = conn.cursor()
+                cursor=conn.cursor()
                 f=cursor.execute("SELECT Name FROM Drivers WHERE (Role='1' OR Role='2') AND Position=0").fetchall()
                 for x in range(len(f)):
                     position=len(cursor.execute("SELECT Name FROM Drivers WHERE Position!=0").fetchall())+1
                     cursor.execute("UPDATE Drivers SET Position=? WHERE Name=?",(position,GAME.Sanitise(f[x]),))
             for x in range(len(teams)):
                 with sqlite3.connect(GAME.database) as conn:
-                    cursor = conn.cursor()
+                    cursor=conn.cursor()
                     cursor.execute('''UPDATE Teams SET Points=? WHERE Name=?''',(teamPoints[x],teams[x]))
             for i in range(20):
                 for x in range(10):
                     if len(GAME.positions)>x:
                         #Drivers Standings
                         with sqlite3.connect(GAME.database) as conn:
-                            cursor = conn.cursor()
+                            cursor=conn.cursor()
                             position=int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Drivers WHERE Name=?''',(GAME.drivers[GAME.positions[x]],)).fetchall()[0]))
                             if position!=1:
                                 points=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Name=?''',(GAME.drivers[GAME.positions[x]],)).fetchall()[0]))
@@ -6034,7 +6053,7 @@ class Game:
                                         if position!=1:
                                             aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Position=?''',(position-1,)).fetchall()[0]))
                         with sqlite3.connect(GAME.database) as conn:
-                            cursor = conn.cursor()
+                            cursor=conn.cursor()
                             #Constructors Standings
                             position=int(GAME.Sanitise(cursor.execute('''SELECT Position FROM Teams WHERE Name=?''',(GAME.teams[GAME.positions[x]],)).fetchall()[0]))
                             if position!=1:
@@ -6084,12 +6103,12 @@ class Game:
                                 pass
             #Development
             with sqlite3.connect(GAME.database) as conn:
-                cursor = conn.cursor()
+                cursor=conn.cursor()
                 f=cursor.execute('''SELECT Name FROM Drivers WHERE Condition!="Retired" AND Legend=0''').fetchall()
             for x in range(len(f)):
                 name=GAME.Sanitise(f[x])
                 with sqlite3.connect(GAME.database) as conn:
-                    cursor = conn.cursor()
+                    cursor=conn.cursor()
                     team=GAME.Sanitise(cursor.execute("SELECT Team FROM Drivers WHERE Name=?",(name,)))
                     rate=int(GAME.Sanitise(cursor.execute('''SELECT DevelopmentRate FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
                     developed=0
@@ -6164,7 +6183,7 @@ class Game:
                     if durability<0:
                         durability=0
                     with sqlite3.connect(GAME.database) as conn:
-                        cursor = conn.cursor()
+                        cursor=conn.cursor()
                         if (team!=GAME.team and durability<35) or durability==0:
                             #Swap engine
                             if car==1:
@@ -6201,7 +6220,7 @@ class Game:
                         
             GAME.race+=1
             with sqlite3.connect(GAME.database) as conn:
-                cursor = conn.cursor()
+                cursor=conn.cursor()
                 cursor.execute('''UPDATE Player SET Race=?''',(GAME.race,))
                 wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Drivers WHERE Name=?",(GAME.drivers[GAME.positions[0]],)).fetchall()))+1
                 cursor.execute('''UPDATE Drivers SET Wins=? WHERE Name=?''',(wins,GAME.drivers[GAME.positions[0]],))
@@ -6316,7 +6335,7 @@ class Game:
     def ReplayObjective(self):
         if GAME.music==1:
             if GAME.replay==2:
-                sound_path = os.path.join(os.path.dirname(__file__), "Music", "Lose my mind.wav")
+                sound_path=os.path.join(os.path.dirname(__file__), "Music", "Lose my mind.wav")
                 if os.path.isfile(sound_path):
                     winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
             else:
@@ -7512,6 +7531,7 @@ class Game:
             GAME.wet=0
             GAME.rainStarts=0
             GAME.rainStops=0
+            GAME.overtake=[]
             if random.randint(1,100)<=GAME.rainChance:
                 #Wet
                 num=random.randint(1,4)
@@ -7598,6 +7618,7 @@ class Game:
             names=GAME.drivers.copy()
             for x in range(len(GAME.drivers)):
                 GAME.racePace.append(0)
+                GAME.overtake.append(0)
             for x in range(len(GAME.drivers)):
                 highest=-1000000
                 highestIndex=0
@@ -8202,38 +8223,38 @@ class Game:
                                 salary=2000000
                             c.execute("UPDATE Drivers SET Team=?, Role=?, Salary=?, ContractEnd=? WHERE Name=?",(team,str(y+1),salary,GAME.season+1,name,))
     def StaffHiring(self, teams):
-        roles = ["Technical Director", "Sporting Director", "Race Engineer 1", "Race Engineer 2"]
+        roles=["Technical Director", "Sporting Director", "Race Engineer 1", "Race Engineer 2"]
         for x in range(4):
             for y in range(12):
                 GAME.GeneratePeople(roles[x])
         with sqlite3.connect(GAME.database) as conn:
-            c = conn.cursor()
+            c=conn.cursor()
             for x in range(len(teams)):
-                team = GAME.Sanitise(
+                team=GAME.Sanitise(
                     c.execute("SELECT Name FROM Teams WHERE Position=?", (x + 1,)).fetchall()[0]
                 )
                 for y, role in enumerate(roles):
                     
-                    f = c.execute("SELECT Name FROM Staff WHERE Team=? AND Role=?", (team, role)).fetchall()
+                    f=c.execute("SELECT Name FROM Staff WHERE Team=? AND Role=?", (team, role)).fetchall()
                     
                     if len(f) == 0:
                         if y < 2:
-                            name = GAME.Sanitise(
+                            name=GAME.Sanitise(
                                 random.choice(
                                     c.execute("SELECT Name FROM Staff WHERE Team='Free Agent' AND Role=?", (role,)).fetchall()
                                 )
                             )
                         else:
-                            name = GAME.Sanitise(
+                            name=GAME.Sanitise(
                                 random.choice(
                                     c.execute("SELECT Name FROM Staff WHERE Team='Free Agent' AND (Role='Race Engineer' OR Role='Race Engineer 1' OR Role='Race Engineer 2')").fetchall()
                                 )
                             )
-                        salary = int(GAME.Sanitise(
+                        salary=int(GAME.Sanitise(
                             c.execute("SELECT Salary FROM Staff WHERE Name=?", (name,)).fetchall()[0]
                         ))
                         if salary < 1000000:
-                            salary = 1000000
+                            salary=1000000
 
                         c.execute("UPDATE Staff SET Team=?, Role=?, Salary=? WHERE Name=?", (team, role, salary, name))
             conn.commit()
@@ -9010,7 +9031,7 @@ class Game:
             screen="Data Background"
         elif screen not in Images:
             screen="Blank Screen"
-        imageOnCanvas = canvas.create_image(0, 0, anchor=tk.NW, image=images[Images.index(screen)])
+        imageOnCanvas=canvas.create_image(0, 0, anchor=tk.NW, image=images[Images.index(screen)])
     def Settings(self):
         GAME.ChangeScreen("Settings")
         GAME.Button("Back",5,730)
@@ -9218,7 +9239,7 @@ class Game:
                 elif event.x>=730 and event.x<=1070:
                     #Quit
                     if GAME.music==1:
-                        sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
+                        sound_path=os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
                         if os.path.isfile(sound_path):
                             winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                     GAME.ChangeScreen("Title Screen")
@@ -9227,7 +9248,7 @@ class Game:
                 GAME.qualifying=1
                 root.after(1200, lambda: GAME.Qualifying())
                 if GAME.music==1:     
-                    sound_path = os.path.join(os.path.dirname(__file__), "Music", "The Chain F1.wav")
+                    sound_path=os.path.join(os.path.dirname(__file__), "Music", "The Chain F1.wav")
                     if os.path.isfile(sound_path):
                         winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
         elif GAME.screen=="Q3 Results":
@@ -9521,10 +9542,8 @@ class Game:
                         index=GAME.car1ID
                     else:
                         index=GAME.car2ID
-                    GAME.pitLap.pop(index)
-                    GAME.pitLap.insert(index,GAME.lap[index])
-                    GAME.pitTyre.pop(index)
-                    GAME.pitTyre.insert(index,tyre)
+                    GAME.pitTyre[index]=tyre
+                    GAME.pitting.append(index)
                     GAME.pause=1
                     GAME.RefreshScreen()
                     GAME.NextMove()
@@ -9698,7 +9717,7 @@ class Game:
                 #Quit
                 GAME.ChangeScreen("Title Screen")
                 if GAME.music==1:
-                    SoundPath = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
+                    SoundPath=os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
                     if os.path.isfile(SoundPath):
                         winsound.PlaySound(SoundPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
         elif (GAME.screen=="Standings" or GAME.screen=="Data" or GAME.screen=="Team Data" or GAME.screen=="Car Data" or GAME.screen=="Achievements"
@@ -9984,7 +10003,7 @@ class Game:
                                 driveability=20
                             c.execute("UPDATE Cars SET Driveability=? WHERE Team=?",(driveability,GAME.team,))
                     if GAME.sound==1:
-                        sound_path = os.path.join(os.path.dirname(__file__), "Sound Effects", "Upgrade Sound.wav")
+                        sound_path=os.path.join(os.path.dirname(__file__), "Sound Effects", "Upgrade Sound.wav")
                         if os.path.isfile(sound_path):
                             winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                     GAME.Menu()
@@ -11141,7 +11160,7 @@ class Game:
                 if GAME.music==0:
                     GAME.StopMusic()
                 else:
-                    sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
+                    sound_path=os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
                     if os.path.isfile(sound_path):
                         winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
                 GAME.Settings()
@@ -12175,7 +12194,7 @@ class Game:
             canvas.create_text(700-(len(team)*25), 100, text=team, fill="white", font=("Arial", 80), anchor="nw")
     def DisplayGrid(self):
         if GAME.music==1:
-            sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Theme.wav")
+            sound_path=os.path.join(os.path.dirname(__file__), "Music", "F1 Theme.wav")
             if os.path.isfile(sound_path):
                 winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
         GAME.ChangeScreen("Blank Screen")
@@ -13109,13 +13128,13 @@ else:
     GAME.newGame=1
 
 print("GAME LOADING...")
-root = tk.Tk()
+root=tk.Tk()
 root.title("F1 Manager 26")
 root.configure(background='black')
 
 #Music
 if GAME.music==1:
-    sound_path = os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
+    sound_path=os.path.join(os.path.dirname(__file__), "Music", "F1 Music.wav")
     if os.path.isfile(sound_path):
         winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
 #Images
@@ -13142,7 +13161,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Catalunya Racing Bulls Upgrade"]
 images=[]
 for x in range(len(Images)):
-    path = os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
+    path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
     if os.path.isfile(path):
         images.append(tk.PhotoImage(file=path))
     else:
@@ -13164,7 +13183,7 @@ for x in range(3):
         driverHeads.append(f"Woman {x+1}")
 heads=[]
 for x in range(len(driverHeads)):
-    path = os.path.join(os.path.dirname(__file__), "Heads", (driverHeads[x]+" Head.png"))
+    path=os.path.join(os.path.dirname(__file__), "Heads", (driverHeads[x]+" Head.png"))
     if os.path.isfile(path):
         heads.append(tk.PhotoImage(file=path))
     else:
@@ -13174,12 +13193,12 @@ steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine
        "Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","Alfa Romeo","HRT","Manor"]
 xDif=[90,82,88,95,110,95,92,100,95,90,105,98,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99]
 yDif=[115,90,95,108,105,80,90,70,122,80,108,135,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75]
-path = os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
+path=os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 if os.path.isfile(path):
     GAME.suits=[tk.PhotoImage(file=path)]
     logos=[]
     for x in range(len(steam)-1):
-        path = os.path.join(os.path.dirname(__file__), "Suits", (steam[x+1]+" Suit.png"))
+        path=os.path.join(os.path.dirname(__file__), "Suits", (steam[x+1]+" Suit.png"))
         if os.path.isfile(path):
             GAME.suits.append(tk.PhotoImage(file=path))
         else:
@@ -13189,19 +13208,19 @@ if os.path.isfile(path):
             team="Ferrari"
         elif "McLaren" in team and team!="McLaren":
             team="Classic McLaren"
-        path = os.path.join(os.path.dirname(__file__), "Logos", (team+" Logo.png"))
+        path=os.path.join(os.path.dirname(__file__), "Logos", (team+" Logo.png"))
         if os.path.isfile(path):
             logos.append(tk.PhotoImage(file=path))
         else:
             missingFiles=1
     steam.append("Sonny Hayes")
-    path = os.path.join(os.path.dirname(__file__), "Suits", ("Sonny Hayes.png"))
+    path=os.path.join(os.path.dirname(__file__), "Suits", ("Sonny Hayes.png"))
     if os.path.isfile(path):
         GAME.suits.append(tk.PhotoImage(file=path))
     else:
         missingFiles=1
     steam.append("Joshua Pearce")
-    path = os.path.join(os.path.dirname(__file__), "Suits", ("Joshua Pearce.png"))
+    path=os.path.join(os.path.dirname(__file__), "Suits", ("Joshua Pearce.png"))
     if os.path.isfile(path):
         GAME.suits.append(tk.PhotoImage(file=path))
     else:
@@ -13211,12 +13230,12 @@ if os.path.isfile(path):
     sponsorLogos=[]
     sponsorSuits=[]
     for x in range(len(sponsors)):
-        path = os.path.join(os.path.dirname(__file__), "Suits", (sponsors[x]+" Suit.png"))
+        path=os.path.join(os.path.dirname(__file__), "Suits", (sponsors[x]+" Suit.png"))
         if os.path.isfile(path):
             sponsorSuits.append(tk.PhotoImage(file=path))
         else:
             sponsorSuits.append(GAME.suits[0])
-        path = os.path.join(os.path.dirname(__file__), "Logos", (sponsors[x]+" Logo.png"))
+        path=os.path.join(os.path.dirname(__file__), "Logos", (sponsors[x]+" Logo.png"))
         if os.path.isfile(path):
             sponsorLogos.append(tk.PhotoImage(file=path))
         else:
@@ -13232,7 +13251,7 @@ Buttons=["Next","Quit","Qualifying","Prepare for Race","Tyre Aggression","Fuel A
          "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career","Select Fuel","KERS Off","KERS On","Delete","DHL"]
 buttons=[]
 for x in range(len(Buttons)):
-    path = os.path.join(os.path.dirname(__file__), "Buttons", (Buttons[x]+" Button.png"))
+    path=os.path.join(os.path.dirname(__file__), "Buttons", (Buttons[x]+" Button.png"))
     if os.path.isfile(path):
         buttons.append(tk.PhotoImage(file=path))
     else:
@@ -13245,7 +13264,7 @@ path=os.path.join(os.path.dirname(__file__), "Race Images", "Lights.png")
 if os.path.isfile(path):
     raceImages=[tk.PhotoImage(file=path)]
     for x in range(len(tracks)):
-        path = os.path.join(os.path.dirname(__file__), "Layouts", (tracks[x]+" Layout.png"))
+        path=os.path.join(os.path.dirname(__file__), "Layouts", (tracks[x]+" Layout.png"))
         if os.path.isfile(path):
             layouts.append(tk.PhotoImage(file=path))
         i=1
@@ -13260,7 +13279,7 @@ else:
 Tyres=["Soft","Medium","Hard","Intermediate","Wet"]
 tyres=[]
 for x in range(len(Tyres)):
-    path = os.path.join(os.path.dirname(__file__), "Tyres", (Tyres[x]+" Tyre.png"))
+    path=os.path.join(os.path.dirname(__file__), "Tyres", (Tyres[x]+" Tyre.png"))
     if os.path.isfile(path):
         tyres.append(tk.PhotoImage(file=path))
     else:
@@ -13268,15 +13287,15 @@ for x in range(len(Tyres)):
 Icons=["ERS Battery","Raindrop","Sunshine","Fuel Tank","Cloud","Minor Fault","Major Fault","Settings","Muted","Unmuted"]
 icons=[]
 for x in range(len(Icons)):
-    path = os.path.join(os.path.dirname(__file__), "Icons", (Icons[x]+".png"))
+    path=os.path.join(os.path.dirname(__file__), "Icons", (Icons[x]+".png"))
     if os.path.isfile(path):
         icons.append(tk.PhotoImage(file=path))
     else:
         missingFiles=1
-canvas = tk.Canvas(root, width=1440, height=810)
+canvas=tk.Canvas(root, width=1440, height=810)
 canvas.pack()
 try:
-    imageOnCanvas = canvas.create_image(0, 0, anchor=tk.NW, image=images[0])
+    imageOnCanvas=canvas.create_image(0, 0, anchor=tk.NW, image=images[0])
 except:
     pass
 if not os.path.isfile("F1 Manager 26 Driver Data.json"):
