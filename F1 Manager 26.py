@@ -479,7 +479,7 @@ class Game:
         #Engines
         if GAME.startYear==2026:
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Mercedes", "Mercedes", 9, 8, 6, 1)''')
-            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ferrari", "Ferrari", 7, 10, 6, 1)''')
+            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ferrari", "Ferrari", 7, 9, 6, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Ford RBPT", "Red Bull", 10, 7, 5, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Audi", "Audi", 6, 8, 5, 1)''')
             c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ("Honda", "Aston Martin", 4, 1, 3, 1)''')
@@ -2702,7 +2702,17 @@ class Game:
                         c.execute("UPDATE Drivers SET ContractEnd=2026 WHERE Name='George Russell' AND NewTeam='0' AND Position>?",(kimiPos,))
                     if GAME.team!="Aston Martin" and len(c.execute("SELECT Name FROM Drivers WHERE NewTeam='Aston Martin' AND NewRole='1'").fetchall())==0:
                         c.execute("UPDATE Drivers SET ContractEnd=?, NewTeam='Aston Martin', NewRole='1' WHERE Name='Lance Stroll' AND NewTeam='0' AND Team='Aston Martin' AND Role='1'",(GAME.season+1,))
-                    
+
+            #ADUO
+            if GAME.race==8 and GAME.team!="Ferrari":
+                with sqlite3.connect(GAME.database) as c:
+                    c.execute("UPDATE Engines SET Power=8 WHERE Name='Ferrari'")
+                GAME.news.append("BREAKING NEWS! Ferrari have brought an ADUO upgrade to their engine.")
+            elif GAME.race==13 and GAME.team!="Ferrari":
+                with sqlite3.connect(GAME.database) as c:
+                    c.execute("UPDATE Engines SET Power=9 WHERE Name='Ferrari'")
+                GAME.news.append("BREAKING NEWS! Ferrari have brought an ADUO upgrade to their engine.")
+                
             #Actions
             if GAME.race>=8:
                 poacher=0
