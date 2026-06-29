@@ -2706,7 +2706,11 @@ class Game:
 
             #ADUO
             if GAME.season==2026:
-                if GAME.race==8 and GAME.team!="Ferrari":
+                if GAME.race==7 and GAME.team!="Audi":
+                    with sqlite3.connect(GAME.database) as c:
+                        c.execute("UPDATE Engines SET Power=7 WHERE Name='Audi'")
+                    GAME.news.append("BREAKING NEWS! Audi have brought an ADUO upgrade to their engine.")
+                elif GAME.race==8 and GAME.team!="Ferrari":
                     with sqlite3.connect(GAME.database) as c:
                         c.execute("UPDATE Engines SET Power=8 WHERE Name='Ferrari'")
                     GAME.news.append("BREAKING NEWS! Ferrari have brought an ADUO upgrade to their engine.")
