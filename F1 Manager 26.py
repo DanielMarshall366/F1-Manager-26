@@ -13213,7 +13213,7 @@ driverHeads=["Max Verstappen","Lando Norris","Charles Leclerc","Oscar Piastri","
              "Felipe Massa","Heikki Kovalainen","Johnny Cecotto","Colton Herta","Freddie Slater","Kush Maini","Theo Pourchaire","Nico Rosberg","Mark Webber","Robert Kubica",
              "Nelson Piquet Jr.","Nick Heidfeld","Sebastien Buemi","Sebastien Bourdais","Jaime Alguersuari","Jarno Trulli","Timo Glock","Kazuki Nakajima","Adrian Sutil",
              "Giancarlo Fisichella","Vitantonio Liuzzi","Luca Badoer","Kamui Kobayashi","Pedro de la Rosa","Vitaly Petrov","Bruno Senna","Karun Chandhok","Lucas di Grassi",
-             "Romain Grosjean"]
+             "Romain Grosjean","Rafael Camara","Nikola Tsolov"]
 for x in range(3):
     driverHeads.append(f"Man {x+1}")
     if x<2:
