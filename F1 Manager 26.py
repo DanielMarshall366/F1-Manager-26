@@ -3060,6 +3060,43 @@ class Game:
                         GAME.overtake[index]=1
                     else:
                         GAME.overtake[index]=0
+
+                    #Battery Management
+                    if GAME.teams[index]!=GAME.team:
+                        if x==0:
+                            if GAME.lap[index]<GAME.laps:
+                                if GAME.ERS[index]<20:
+                                    GAME.ERSdeployment[index]=1
+                                else:
+                                    GAME.ERSdeployment[index]=2
+                            else:
+                                GAME.ERSdeployment[index]=3
+                        elif x==len(GAME.positions)-1:
+                            if GAME.lap[index]<GAME.laps:
+                                if GAME.ERS[index]<20:
+                                    GAME.ERSdeployment[index]=1
+                                elif GAME.overtake[index]==1:
+                                    GAME.ERSdeployment[index]=3
+                                else:
+                                    GAME.ERSdeployment[index]=2
+                            else:
+                                GAME.ERSdeployment[index]=3
+                        else:
+                            if GAME.ERS[index]<10:
+                                GAME.ERSdeployment[index]=1
+                            elif GAME.ERS[index]<20:
+                                if GAME.time[GAME.positions[x+1]]<1 and random.randint(1,5)>2:
+                                    GAME.ERSdeployment[index]=2
+                                else:
+                                    GAME.ERSdeployment[index]=1
+                            elif GAME.overtake[index]==1 and random.randint(1,4)>1:
+                                GAME.ERSdeployment[index]=3
+                            elif GAME.lap[GAME.positions[0]]>=GAME.laps:
+                                GAME.ERSdeployment[index]=3
+                            else:
+                                GAME.ERSdeployment[index]=2
+                        if GAME.ERSdeployment[index]==3 and GAME.water>=1:
+                            GAME.ERSdeployment[index]=2
             GAME.RefreshScreen()
             GAME.cycles+=1
             if GAME.cycles>40:
@@ -3510,35 +3547,22 @@ class Game:
                                 if (GAME.season<2014 or GAME.replay==3) and GAME.ERSdeployment[index]==1:
                                     GAME.ERSdeployment[index]=2
                             else:
-                                if GAME.teams[index]!=GAME.team and GAME.lap[index]>GAME.startLap and GAME.time[index]<0.5 and x>0 and GAME.ERS[index]>=30 and random.randint(1,2)==2 and GAME.water<1:
-                                    GAME.ERSdeployment[index]=3
                                 if GAME.ERSdeployment[index]==1:
-                                    ERS=GAME.ERS[index]+random.randint(6,15)+(4*GAME.battery[index])
+                                    ERS=GAME.ERS[index]+round(1.5*GAME.battery[index])+15
                                     if ERS>100:
                                         ERS=100
-                                    if GAME.teams[index]!=GAME.team:
-                                        if (ERS>50 and GAME.time[index]<1 and x!=0) or ERS>90:
-                                            GAME.ERSdeployment[index]=3
-                                        elif ERS>60:
-                                            GAME.ERSdeployment[index]=2
                                 elif GAME.ERSdeployment[index]==2:
                                     ERS=GAME.ERS[index]+GAME.battery[index]-10
                                     if ERS>100:
                                         ERS=100
                                     elif ERS<0:
                                         ERS=0
-                                        if GAME.teams[index]!=GAME.team:
-                                            GAME.ERSdeployment.pop(index)
-                                            GAME.ERSdeployment.insert(index, 1)
                                     if GAME.teams[index]!=GAME.team and ERS>40 and GAME.water<1 and x!=0 and GAME.time[index]<1 and random.randint(1,2)==2:
                                         GAME.ERSdeployment[index]=3
                                 elif GAME.overtake[index]==1:
                                     ERS=GAME.ERS[index]+GAME.battery[index]-25
                                     if ERS<0:
                                         ERS=0
-                                    if ERS<50 and GAME.teams[index]!=GAME.team:
-                                        GAME.ERSdeployment.pop(index)
-                                        GAME.ERSdeployment.insert(index, round(random.randint(1,5)/2))
                                 else:
                                     ERS=GAME.ERS[index]+GAME.battery[index]-40
                                     if ERS<0:
@@ -4155,7 +4179,10 @@ class Game:
                         GAME.pitLap[index]=0
                 if len(runOutOfFuel)>=1:
                     for x in range(len(runOutOfFuel)):
-                        GAME.positions.remove(runOutOfFuel[x])
+                        try:
+                            GAME.positions.remove(runOutOfFuel[x])
+                        except:
+                            pass
                 #Pit Stops
                 if len(GAME.pitting)>=1:
                     for driverIndex in GAME.pitting:
@@ -11336,18 +11363,21 @@ class Game:
         try:
             research=int(research)
         except:
-            research=research.lower()
-            if "m" in research or "k" in research:
-                if "m" in research:
-                    multiplier=1000000
+            try:
+                research=research.lower()
+                if "m" in research or "k" in research:
+                    if "m" in research:
+                        multiplier=1000000
+                    else:
+                        multiplier=1000
+                    research=research[:-1]
+                    try:
+                        research=int(float(research)*multiplier)
+                    except:
+                        research=0
                 else:
-                    multiplier=1000
-                research=research[:-1]
-                try:
-                    research=int(float(research)*multiplier)
-                except:
                     research=0
-            else:
+            except:
                 research=0
         if research<1 or research>maxResearch:
             GAME.Menu()
@@ -11371,18 +11401,21 @@ class Game:
         try:
             research=int(research)
         except:
-            research=research.lower()
-            if "m" in research or "k" in research:
-                if "m" in research:
-                    multiplier=1000000
+            try:
+                research=research.lower()
+                if "m" in research or "k" in research:
+                    if "m" in research:
+                        multiplier=1000000
+                    else:
+                        multiplier=1000
+                    research=research[:-1]
+                    try:
+                        research=int(float(research)*multiplier)
+                    except:
+                        research=0
                 else:
-                    multiplier=1000
-                research=research[:-1]
-                try:
-                    research=int(float(research)*multiplier)
-                except:
                     research=0
-            else:
+            except:
                 research=0
         if research<1:
             GAME.Menu()
