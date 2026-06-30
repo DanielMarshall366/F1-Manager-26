@@ -3729,7 +3729,7 @@ class Game:
                                         faster=2
                                     elif (GAME.tyreAggression[GAME.positions[x-1-driversRemoved]]<GAME.tyreAggression[driverID] and GAME.tyreRemaining[driverID]>=30) or GAME.tyreRemaining[GAME.positions[x-1-driversRemoved]]+10<=GAME.tyreRemaining[driverID]:
                                         faster=1
-                                if GAME.ERSdeployment[driverID]==3 and GAME.ERSdeployment[x-1-driversRemoved]<3 and x!=0 and GAME.time[driverID]<1:
+                                if GAME.ERSdeployment[driverID]==3 and GAME.ERSdeployment[x-1-driversRemoved]<3 and x!=0 and GAME.time[driverID]<1 and GAME.ers==1:
                                     faster+=1
                             aheadID=GAME.positions[x-1-driversRemoved]
                             ahead=GAME.drivers[aheadID]
@@ -4250,10 +4250,11 @@ class Game:
                             if valid==1:
                                 GAME.bestPitStop.insert(pos,pitStopTime)
                                 GAME.bestPitStopper.insert(pos,driver)
-                        if pitStopTime>3.5 and pitStopTime>GAME.bestPitStop[0]:
-                            GAME.AddToLog(f"{GAME.drivers[driverIndex]} has had a slow pit stop that took {pitStopTime:.3f} seconds.")
-                        elif GAME.teams[index]==GAME.team and pitStopTime>GAME.bestPitStop[0]:
-                            GAME.AddToLog(f"{GAME.drivers[driverIndex]} has completed a {pitStopTime:.3f} second pit stop.")
+                        if pitStopTime>GAME.bestPitStop[0]:
+                            if pitStopTime>3.5:
+                                GAME.AddToLog(f"{GAME.drivers[driverIndex]} has had a slow pit stop that took {pitStopTime:.3f} seconds.")
+                            elif GAME.teams[driverIndex]==GAME.team:
+                                GAME.AddToLog(f"{GAME.drivers[driverIndex]} has completed a {pitStopTime:.3f} second pit stop.")
                         penalty=GAME.penalties[driverIndex]
                         GAME.penalties[driverIndex]=0
                         totalTimeLost=20+pitStopTime+penalty
@@ -4703,8 +4704,9 @@ class Game:
                 index=GAME.car2ID
             GAME.pitTyre[index]=tyre
             GAME.pitting.append(index)
+            GAME.lapPittedTo[index]=GAME.lap[index]
             GAME.pause=1
-            GAME.RefreshScreen()
+            GAME.AddToLog(f"{GAME.drivers[index]} is pitting.")
             GAME.NextMove()
         else:
             GAME.ChangeScreen("Box")
@@ -5169,32 +5171,29 @@ class Game:
                             if valid==1:
                                 GAME.bestPitStop.insert(pos,pitStopTime)
                                 GAME.bestPitStopper.insert(pos,driver)
+                        if pitStopTime>GAME.bestPitStop[0]:
+                            if pitStopTime>3.5:
+                                GAME.AddToLog(f"{GAME.drivers[driverIndex]} has had a slow pit stop that took {pitStopTime:.3f} seconds.")
+                            elif GAME.teams[driverIndex]==GAME.team:
+                                GAME.AddToLog(f"{GAME.drivers[driverIndex]} has completed a {pitStopTime:.3f} second pit stop.")
                         if GAME.penalties[driverIndex]>0:
                             penalty=GAME.penalties[driverIndex]
                             GAME.penalties.pop(driverIndex)
                             GAME.penalties.insert(driverIndex,0)
                         else:
                             penalty=0
-                        totalTimeLost=baseTimeLost + pitStopTime + penalty
-                        timeAccum=0
-                        i=1
-                        while pos + i < len(GAME.positions):
-                            next_driver=GAME.positions[pos + i]
-                            timeAccum += GAME.time[next_driver]
-                            if timeAccum > totalTimeLost:
-                                break
-                            i += 1
+                        totalTimeLost=10 + pitStopTime + penalty
                         if GAME.tyre[driverIndex]!=GAME.SCPitTyre[x]:
                             GAME.tyreCompoundsUsed[driverIndex]+=1
                         newPos=min(pos + i - 1, len(GAME.positions) - 1)
                         distanceLost=round(totalTimeLost/41.67,3)
                         GAME.positions.remove(driverIndex)
                         GAME.positions.insert(newPos, driverIndex)
-                        GAME.distance[driverIndex] -= distanceLost
+                        GAME.distance[driverIndex]-=distanceLost
                         GAME.tyre.pop(driverIndex)
                         GAME.tyre.insert(driverIndex,GAME.SCPitTyre[x])
                         GAME.tyreRemaining[driverIndex]=100
-                        GAME.stops[driverIndex] += 1
+                        GAME.stops[driverIndex]+=1
                         GAME.lapPittedTo.pop(driverIndex)
                         GAME.lapPittedTo.insert(driverIndex,lap)
                         if GAME.pitLap[driverIndex]<=lap+3:
@@ -5529,7 +5528,7 @@ class Game:
                                 probability=20
                             else:
                                 probability=30
-                            if random.randint(1,probability)<=2 or (GAME.season==2026 and GAME.teams[driverID]=="Ferrari"):
+                            if random.randint(1,probability)<=2 or (GAME.season==2026 and GAME.teams[driverID]=="Ferrari" and GAME.race<4):
                                 #Successful overtake
                                 if x==1:
                                     message=(driver+" overtook "+ahead+" for the lead!")
@@ -5970,7 +5969,7 @@ class Game:
     def SaveRace(self):
         if os.path.isfile(GAME.database):
             GAME.actions=3
-            #Pit Stops
+            
             if GAME.startYear==2026:
                 pointsAvailable=[25,18,15,12,10,8,6,4,2,1]
                 with sqlite3.connect(GAME.database) as c:
@@ -9584,8 +9583,9 @@ class Game:
                         index=GAME.car2ID
                     GAME.pitTyre[index]=tyre
                     GAME.pitting.append(index)
+                    GAME.lapPittedTo[index]=GAME.lap[index]
                     GAME.pause=1
-                    GAME.RefreshScreen()
+                    GAME.AddToLog(f"{GAME.drivers[index]} is pitting.")
                     GAME.NextMove()
             elif event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
                 #Back
@@ -13204,7 +13204,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Virgin Upgrade","HRT Upgrade","Lotus Upgrade","Sauber Display","Virgin Display","HRT Display","Lotus Renault Display","Lotus Renault Upgrade","Caterham Display",
         "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display",
         "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade",
-        "Catalunya Racing Bulls Upgrade"]
+        "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
