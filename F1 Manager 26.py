@@ -2704,8 +2704,17 @@ class Game:
                     if GAME.team!="Aston Martin" and len(c.execute("SELECT Name FROM Drivers WHERE NewTeam='Aston Martin' AND NewRole='1'").fetchall())==0:
                         c.execute("UPDATE Drivers SET ContractEnd=?, NewTeam='Aston Martin', NewRole='1' WHERE Name='Lance Stroll' AND NewTeam='0' AND Team='Aston Martin' AND Role='1'",(GAME.season+1,))
 
-            #ADUO
             if GAME.season==2026:
+                #Race Cancellations
+                if GAME.race==3:
+                    GAME.news.append("BREAKING NEWS! The Bahrain and Saudi Arabian Grand Prix have been cancelled.")
+                    GAME.races=22
+                    with sqlite3.connect(GAME.database) as c:
+                        c.execute("DELETE FROM Calendar WHERE ID=4 or ID=5")
+                        for x in range(19):
+                            c.execute("UPDATE Calendar SET ID=? WHERE ID=?",(x+4,x+6,))
+                            
+                #ADUO
                 if GAME.race==7 and GAME.team!="Audi":
                     with sqlite3.connect(GAME.database) as c:
                         c.execute("UPDATE Engines SET Power=7 WHERE Name='Audi'")
@@ -13008,8 +13017,8 @@ class Game:
         with sqlite3.connect(GAME.database) as F1:
                 F1.execute("DELETE FROM Calendar")
                 if GAME.season==2026:
-                    GAME.races=22
-                    calendar=["Albert Park","Shanghai","Suzuka","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
+                    GAME.races=24
+                    calendar=["Albert Park","Shanghai","Suzuka","Sakhir","Jeddah","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
                               "Spa","Hungaroring","Zandvoort","Monza","Madring","Baku","Marina Bay","Austin","Mexico City","Interlagos",
                               "Las Vegas","Qatar","Abu Dhabi"]
                 elif GAME.season==2009:
