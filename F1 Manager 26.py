@@ -5528,7 +5528,7 @@ class Game:
                                 probability=20
                             else:
                                 probability=30
-                            if random.randint(1,probability)<=2 or (GAME.season==2026 and GAME.teams[driverID]=="Ferrari" and GAME.race<4):
+                            if random.randint(1,probability)<=2 or (GAME.season==2026 and GAME.teams[driverID]=="Ferrari" and GAME.race<5):
                                 #Successful overtake
                                 if x==1:
                                     message=(driver+" overtook "+ahead+" for the lead!")
@@ -13204,7 +13204,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Virgin Upgrade","HRT Upgrade","Lotus Upgrade","Sauber Display","Virgin Display","HRT Display","Lotus Renault Display","Lotus Renault Upgrade","Caterham Display",
         "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display",
         "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade",
-        "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving"]
+        "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
