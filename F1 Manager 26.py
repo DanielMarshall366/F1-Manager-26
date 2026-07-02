@@ -210,6 +210,7 @@ class Game:
         self.crashScore=0
         self.disqualified=[]
         self.overtake=[]
+        self.sprint=0
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -571,28 +572,28 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Albert Park", "Australia", 5.278, 58, 50, 25, 30, "High", 40, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Shanghai", "China", 5.451, 56, 35, 1, 25, "Medium", 50, 1, 0, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Suzuka", "Japan", 5.807, 53, 75, 15, 20, "High", 55, 0, 0, 1)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Sakhir", "Bahrain", 5.412, 57, 40, 0, 25, "Medium", 50, 1, 0, 4)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Sakhir", "Bahrain", 5.412, 57, 40, 0, 25, "Medium", 50, 0, 0, 4)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Jeddah", "Saudi Arabia", 6.174, 50, 60, 0, 35, "Medium", 65, 0, 1, 3)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Miami", "United States of America", 5.412, 57, 50, 5, 25, "Low", 50, 1, 0, 3)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Miami", "United States of America", 5.412, 57, 50, 5, 25, "Low", 50, 1, 1, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Imola", "Italy", 4.909, 63, 70, 5, 20, "Medium", 30, 0, 0, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Monte Carlo", "Monaco", 3.337, 78, 88, 25, 15, "Low", 5, 0, 0, 1)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Catalunya", "Spain", 4.657, 66, 40, 5, 25, "Medium", 65, 0, 0, 3)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Montreal", "Canada", 4.361, 70, 40, 10, -15, "Low", 48, 0, 0, 3)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Montreal", "Canada", 4.361, 70, 40, 10, -15, "Low", 48, 1, 1, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Red Bull Ring", "Austria", 4.318, 71, 65, 5, 15, "High", 75, 0, 0, 4)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Silverstone", "United Kingdom", 5.891, 52, 50, 65, 18, "High", 65, 0, 0, 4)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Spa", "Belgium", 7.004, 44, 70, 30, 10, "High", 75, 1, 0, 3)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Spa", "Belgium", 7.004, 44, 70, 30, 10, "High", 75, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Hungaroring", "Hungary", 4.381, 70, 50, 5, 11, "Medium", 58, 0, 0, 2)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Zandvoort", "Netherlands", 4.259, 72, 55, 10, 17, "High", 35, 0, 0, 2)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Zandvoort", "Netherlands", 4.259, 72, 55, 10, 17, "High", 35, 1, 0, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Monza", "Italy", 5.793, 53, 68, 5, 20, "High", 100, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Baku", "Azerbaijan", 6.003, 51, 85, 1, 15, "Low", 80, 0, 1, 2)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Marina Bay", "Singapore", 4.940, 62, 83, 5, 32, "Medium", 35, 0, 1, 2)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Marina Bay", "Singapore", 4.940, 62, 83, 5, 32, "Medium", 35, 1, 1, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Austin", "United States of America", 5.513, 56, 60, 0, 30, "Medium", 58, 0, 1, 4)''')        
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Mexico City", "Mexico", 4.304, 71, 50, 5, 21, "Medium", 50, 1, 0, 3)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Mexico City", "Mexico", 4.304, 71, 50, 5, 21, "Medium", 50, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Interlagos", "Brazil", 4.309, 71, 50, 75, 30, "Low", 50, 0, 1, 5)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Las Vegas", "United States of America", 6.201, 50, 65, 5, 10, "Low", 70, 0, 1, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Qatar", "Qatar", 5.419, 57, 60, 0, 22, "High", 38, 1, 0, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Abu Dhabi", "Abu Dhabi", 5.281, 58, 50, 0, 20, "Medium", 65, 0, 0, 3)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Madring", "Spain", 5.474, 57, 50, 5, 25, "Medium", 45, 0, 1, 3)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Madring", "Spain", 5.474, 57, 67, 5, 25, "Medium", 45, 0, 1, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Istanbul Park", "Turkey", 5.338, 58, 55, 20, 25, "Medium", 40, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Nürburgring", "Germany", 5.148, 60, 95, 23, 20, "High", 45, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Hockenheim", "Germany", 4.574, 67, 68, 23, 20, "Medium", 65, 0, 0, 4)''')
@@ -600,7 +601,9 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Sepang", "Malaysia", 5.543, 56, 60, 75, 28, "High", 35, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Valencia", "Spain", 5.419, 57, 55, 50, 25, "Low", 27, 0, 1, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("South Korea", "South Korea", 5.615, 55, 50, 10, 15, "High", 40, 0, 0, 3)''')
-        
+        if GAME.startYear==2009:
+            c.execute("UPDATE Tracks SET Sprint=0")
+            
         #Player
         if GAME.startYear==2026:
             regulationChange=2029
@@ -3400,7 +3403,7 @@ class Game:
 
                         #Fuel Usage
                         fuelUsage=45*GAME.fuelAggression[index]/int(GAME.laps)
-                        if GAME.replay==7:
+                        if GAME.replay==7 or GAME.sprint==1:
                             fuelUsage=fuelUsage/3
                         elif GAME.replay==8:
                             fuelUsage=0
@@ -5842,7 +5845,7 @@ class Game:
         GAME.CalculateTime()
         #Disqualifications
         GAME.disqualified=[]
-        if GAME.wet==0:
+        if GAME.wet==0 and GAME.sprint!=1:
             disqualified=[]
             for x in range(len(GAME.positions)):
                 if GAME.tyreCompoundsUsed[GAME.positions[x]]<2:
@@ -5913,12 +5916,19 @@ class Game:
         with sqlite3.connect(GAME.database) as conn:
             cursor=conn.cursor()
             pointsSystem=int(GAME.Sanitise(cursor.execute("SELECT True FROM Regulations WHERE Regulation='Old Points System'").fetchall()))
-            fastestLapPoint=int(GAME.Sanitise(cursor.execute("SELECT  True FROM Regulations WHERE Regulation='Fastest Lap Point'").fetchall()))
-            double=0
-            if GAME.race==GAME.races:
-                if len(cursor.execute("SELECT Regulation FROM Regulations WHERE Regulation='Double Points On Last Race' AND True=1").fetchall())>0:
-                    double=1
-            if pointsSystem==0:
+            if GAME.sprint==1:
+                fastestLapPoint=0
+                double=0
+            else:
+                fastestLapPoint=int(GAME.Sanitise(cursor.execute("SELECT  True FROM Regulations WHERE Regulation='Fastest Lap Point'").fetchall()))
+                double=0
+                if GAME.race==GAME.races:
+                    if len(cursor.execute("SELECT Regulation FROM Regulations WHERE Regulation='Double Points On Last Race' AND True=1").fetchall())>0:
+                        double=1
+
+            if GAME.sprint==1:
+                pointsAvailable=[8,7,6,5,4,3,2,1]
+            elif pointsSystem==0:
                 pointsAvailable=[25,18,15,12,10,8,6,4,2,1]
             else:
                 pointsAvailable=[10,8,6,5,4,3,2,1]
@@ -5968,7 +5978,8 @@ class Game:
         GAME.Button("Next",1230,5)
     def SaveRace(self):
         if os.path.isfile(GAME.database):
-            GAME.actions=3
+            if GAME.sprint!=1:
+                GAME.actions=3
             
             if GAME.startYear==2026:
                 pointsAvailable=[25,18,15,12,10,8,6,4,2,1]
@@ -6106,7 +6117,7 @@ class Game:
                                         cursor.execute('''UPDATE Teams SET Position=? WHERE Name=?''',(position+1, ahead,))
                                         if position!=1:
                                             aheadPoints=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Teams WHERE Position=?''',(position-1,)).fetchall()[0]))
-            if GAME.race==1:
+            if GAME.race==1 and GAME.sprint!=-1:
                 with sqlite3.connect(GAME.database) as c:
                     zeroPoints=[]
                     f=c.execute("SELECT Name FROM Teams").fetchall()
@@ -6141,73 +6152,74 @@ class Game:
                             except:
                                 pass
             #Development
-            with sqlite3.connect(GAME.database) as conn:
-                cursor=conn.cursor()
-                f=cursor.execute('''SELECT Name FROM Drivers WHERE Condition!="Retired" AND Legend=0''').fetchall()
-            for x in range(len(f)):
-                name=GAME.Sanitise(f[x])
+            if GAME.sprint!=1:
                 with sqlite3.connect(GAME.database) as conn:
                     cursor=conn.cursor()
-                    team=GAME.Sanitise(cursor.execute("SELECT Team FROM Drivers WHERE Name=?",(name,)))
-                    rate=int(GAME.Sanitise(cursor.execute('''SELECT DevelopmentRate FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                    developed=0
-                    overtaking=int(GAME.Sanitise(cursor.execute('''SELECT Overtaking FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                    defending=int(GAME.Sanitise(cursor.execute('''SELECT Defending FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                    pace=int(GAME.Sanitise(cursor.execute('''SELECT Pace FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                    experience=int(GAME.Sanitise(cursor.execute('''SELECT Experience FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                    control=int(GAME.Sanitise(cursor.execute('''SELECT Control FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                    reaction=int(GAME.Sanitise(cursor.execute('''SELECT Reaction FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                    rating=int(GAME.Sanitise(cursor.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                    role=GAME.Sanitise(cursor.execute("SELECT Role FROM Drivers WHERE Name=?",(name,)))
-                    if rate>0:
-                        if team!="Free Agent":
-                            if role=="Junior":
-                                rate=rate*2
-                            elif role=="Reserve":
-                                rate=round(rate*1.5)
-                            #Overtaking
-                            if random.randint(1,450)<=rate:
-                                overtaking+=1
-                                if random.randint(1,5)==5:
-                                    experience+=1
-                            #Defending
-                            if random.randint(1,450)<=rate:
-                                defending+=1
-                                if random.randint(1,5)==5:
-                                    experience+=1
-                            #Pace
-                            if random.randint(1,450)<=rate:
-                                pace+=1
-                                if random.randint(1,5)==5:
-                                    experience+=1
-                            #Control
-                            if random.randint(1,450)<=rate:
-                                control+=1
-                                if random.randint(1,5)==5:
-                                    experience+=1
-                            rating=round((overtaking+defending+pace+control+experience+reaction)/6)
-                    elif rate<0:
-                        if random.randint(-50,-1)>rate:
-                            pace-=2
-                            if random.randint(1,5)<=2:
-                                rating-=1
-                        if random.randint(1,2)==2:
-                            experience+=1
-                            if experience>110:
-                                experience=110
-                                if random.randint(1,2)==2:
+                    f=cursor.execute('''SELECT Name FROM Drivers WHERE Condition!="Retired" AND Legend=0''').fetchall()
+                for x in range(len(f)):
+                    name=GAME.Sanitise(f[x])
+                    with sqlite3.connect(GAME.database) as conn:
+                        cursor=conn.cursor()
+                        team=GAME.Sanitise(cursor.execute("SELECT Team FROM Drivers WHERE Name=?",(name,)))
+                        rate=int(GAME.Sanitise(cursor.execute('''SELECT DevelopmentRate FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                        developed=0
+                        overtaking=int(GAME.Sanitise(cursor.execute('''SELECT Overtaking FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                        defending=int(GAME.Sanitise(cursor.execute('''SELECT Defending FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                        pace=int(GAME.Sanitise(cursor.execute('''SELECT Pace FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                        experience=int(GAME.Sanitise(cursor.execute('''SELECT Experience FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                        control=int(GAME.Sanitise(cursor.execute('''SELECT Control FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                        reaction=int(GAME.Sanitise(cursor.execute('''SELECT Reaction FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                        rating=int(GAME.Sanitise(cursor.execute('''SELECT Rating FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                        role=GAME.Sanitise(cursor.execute("SELECT Role FROM Drivers WHERE Name=?",(name,)))
+                        if rate>0:
+                            if team!="Free Agent":
+                                if role=="Junior":
+                                    rate=rate*2
+                                elif role=="Reserve":
+                                    rate=round(rate*1.5)
+                                #Overtaking
+                                if random.randint(1,450)<=rate:
+                                    overtaking+=1
+                                    if random.randint(1,5)==5:
+                                        experience+=1
+                                #Defending
+                                if random.randint(1,450)<=rate:
+                                    defending+=1
+                                    if random.randint(1,5)==5:
+                                        experience+=1
+                                #Pace
+                                if random.randint(1,450)<=rate:
                                     pace+=1
-                                    if random.randint(1,3)==3:
-                                        rating+=1
-                    if random.randint(1,5)==5:
-                        experience+=1
-                    if experience>110:
-                        experience=110
-                    if control>99:
-                        control=99
-                    cursor.execute('''UPDATE Drivers SET Rating=?, Overtaking=?, Defending=?, Pace=?, Experience=?, Control=?, DevelopmentRate=? WHERE Name=?''',(rating, overtaking, defending, pace, experience, control, rate, name,))
+                                    if random.randint(1,5)==5:
+                                        experience+=1
+                                #Control
+                                if random.randint(1,450)<=rate:
+                                    control+=1
+                                    if random.randint(1,5)==5:
+                                        experience+=1
+                                rating=round((overtaking+defending+pace+control+experience+reaction)/6)
+                        elif rate<0:
+                            if random.randint(-50,-1)>rate:
+                                pace-=2
+                                if random.randint(1,5)<=2:
+                                    rating-=1
+                            if random.randint(1,2)==2:
+                                experience+=1
+                                if experience>110:
+                                    experience=110
+                                    if random.randint(1,2)==2:
+                                        pace+=1
+                                        if random.randint(1,3)==3:
+                                            rating+=1
+                        if random.randint(1,5)==5:
+                            experience+=1
+                        if experience>110:
+                            experience=110
+                        if control>99:
+                            control=99
+                        cursor.execute('''UPDATE Drivers SET Rating=?, Overtaking=?, Defending=?, Pace=?, Experience=?, Control=?, DevelopmentRate=? WHERE Name=?''',(rating, overtaking, defending, pace, experience, control, rate, name,))
             #Engines
-            if GAME.race<GAME.races:
+            if GAME.race<GAME.races and GAME.sprint!=1:
                 for x in range(len(GAME.engineDurability)):
                     team=GAME.teams[x]
                     car=GAME.cars[x]
@@ -6257,17 +6269,22 @@ class Game:
                                 GAME.costCap-=GAME.repairBill[x]
                                 c.execute("UPDATE Player SET CostCap=?",(GAME.costCap,))
                         
-            GAME.race+=1
             with sqlite3.connect(GAME.database) as conn:
                 cursor=conn.cursor()
-                cursor.execute('''UPDATE Player SET Race=?''',(GAME.race,))
-                wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Drivers WHERE Name=?",(GAME.drivers[GAME.positions[0]],)).fetchall()))+1
-                cursor.execute('''UPDATE Drivers SET Wins=? WHERE Name=?''',(wins,GAME.drivers[GAME.positions[0]],))
-                if GAME.teams[GAME.positions[0]]==GAME.team:
-                    wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Player").fetchall()))+1
-                    cursor.execute('''UPDATE Player SET Wins=?''',(wins,))
+                if GAME.sprint==1:
+                    track=GAME.Sanitise(cursor.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.race,)).fetchall()[0])
+                    cursor.execute("UPDATE Tracks SET Sprint=-1 WHERE Name=?",(track,))
+                else:
+                    GAME.race+=1
+                    cursor.execute('''UPDATE Player SET Race=?''',(GAME.race,))
+                if GAME.sprint!=1:
+                    wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Drivers WHERE Name=?",(GAME.drivers[GAME.positions[0]],)).fetchall()))+1
+                    cursor.execute('''UPDATE Drivers SET Wins=? WHERE Name=?''',(wins,GAME.drivers[GAME.positions[0]],))
+                    if GAME.teams[GAME.positions[0]]==GAME.team:
+                        wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Player").fetchall()))+1
+                        cursor.execute('''UPDATE Player SET Wins=?''',(wins,))
                 #Expectations
-                if len(GAME.expected)==2:
+                if len(GAME.expected)==2 and GAME.sprint!=1:
                     positions=[]
                     for x in range(len(GAME.positions)):
                         if GAME.teams[x]==GAME.expected[0]:
@@ -6357,6 +6374,8 @@ class Game:
                             c.execute("UPDATE Cars SET DragReduction=? WHERE Team=?",(dragReduction,team,))
             if GAME.music==1:
                 GAME.StopMusic()
+            if GAME.sprint==1:
+                GAME.sprint=-1
             GAME.drivers.clear()
             GAME.SaveScreen()
         else:
@@ -6441,6 +6460,7 @@ class Game:
         self.battery=[]
         self.fastest=[-1,0,10]
         self.crashScore=0
+        self.sprint=0
         if GAME.replay==2:
             GAME.team="APX GP"
             GAME.car1="Sonny Hayes"
@@ -6584,7 +6604,7 @@ class Game:
                     GAME.pitLap.append(pitLap)
                     GAME.pitTyre.append(pitTyre)
 
-            GAME.DisplayReplayGrid()
+            GAME.DisplayQualifyingGrid()
         elif GAME.replay==1:
             GAME.track="Abu Dhabi"
             GAME.raceCountry="Abu Dhabi"
@@ -6739,7 +6759,7 @@ class Game:
             GAME.events=0
             GAME.BackgroundColour()
 
-            GAME.DisplayReplayGrid()
+            GAME.DisplayQualifyingGrid()
         elif GAME.replay==4:
             GAME.ChangeScreen("Choose a Team 2008")
         elif GAME.replay==5:
@@ -6848,7 +6868,7 @@ class Game:
                         GAME.tyreAggression.append(random.randint(3,5))
                         GAME.fuelAggression.append(3)
 
-            GAME.DisplayReplayGrid()
+            GAME.DisplayQualifyingGrid()
             
 
     def AbuDhabi2021(self):
@@ -6914,9 +6934,9 @@ class Game:
                 GAME.engineDurability.append(100)
                 GAME.engineReliability.append(15)
 
-        GAME.DisplayReplayGrid()
-    def DisplayReplayGrid(self):
-        GAME.ChangeScreen("Replay Grid")
+        GAME.DisplayQualifyingGrid()
+    def DisplayQualifyingGrid(self):
+        GAME.ChangeScreen("Qualifying Grid")
         if GAME.replay==1:
             race="Abu Dhabi 2021"
         elif GAME.replay==2:
@@ -6927,14 +6947,27 @@ class Game:
             race="Brazil 2008"
         elif GAME.replay==5:
             race="Spa 2000"
-        else:
+        elif GAME.replay==6:
             race="Monaco 1984"
+        else:
+            with sqlite3.connect(GAME.database) as c:
+                race=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.race,)).fetchall()[0])
+            race=f"{race} Sprint Race"
         canvas.create_text(100, 10, text=race, fill="black", font=("Arial", 50), anchor="nw")
         for x in range(round(len(GAME.drivers)/2)):
             for y in range(2):
-                index=(x*2)+y
+                index=GAME.positions[(x*2)+y]
                 if index<=len(GAME.drivers)-1:
-                    canvas.create_text(100+(650*y), 150+(50*x)+(25*y), text=f"{index+1}. {GAME.drivers[index]} {GAME.teams[index]}", fill="black", font=("Arial", 30), anchor="nw")
+                    if GAME.replay==6:
+                        colour="black"
+                    else:
+                        if "Honda" in GAME.teams[index] or GAME.teams[index]=="AlphaTauri":
+                            colour="white"
+                        else:
+                            colour=GAME.TeamColour(GAME.teams[index],GAME.season)
+                            if colour=="white":
+                                colour="black"
+                    canvas.create_text(100+(650*y), 150+(50*x)+(25*y), text=f"{(x*2)+y+1}. {GAME.drivers[index]} {GAME.teams[index]}", fill=colour, font=("Arial", 30), anchor="nw")
         GAME.Button("Prepare for Race",1200,725)
     def Spa2000(self):
         GAME.track="Spa"
@@ -7028,7 +7061,7 @@ class Game:
                     GAME.tyreAggression.append(random.randint(3,5))
                     GAME.fuelAggression.append(3)
 
-        GAME.DisplayReplayGrid()
+        GAME.DisplayQualifyingGrid()
     def Brazil2008(self):
         GAME.track="Interlagos"
         GAME.raceCountry="Brazil"
@@ -7135,7 +7168,7 @@ class Game:
                     else:
                         GAME.pitTyre.append("Hard")
 
-        GAME.DisplayReplayGrid()
+        GAME.DisplayQualifyingGrid()
     def Reserves(self):
         with sqlite3.connect(GAME.database) as c:
             #Board Finances
@@ -7230,6 +7263,7 @@ class Game:
         with sqlite3.connect(GAME.database) as c:
             race=GAME.Sanitise(c.execute('''SELECT Track FROM Calendar WHERE ID=?''',(GAME.race,)).fetchall()[0])
             country=GAME.Sanitise(c.execute('''SELECT Country FROM Tracks WHERE Name=?''',(race,)).fetchall()[0])
+            GAME.sprint=int(GAME.Sanitise(c.execute("SELECT Sprint FROM Tracks WHERE Name=?",(race,)).fetchall()[0]))
             #Practice
             GAME.rawPace=[]
             corners=GAME.Sanitise(c.execute('''SELECT Corners FROM Tracks WHERE Name=?''',(race,)).fetchall()[0])
@@ -7370,38 +7404,49 @@ class Game:
         self.rainStopped=0
         self.fastest=[-1,0,10]
         self.crashScore=0
-        GAME.ChangeScreen("Practice")
-        GAME.DisplayLayout(race)
-        canvas.create_text(20, 125, text=race, fill="white", font=("Arial", 50), anchor="nw")
-        if country!=race:
-            canvas.create_text(20, 185, text=country, fill="white", font=("Arial", 50), anchor="nw")
-        if GAME.carConfidence==10:
-            carConfidence="The car feels Great to drive."
-        elif GAME.carConfidence==9:
-            carConfidence="The car feels Alright to drive."
-        elif GAME.carConfidence==8:
-            carConfidence="The car doesn't feel Optimal to drive."
-        elif GAME.carConfidence>5:
-            carConfidence="The car feels Difficult to drive."
-        elif GAME.carConfidence>3:
-            carConfidence="The car feels Very Difficult to drive."
-        elif GAME.carConfidence==2:
-            carConfidence="The car feels Extremely Difficult to drive."
-        else:
-            carConfidence="The car is undriveable."
-        canvas.create_text(550, 130, text=carConfidence, fill="white", font=("Arial", 30), anchor="nw")
         if GAME.driver1=="":
             GAME.driver1=0
         if GAME.driver2=="":
             GAME.driver2=0
-        GAME.DisplayRaceTeam()
-        if GAME.driver1 in GAME.drivers:
-            canvas.create_text(300, 290, text=GAME.driver1, fill="white", font=("Arial", 20), anchor="nw")
-            canvas.create_text(300, 340, text=("Confidence: "+str(car1Confidence)), fill="white", font=("Arial", 20), anchor="nw")
-        if GAME.driver2 in GAME.drivers:
-            canvas.create_text(950, 290, text=GAME.driver2, fill="white", font=("Arial", 20), anchor="nw")
-            canvas.create_text(950, 340, text=("Confidence: "+str(car2Confidence)), fill="white", font=("Arial", 20), anchor="nw")
-        GAME.Button("Qualifying",1200,695)
+        if GAME.sprint>-1:
+            GAME.ChangeScreen("Practice")
+            GAME.DisplayLayout(race)
+            canvas.create_text(20, 125, text=race, fill="white", font=("Arial", 50), anchor="nw")
+            if country!=race:
+                canvas.create_text(20, 185, text=country, fill="white", font=("Arial", 50), anchor="nw")
+            if GAME.carConfidence==10:
+                carConfidence="The car feels Great to drive."
+            elif GAME.carConfidence==9:
+                carConfidence="The car feels Alright to drive."
+            elif GAME.carConfidence==8:
+                carConfidence="The car doesn't feel Optimal to drive."
+            elif GAME.carConfidence>5:
+                carConfidence="The car feels Difficult to drive."
+            elif GAME.carConfidence>3:
+                carConfidence="The car feels Very Difficult to drive."
+            elif GAME.carConfidence==2:
+                carConfidence="The car feels Extremely Difficult to drive."
+            else:
+                carConfidence="The car is undriveable."
+            canvas.create_text(550, 130, text=carConfidence, fill="white", font=("Arial", 30), anchor="nw")
+            GAME.DisplayRaceTeam()
+            if GAME.driver1 in GAME.drivers:
+                canvas.create_text(300, 290, text=GAME.driver1, fill="white", font=("Arial", 20), anchor="nw")
+                canvas.create_text(300, 340, text=("Confidence: "+str(car1Confidence)), fill="white", font=("Arial", 20), anchor="nw")
+            if GAME.driver2 in GAME.drivers:
+                canvas.create_text(950, 290, text=GAME.driver2, fill="white", font=("Arial", 20), anchor="nw")
+                canvas.create_text(950, 340, text=("Confidence: "+str(car2Confidence)), fill="white", font=("Arial", 20), anchor="nw")
+            if GAME.sprint==1:
+                GAME.Button("Sprint Race",1200,695)
+            else:
+                GAME.Button("Qualifying",1200,695)
+        else:
+            GAME.qualifying=1
+            if GAME.music==1:     
+                sound_path=os.path.join(os.path.dirname(__file__), "Music", "The Chain F1.wav")
+                if os.path.isfile(sound_path):
+                    winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+            GAME.Qualifying()
     def Qualifying(self):
         with sqlite3.connect(GAME.database) as c:
             GAME.rainChance=int(GAME.Sanitise(c.execute('''SELECT RainChance FROM Tracks WHERE Name=?''',(GAME.track,)).fetchall()[0]))
@@ -7436,36 +7481,39 @@ class Game:
                 GAME.positions.append(highestIndex)
             #Q1
             f=c.execute("SELECT Name FROM Teams").fetchall()
-        eliminations=len(f)-5
-        delay=0
-        if len(GAME.drivers)>10+eliminations:
-            if len(GAME.drivers)<len(f)*2:
-                eliminations=len(GAME.drivers)-eliminations-10
-            delay=8000
-            GAME.ChangeScreen("Q1 Eliminations")
-            eliminated=[]
-            for x in range(eliminations):
-                index=GAME.positions[len(GAME.positions)-1-x]
-                eliminated.append(GAME.drivers[index])
-            GAME.DisplayEliminations(eliminated,weatherMessage,len(GAME.drivers)+1-eliminations)
-        #Q2
-        if len(GAME.drivers)>10:
-            e=eliminations
-            if len(GAME.drivers)<len(f)*2:
-                eliminations=len(GAME.drivers)-eliminations-10
-            root.after(delay, lambda: GAME.ChangeScreen("Q2 Eliminations"))
-            eliminated=[]
-            for x in range(eliminations):
-                index=GAME.positions[len(GAME.positions)-1-x-e]
-                eliminated.append(GAME.drivers[index])
-            root.after(delay, lambda i=eliminated: GAME.DisplayEliminations(i,weatherMessage,11))
-            delay+=8000
-        #Q3
-        if len(GAME.drivers)>9:
-            drivers=10
+        if GAME.sprint==1:
+            GAME.DisplayQualifyingGrid()
         else:
-            drivers=len(GAME.drivers)
-        root.after(delay, lambda: GAME.Q3(drivers))
+            eliminations=len(f)-5
+            delay=0
+            if len(GAME.drivers)>10+eliminations:
+                if len(GAME.drivers)<len(f)*2:
+                    eliminations=len(GAME.drivers)-eliminations-10
+                delay=8000
+                GAME.ChangeScreen("Q1 Eliminations")
+                eliminated=[]
+                for x in range(eliminations):
+                    index=GAME.positions[len(GAME.positions)-1-x]
+                    eliminated.append(GAME.drivers[index])
+                GAME.DisplayEliminations(eliminated,weatherMessage,len(GAME.drivers)+1-eliminations)
+            #Q2
+            if len(GAME.drivers)>10:
+                e=eliminations
+                if len(GAME.drivers)<len(f)*2:
+                    eliminations=len(GAME.drivers)-eliminations-10
+                root.after(delay, lambda: GAME.ChangeScreen("Q2 Eliminations"))
+                eliminated=[]
+                for x in range(eliminations):
+                    index=GAME.positions[len(GAME.positions)-1-x-e]
+                    eliminated.append(GAME.drivers[index])
+                root.after(delay, lambda i=eliminated: GAME.DisplayEliminations(i,weatherMessage,11))
+                delay+=8000
+            #Q3
+            if len(GAME.drivers)>9:
+                drivers=10
+            else:
+                drivers=len(GAME.drivers)
+            root.after(delay, lambda: GAME.Q3(drivers))
     def DisplayEliminations(self,eliminated,w,topPosition):
         if w=="It's wet for Qualifying.":
             canvas.create_text(400, 170, text=w, fill="#2FB3FF", font=("Arial", 50), anchor="nw")
@@ -7560,6 +7608,8 @@ class Game:
             GAME.temperature=int(GAME.Sanitise(c.execute('''SELECT Temperature FROM Tracks WHERE Name=?''',(GAME.track,)).fetchall()[0]))
             GAME.length=float(GAME.Sanitise(c.execute('''SELECT Length FROM Tracks WHERE Name=?''',(GAME.track,)).fetchall()[0]))
             GAME.laps=int(GAME.Sanitise(c.execute('''SELECT Laps FROM Tracks WHERE Name=?''',(GAME.track,)).fetchall()[0]))
+            if GAME.sprint==1:
+                GAME.laps=(GAME.laps//3)+1
             GAME.overtakeability=int(GAME.Sanitise(c.execute('''SELECT Overtakeability FROM Tracks WHERE Name=?''',(GAME.track,)).fetchall()[0]))
             GAME.risk=int(GAME.Sanitise(c.execute('''SELECT Risk FROM Tracks WHERE Name=?''',(GAME.track,)).fetchall()[0]))
             GAME.street=int(GAME.Sanitise(c.execute('''SELECT Street FROM Tracks WHERE Name=?''',(GAME.track,)).fetchall()[0]))
@@ -7751,14 +7801,16 @@ class Game:
                             GAME.tyre.append("Wet")
                         else:
                             GAME.tyre.append("Intermediate")
-                    elif GAME.track=="Monte Carlo" and random.randint(1,50)==50 and GAME.positions.index(x)>9:
-                        GAME.strategy.append(1)
-                        GAME.pitLap.append(1)
-                        GAME.tyre.append("Soft")
-                        if random.randint(1,5)<=3 and GAME.season>2010:
-                            GAME.pitTyre.append("Medium")
+                    elif GAME.sprint==1:
+                        GAME.strategy.append(0)
+                        GAME.pitLap.append(0)
+                        GAME.pitTyre.append(0)
+                        if GAME.expectedTyreLife[0]>=GAME.laps or random.randint(1,20)==20:
+                            GAME.tyre.append("Soft")
+                        elif GAME.expectedTyreLife[1]<GAME.laps and random.randint(1,8)==8:
+                            GAME.tyre.append("Hard")
                         else:
-                            GAME.pitTyre.append("Hard")
+                            GAME.tyre.append("Medium")
                     else:
                         if standardStrategy==1.5:
                             if random.randint(1,5)<4:
@@ -7892,7 +7944,9 @@ class Game:
                         GAME.tyre.append(tyre)
                         GAME.pitLap.append(pitLap)
                         GAME.pitTyre.append(pitTyre)
-                    if GAME.wet==1 or GAME.refueling==0:
+                    if GAME.sprint==1:
+                        GAME.fuel.append(40)
+                    elif GAME.wet==1 or GAME.refueling==0:
                         GAME.fuel.append(100)
                     else:
                         GAME.fuel.append(round(105*GAME.pitLap[x]/GAME.laps))
@@ -8124,7 +8178,7 @@ class Game:
         if final==0:
             GAME.Button("Back",5,730)
             if GAME.startYear==2026:
-                GAME.Button("DHL",1230,730)
+                GAME.Button("DHL",1235,730)
         elif GAME.startYear==2026:
             GAME.Button("Next",1200,730)
         else:
@@ -9043,7 +9097,7 @@ class Game:
         if screen=="Title Screen":
             GAME.team=0
             GAME.BackgroundColour()
-        elif screen=="Tyre Data" or screen=="Replacing" or screen=="Replacement" or screen=="Sponsor Negotiation" or screen=="Replay Grid":
+        elif screen=="Tyre Data" or screen=="Replacing" or screen=="Replacement" or screen=="Sponsor Negotiation":
             screen="Grey Screen"
         elif screen=="Data" or screen=="Scouting":
             screen="Board Room"
@@ -9090,6 +9144,7 @@ class Game:
             GAME.replay=0
             GAME.team=""
             GAME.startYear=2026
+            GAME.season=2026
             GAME.screen="Opening Menu"
             GAME.Button("New Game",500,575)
             GAME.Button("Load Game",735,575)
@@ -9284,12 +9339,15 @@ class Game:
                     GAME.ChangeScreen("Title Screen")
         elif GAME.screen=="Practice":
             if event.x>=1200 and event.x<=1400 and event.y>=700 and event.y<=750 and GAME.qualifying==0:
-                GAME.qualifying=1
-                root.after(1200, lambda: GAME.Qualifying())
-                if GAME.music==1:     
-                    sound_path=os.path.join(os.path.dirname(__file__), "Music", "The Chain F1.wav")
-                    if os.path.isfile(sound_path):
-                        winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                if GAME.sprint==1:
+                    GAME.Qualifying()
+                else:
+                    GAME.qualifying=1
+                    root.after(1200, lambda: GAME.Qualifying())
+                    if GAME.music==1:     
+                        sound_path=os.path.join(os.path.dirname(__file__), "Music", "The Chain F1.wav")
+                        if os.path.isfile(sound_path):
+                            winsound.PlaySound(sound_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
         elif GAME.screen=="Q3 Results":
             if event.x>=1235 and event.x<=1435 and event.y>=735 and event.y<=785 and GAME.qualifying==2:
                 if GAME.replay>0:
@@ -9330,7 +9388,10 @@ class Game:
                 else:
                     GAME.aggressions=[3,2,2]
                     GAME.driver=1
-                    GAME.fuelTank=100
+                    if GAME.sprint==1:
+                        GAME.fuelTank=40
+                    else:
+                        GAME.fuelTank=100
                     GAME.ChooseStartingAggression()
         elif GAME.screen=="Choose Aggression":
             modify=0
@@ -9598,49 +9659,52 @@ class Game:
                 GAME.RaceResults()
         elif GAME.screen=="Race Results":
             if event.x>=1230 and event.x<=1430 and event.y>=5 and event.y<=55:
-                #Driver Of The Day
-                GAME.ChangeScreen("Driver Of The Day")
-                message=0
-                winner=GAME.drivers[GAME.positions[0]]
-                with sqlite3.connect(GAME.database) as c:
-                    wins=int(GAME.Sanitise(c.execute("SELECT Wins FROM Drivers WHERE Name=?",(winner,)).fetchall()[0]))+1
-                if GAME.homeWin==1 or wins==1 or wins%10==0:
-                    driver=winner
-                    team=GAME.teams[GAME.positions[0]]
-                    if wins==1:
-                        message="First Win"
-                    elif GAME.homeWin==1:
-                        message="Home Win"
-                    else:
-                        message=f"{wins}th Win"
+                if GAME.sprint==1:
+                    GAME.SaveRace()
                 else:
-                    if random.randint(1,2)==1:
-                        best=[-2,0]
-                        for x in range(10):
-                            if len(GAME.positions)>x:
-                                index=GAME.positions[x]
-                                gained=GAME.startingPositions.index(index)-x
-                                if gained>best[0]+2:
-                                    best=[gained,index]
+                    #Driver Of The Day
+                    GAME.ChangeScreen("Driver Of The Day")
+                    message=0
+                    winner=GAME.drivers[GAME.positions[0]]
+                    with sqlite3.connect(GAME.database) as c:
+                        wins=int(GAME.Sanitise(c.execute("SELECT Wins FROM Drivers WHERE Name=?",(winner,)).fetchall()[0]))+1
+                    if GAME.homeWin==1 or wins==1 or wins%10==0:
+                        driver=winner
+                        team=GAME.teams[GAME.positions[0]]
+                        if wins==1:
+                            message="First Win"
+                        elif GAME.homeWin==1:
+                            message="Home Win"
+                        else:
+                            message=f"{wins}th Win"
                     else:
-                        best=[0,0,-1]
-                        for x in range(3):
-                            index=GAME.positions[x]
-                            team=GAME.teams[index]
-                            with sqlite3.connect(GAME.database) as c:
-                                position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
-                            gained=GAME.startingPositions.index(index)-x
-                            if position>best[0]+1 or (position==best[0] and gained>best[2]+2):
-                                best=[position,index,gained]
-                    driver=GAME.drivers[best[1]]
-                    team=GAME.teams[best[1]]
-                GAME.DisplayDriver(driver,520,500)
-                colour=GAME.TeamColour(team,GAME.season)
-                canvas.create_text(550, 270, text=driver, fill=colour, font=("Arial", 40), anchor="nw")
-                if message==0:
-                    message=f"P{GAME.startingPositions.index(best[1])+1}>P{GAME.positions.index(best[1])+1}"
-                canvas.create_text(600, 330, text=message, fill=colour, font=("Arial", 40), anchor="nw")
-                root.after(5000, lambda: GAME.SaveRace())
+                        if random.randint(1,2)==1:
+                            best=[-2,0]
+                            for x in range(10):
+                                if len(GAME.positions)>x:
+                                    index=GAME.positions[x]
+                                    gained=GAME.startingPositions.index(index)-x
+                                    if gained>best[0]+2:
+                                        best=[gained,index]
+                        else:
+                            best=[0,0,-1]
+                            for x in range(3):
+                                index=GAME.positions[x]
+                                team=GAME.teams[index]
+                                with sqlite3.connect(GAME.database) as c:
+                                    position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
+                                gained=GAME.startingPositions.index(index)-x
+                                if position>best[0]+1 or (position==best[0] and gained>best[2]+2):
+                                    best=[position,index,gained]
+                        driver=GAME.drivers[best[1]]
+                        team=GAME.teams[best[1]]
+                    GAME.DisplayDriver(driver,520,500)
+                    colour=GAME.TeamColour(team,GAME.season)
+                    canvas.create_text(550, 270, text=driver, fill=colour, font=("Arial", 40), anchor="nw")
+                    if message==0:
+                        message=f"P{GAME.startingPositions.index(best[1])+1}>P{GAME.positions.index(best[1])+1}"
+                    canvas.create_text(600, 330, text=message, fill=colour, font=("Arial", 40), anchor="nw")
+                    root.after(5000, lambda: GAME.SaveRace())
         elif GAME.screen=="Board Room":
             if event.x>=400 and event.x<=600 and event.y>=510 and event.y<=560:
                 #Standings
@@ -9818,17 +9882,7 @@ class Game:
                 GAME.CarData()
             elif event.x>=820 and event.x<=1020 and event.y>=510 and event.y<=560:
                 #Calendar
-                GAME.ChangeScreen("Calendar")
-                canvas.create_text(570, 10, text=f"{GAME.season} Season", fill="#F5C939", font=("Arial", 40), anchor="nw")
-                GAME.Button("Back",5,725)
-                with sqlite3.connect(GAME.database) as c:
-                    f=c.execute("SELECT Track FROM Calendar").fetchall()
-                    for x in range(len(f)//5):
-                        for y in range(5):
-                            GAME.CalendarDisplay(x,y,GAME.Sanitise(f[(x*5)+y]))
-                    for z in range(len(f)%5):
-                        GAME.CalendarDisplay(len(f)//5,z,GAME.Sanitise(f[((len(f)//5)*5)+z]))
-                canvas.create_text(250, 600, text=f"Next Race: {GAME.Sanitise(f[GAME.race-1])}", fill="#C4C4C4", font=("Arial", 50), anchor="nw")
+                GAME.ViewCalendar()
             elif event.x>=870 and event.x<=1070 and event.y>=580 and event.y<=630:
                 #Achievements
                 GAME.ChangeScreen("Achievements")
@@ -11146,14 +11200,17 @@ class Game:
                                 salary=3000000
                             c.execute("UPDATE Drivers SET Team=?, Role='Reserve', Salary=?, ContractEnd=? WHERE Name=?",(GAME.team,salary,contractEnd,driver,))
                         GAME.Menu()
-        elif GAME.screen=="Replay Grid":
+        elif GAME.screen=="Qualifying Grid":
             if event.x>=1200 and event.x<=1400 and event.y>=725 and event.y<=775:
-                GAME.aggressions=[3,2,2]
-                GAME.driver=1
-                if GAME.replay==1 or GAME.replay==2:
-                    GAME.ChooseStartingTyres()
+                if GAME.replay==0:
+                    GAME.RacePreparation()
                 else:
-                    GAME.ChooseStartingAggression()
+                    GAME.aggressions=[3,2,2]
+                    GAME.driver=1
+                    if GAME.replay==1 or GAME.replay==2:
+                        GAME.ChooseStartingTyres()
+                    else:
+                        GAME.ChooseStartingAggression()
         elif GAME.screen=="Choose a Team 2000":
             GAME.team=0
             if event.x>=1200:
@@ -11225,8 +11282,15 @@ class Game:
                         GAME.newGame=1
                     GAME.ChangeScreen("Title Screen")
         elif GAME.screen=="Calendar":
-            if event.x>=5 and event.x<=205 and event.y>=720 and event.y<=770:
+            if event.x>=5 and event.x<=205 and event.y>=725 and event.y<=775:
                 GAME.Menu()
+            elif event.x>=1235 and event.x<=1430 and event.y>=725 and event.y<=775 and GAME.season>2020:
+                GAME.SprintCalendar()
+        elif GAME.screen=="Sprint Calendar":
+            if event.x>=5 and event.x<=205 and event.y>=725 and event.y<=775:
+                GAME.Menu()
+            elif event.x>=1235 and event.x<=1430 and event.y>=725 and event.y<=775:
+                GAME.ViewCalendar()
         elif GAME.screen=="2009 Choose a Team":
             if event.x>=90 and event.x<=495 and event.y>=200 and event.y<=330:
                 GAME.team="Ferrari"
@@ -11703,6 +11767,8 @@ class Game:
             colour="#002A69"
         elif "Volvo" in team:
             colour="#002F6C"
+        elif team=="APX GP":
+            colour="#F5F5F5"
         else:
             colour="white"
         return colour
@@ -12571,6 +12637,7 @@ class Game:
                 c=F1.cursor()
                 c.execute("UPDATE Teams SET Appearance='Manor' WHERE Name='Manor'")
             elif GAME.season==2021:
+                GAME.news.append("BREAKING NEWS! F1 have introduced sprint races to the calendar.")
                 GAME.news.append("BREAKING NEWS! Racing Point have rebranded as Aston Martin.")
                 GAME.news.append("BREAKING NEWS! Renault have rebranded as Alpine.")
                 F1.commit()
@@ -13075,6 +13142,32 @@ class Game:
                     calendar.append(finale)
                 for x in range(GAME.races):
                     F1.execute("INSERT into Calendar (ID, Track) VALUES(?, ?)",(x+1,calendar[x],))
+
+                #Sprints
+                if GAME.season<2021:
+                    F1.execute("UPDATE Tracks SET sprint=0")
+                else:
+                    F1.execute("UPDATE Tracks SET Sprint=1 WHERE Sprint=-1")
+                    sprints=F1.execute("SELECT Name FROM Tracks WHERE Sprint=1").fetchall()
+                    for x in range(len(sprints)):
+                        sprints[x]=GAME.Sanitise(sprints[x])
+                    for sprint in sprints:
+                        if sprint not in calendar:
+                            sprints.remove(sprint)
+                            F1.execute("UPDATE Tracks SET Sprint=0 WHERE Track=?",(sprint,))
+                    if len(sprints)>0:
+                        newSprint=random.choice(calendar)
+                        while newSprint in sprints:
+                            newSprint=random.choice(calendar)
+                        sprints.remove(random.choice(sprints))
+                        sprints.append(newSprint)
+                        F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name=?",(newSprint,))
+                    for x in range(6-len(sprints)):
+                        newSprint=random.choice(calendar)
+                        while newSprint in sprints:
+                            newSprint=random.choice(calendar)
+                        sprints.append(newSprint)
+                        F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name=?",(newSprint,))
         canvas.create_text(570, 10, text=f"{GAME.season} Calendar", fill="#F5C939", font=("Arial", 40), anchor="nw")
         delay=500
         for x in range(GAME.races//5):
@@ -13096,10 +13189,45 @@ class Game:
         if number<GAME.race:
             colour="#B60000"
         elif number==GAME.race:
-            colour="green"
+            with sqlite3.connect(GAME.database) as c:
+                if len(c.execute("SELECT Name FROM Tracks WHERE Name=? AND Sprint=-1",(track,)).fetchall())>0 and GAME.screen=="Sprint Calendar":
+                    colour="#FF6F00"
+                else:
+                    colour="green"
         else:
             colour="#DADADA"
         canvas.create_text(x, y, text=(f"{number}. {track}"), fill=colour, font=("Arial", 15), anchor="nw")
+    def ViewCalendar(self):
+        GAME.ChangeScreen("Calendar")
+        canvas.create_text(570, 10, text=f"{GAME.season} Season", fill="#F5C939", font=("Arial", 40), anchor="nw")
+        GAME.Button("Back",5,725)
+        if GAME.season>2020:
+            GAME.Button("Sprints",1235,725)
+        with sqlite3.connect(GAME.database) as c:
+            f=c.execute("SELECT Track FROM Calendar").fetchall()
+            for x in range(len(f)//5):
+                for y in range(5):
+                    GAME.CalendarDisplay(x,y,GAME.Sanitise(f[(x*5)+y]))
+            for z in range(len(f)%5):
+                GAME.CalendarDisplay(len(f)//5,z,GAME.Sanitise(f[((len(f)//5)*5)+z]))
+        canvas.create_text(250, 600, text=f"Next Race: {GAME.Sanitise(f[GAME.race-1])}", fill="#C4C4C4", font=("Arial", 50), anchor="nw")
+    def SprintCalendar(self):
+        GAME.ChangeScreen("Calendar")
+        GAME.screen="Sprint Calendar"
+        canvas.create_text(545, 10, text=f"Sprint Calendar", fill="#F5C939", font=("Arial", 40), anchor="nw")
+        GAME.Button("Back",5,725)
+        GAME.Button("Calendar",1235,725)
+        with sqlite3.connect(GAME.database) as c:
+            f=c.execute("SELECT Track FROM Calendar").fetchall()
+            for x in range(len(f)//5):
+                for y in range(5):
+                    track=GAME.Sanitise(f[(x*5)+y])
+                    if len(c.execute("SELECT Name FROM Tracks WHERE Name=? AND Sprint!=0",(track,)).fetchall())>0:
+                        GAME.CalendarDisplay(x,y,track)
+            for z in range(len(f)%5):
+                track=GAME.Sanitise(f[((len(f)//5)*5)+z])
+                if len(c.execute("SELECT Name FROM Tracks WHERE Name=? AND Sprint!=0",(track,)).fetchall())>0:
+                    GAME.CalendarDisplay(len(f)//5,z,track)
     def Voice(self, subject, line):
         try:
             if not (((line=="Overtake" or line=="Lead") and GAME.replay==2) or GAME.pause==3 or GAME.replay==8 or GAME.replay==9 or GAME.replay==6):
@@ -13204,7 +13332,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Virgin Upgrade","HRT Upgrade","Lotus Upgrade","Sauber Display","Virgin Display","HRT Display","Lotus Renault Display","Lotus Renault Upgrade","Caterham Display",
         "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display",
         "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade",
-        "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade"]
+        "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade","Qualifying Grid"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
@@ -13294,7 +13422,7 @@ Buttons=["Next","Quit","Qualifying","Prepare for Race","Tyre Aggression","Fuel A
          "View Contracts","Scout Drivers","Scout Technical Directors","Scout Sporting Directors","Scout Race Engineers","Renew","Reserve & Junior Drivers","Other Contracts",
          "Promote","Propose Contract","Name Selector","Hire","Choose Driver","Choose Engine","Choose","Swap Drivers","End Season","Vote For","Vote Against","Start Season",
          "Length Selector","Stay","Move","Create","Accept","Decline","Team Management","Fired","Stay Out","Start Race","ERS Disabled","Banned","Hire Reserve","Canada 2011",
-         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career","Select Fuel","KERS Off","KERS On","Delete","DHL"]
+         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career","Select Fuel","KERS Off","KERS On","Delete","DHL","Sprint Race","Sprints"]
 buttons=[]
 for x in range(len(Buttons)):
     path=os.path.join(os.path.dirname(__file__), "Buttons", (Buttons[x]+" Button.png"))
