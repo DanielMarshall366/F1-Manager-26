@@ -580,7 +580,7 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Catalunya", "Spain", 4.657, 66, 40, 5, 25, "Medium", 65, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Montreal", "Canada", 4.361, 70, 40, 10, -15, "Low", 48, 1, 1, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Red Bull Ring", "Austria", 4.318, 71, 65, 5, 15, "High", 75, 0, 0, 4)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Silverstone", "United Kingdom", 5.891, 52, 50, 65, 18, "High", 65, 0, 0, 4)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Silverstone", "United Kingdom", 5.891, 52, 50, 65, 18, "High", 65, 1, 0, 4)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Spa", "Belgium", 7.004, 44, 70, 30, 10, "High", 75, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Hungaroring", "Hungary", 4.381, 70, 50, 5, 11, "Medium", 58, 0, 0, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Zandvoort", "Netherlands", 4.259, 72, 55, 10, 17, "High", 35, 1, 0, 2)''')
@@ -591,7 +591,7 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Mexico City", "Mexico", 4.304, 71, 50, 5, 21, "Medium", 50, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Interlagos", "Brazil", 4.309, 71, 50, 75, 30, "Low", 50, 0, 1, 5)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Las Vegas", "United States of America", 6.201, 50, 65, 5, 10, "Low", 70, 0, 1, 3)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Qatar", "Qatar", 5.419, 57, 60, 0, 22, "High", 38, 1, 0, 2)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Qatar", "Qatar", 5.419, 57, 60, 0, 22, "High", 38, 0, 0, 2)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Abu Dhabi", "Abu Dhabi", 5.281, 58, 50, 0, 20, "Medium", 65, 0, 0, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Madring", "Spain", 5.474, 57, 67, 5, 25, "Medium", 45, 0, 1, 3)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability) VALUES ("Istanbul Park", "Turkey", 5.338, 58, 55, 20, 25, "Medium", 40, 0, 0, 3)''')
@@ -6020,12 +6020,13 @@ class Game:
                         cursor.execute('''UPDATE Drivers SET Condition="Injured" WHERE Name=?''',(GAME.injured[x],))
             teams=[]
             teamPoints=[]
-            with sqlite3.connect(GAME.database) as conn:
-                cursor=conn.cursor()
-                f=cursor.execute('''SELECT Name FROM Teams''').fetchall()
-                cursor.execute("UPDATE Player SET Actions=3")
-                if len(cursor.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
-                    cursor.execute("UPDATE Drivers SET Team='Red Bull' WHERE Team='Racing Bulls' AND Role='Reserve'")
+            if GAME.sprint!=1:
+                with sqlite3.connect(GAME.database) as conn:
+                    cursor=conn.cursor()
+                    f=cursor.execute('''SELECT Name FROM Teams''').fetchall()
+                    cursor.execute("UPDATE Player SET Actions=3")
+                    if len(cursor.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
+                        cursor.execute("UPDATE Drivers SET Team='Red Bull' WHERE Team='Racing Bulls' AND Role='Reserve'")
             for x in range(len(f)):
                 team=GAME.Sanitise(f[x])
                 teams.append(team)
@@ -6223,16 +6224,22 @@ class Game:
                 for x in range(len(GAME.engineDurability)):
                     team=GAME.teams[x]
                     car=GAME.cars[x]
-                    if GAME.faults[x]==0:
-                        durability=GAME.engineDurability[x]-random.randint(round(270/GAME.races)-2,round(270/GAME.races)+2)
-                    elif GAME.faults[x]=="Minor":
-                        durability=GAME.engineDurability[x]-random.randint(round(320/GAME.races)-2,round(320/GAME.races)+2)
-                    elif GAME.faults[x]=="Major":
-                        durability=GAME.engineDurability[x]-random.randint(round(380/GAME.races)-10,round(380/GAME.races)+10)
+                    if GAME.sprint==1:
+                        if GAME.faults[x]=="Failure":
+                            durability=0
+                        else:
+                            durability=GAME.engineDurability[x]
                     else:
-                        durability=0
-                    if durability<0:
-                        durability=0
+                        if GAME.faults[x]==0:
+                            durability=GAME.engineDurability[x]-random.randint(round(270/GAME.races)-2,round(270/GAME.races)+2)
+                        elif GAME.faults[x]=="Minor":
+                            durability=GAME.engineDurability[x]-random.randint(round(320/GAME.races)-2,round(320/GAME.races)+2)
+                        elif GAME.faults[x]=="Major":
+                            durability=GAME.engineDurability[x]-random.randint(round(380/GAME.races)-10,round(380/GAME.races)+10)
+                        else:
+                            durability=0
+                        if durability<0:
+                            durability=0
                     with sqlite3.connect(GAME.database) as conn:
                         cursor=conn.cursor()
                         if (team!=GAME.team and durability<35) or durability==0:
@@ -7457,7 +7464,7 @@ class Game:
                 GAME.rainChance+=15
             else:
                 #Dry Qualifying
-                weatherMessage="There isn't any rain for Qualifying."
+                weatherMessage=0
                 wet=0
             qualifyingPace=[]
             for x in range(len(GAME.drivers)):
@@ -11272,14 +11279,17 @@ class Game:
                 if event.x>=5 and event.x<=205:
                     GAME.ChangeScreen("Title Screen")
                 elif event.x>=1230 and event.x<=1430:
-                    os.remove(f"F1 Manager 26 Save Data {GAME.database}.db")
-                    database=GAME.database+1
-                    if os.path.isfile(f"F1 Manager 26 Save Data {database}.db"):
-                        while os.path.isfile(f"F1 Manager 26 Save Data {database}.db"):
-                            os.rename(f"F1 Manager 26 Save Data {database}.db",f"F1 Manager 26 Save Data {database-1}.db")
-                            database+=1
-                    if not os.path.isfile("F1 Manager 26 Save Data 1.db"):
-                        GAME.newGame=1
+                    try:
+                        os.remove(f"F1 Manager 26 Save Data {GAME.database}.db")
+                        database=GAME.database+1
+                        if os.path.isfile(f"F1 Manager 26 Save Data {database}.db"):
+                            while os.path.isfile(f"F1 Manager 26 Save Data {database}.db"):
+                                os.rename(f"F1 Manager 26 Save Data {database}.db",f"F1 Manager 26 Save Data {database-1}.db")
+                                database+=1
+                        if not os.path.isfile("F1 Manager 26 Save Data 1.db"):
+                            GAME.newGame=1
+                    except:
+                        pass
                     GAME.ChangeScreen("Title Screen")
         elif GAME.screen=="Calendar":
             if event.x>=5 and event.x<=205 and event.y>=725 and event.y<=775:
@@ -13217,17 +13227,26 @@ class Game:
         canvas.create_text(545, 10, text=f"Sprint Calendar", fill="#F5C939", font=("Arial", 40), anchor="nw")
         GAME.Button("Back",5,725)
         GAME.Button("Calendar",1235,725)
+        nextSprint=[0,26]
         with sqlite3.connect(GAME.database) as c:
             f=c.execute("SELECT Track FROM Calendar").fetchall()
             for x in range(len(f)//5):
                 for y in range(5):
                     track=GAME.Sanitise(f[(x*5)+y])
                     if len(c.execute("SELECT Name FROM Tracks WHERE Name=? AND Sprint!=0",(track,)).fetchall())>0:
+                        if (x*5)+y+1<nextSprint[1] and (x*5)+y+1>=GAME.race:
+                            nextSprint=[track,(x*5)+y+1]
                         GAME.CalendarDisplay(x,y,track)
             for z in range(len(f)%5):
                 track=GAME.Sanitise(f[((len(f)//5)*5)+z])
                 if len(c.execute("SELECT Name FROM Tracks WHERE Name=? AND Sprint!=0",(track,)).fetchall())>0:
+                    if len(f)+z+1<nextSprint[1] and len(f)+z+1>=GAME.race:
+                        nextSprint=[track,len(f)+z+1]
                     GAME.CalendarDisplay(len(f)//5,z,track)
+        if nextSprint[1]==GAME.race:
+            canvas.create_text(250, 600, text="Sprint Weekend", fill="#C4C4C4", font=("Arial", 50), anchor="nw")
+        else:
+            canvas.create_text(250, 600, text=f"Next Sprint: {nextSprint[0]}", fill="#C4C4C4", font=("Arial", 50), anchor="nw")
     def Voice(self, subject, line):
         try:
             if not (((line=="Overtake" or line=="Lead") and GAME.replay==2) or GAME.pause==3 or GAME.replay==8 or GAME.replay==9 or GAME.replay==6):
