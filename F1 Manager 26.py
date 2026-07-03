@@ -13164,7 +13164,7 @@ class Game:
                     for sprint in sprints:
                         if sprint not in calendar:
                             sprints.remove(sprint)
-                            F1.execute("UPDATE Tracks SET Sprint=0 WHERE Track=?",(sprint,))
+                            F1.execute("UPDATE Tracks SET Sprint=0 WHERE Name=?",(sprint,))
                     if len(sprints)>0:
                         newSprint=random.choice(calendar)
                         while newSprint in sprints:
