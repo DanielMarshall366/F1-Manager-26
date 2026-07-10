@@ -211,6 +211,8 @@ class Game:
         self.disqualified=[]
         self.overtake=[]
         self.sprint=0
+        self.eventLaps=[]
+        self.eventOptions=[]
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -2696,16 +2698,10 @@ class Game:
                                 else:
                                     GAME.news.append(f"BREAKING NEWS! {legend} has returned to his prime.")
                             
-            #Contract Clauses
+            #Stroll Infinite Contract
             if GAME.race==13:
                 with sqlite3.connect(GAME.database) as c:
-                    if GAME.season<2028:
-                        c.execute("UPDATE Drivers SET ContractEnd=? WHERE Name='Max Verstappen' AND Team='Red Bull' AND Role='1' AND Position>? AND NewTeam='0'",(GAME.season,2028-GAME.season,))
-                    if GAME.season==2026 and GAME.team!="Mercedes":
-                        kimiPos=int(GAME.Sanitise(c.execute("SELECT Position FROM Drivers WHERE Name='Kimi Antonelli'").fetchall()[0]))
-                        c.execute("UPDATE Drivers SET ContractEnd=2026 WHERE Name='George Russell' AND NewTeam='0' AND Position>?",(kimiPos,))
-                    if GAME.team!="Aston Martin" and len(c.execute("SELECT Name FROM Drivers WHERE NewTeam='Aston Martin' AND NewRole='1'").fetchall())==0:
-                        c.execute("UPDATE Drivers SET ContractEnd=?, NewTeam='Aston Martin', NewRole='1' WHERE Name='Lance Stroll' AND NewTeam='0' AND Team='Aston Martin' AND Role='1'",(GAME.season+1,))
+                    c.execute("UPDATE Drivers SET ContractEnd=?, NewTeam='Aston Martin', NewRole='1' WHERE Name='Lance Stroll' AND NewTeam='0' AND Team='Aston Martin' AND Role='1'",(GAME.season+1,))
 
             if GAME.season==2026:
                 #Race Cancellations
@@ -3732,7 +3728,7 @@ class Game:
                                         faster=2
                                     elif (GAME.tyreAggression[GAME.positions[x-1-driversRemoved]]<GAME.tyreAggression[driverID] and GAME.tyreRemaining[driverID]>=30) or GAME.tyreRemaining[GAME.positions[x-1-driversRemoved]]+10<=GAME.tyreRemaining[driverID]:
                                         faster=1
-                                if GAME.ERSdeployment[driverID]==3 and GAME.ERSdeployment[x-1-driversRemoved]<3 and x!=0 and GAME.time[driverID]<1 and GAME.ers==1:
+                                if GAME.ERSdeployment[driverID]==3 and GAME.ERSdeployment[x-1-driversRemoved]<3 and x!=0 and GAME.time[driverID]<1 and GAME.ers==1 and random.randint(1,7)<GAME.overtakeability*2:
                                     faster+=1
                             aheadID=GAME.positions[x-1-driversRemoved]
                             ahead=GAME.drivers[aheadID]
@@ -4070,6 +4066,53 @@ class Game:
                             distance=GAME.distance[GAME.positions[x-1-driversRemoved]]-(random.randint(100,200)/100)
                             GAME.distance.pop(x-driversRemoved)
                             GAME.distance.insert(x-driversRemoved, distance)
+            #Race Events
+            if GAME.lap[GAME.positions[0]] in GAME.eventLaps:
+                try:
+                    GAME.eventLaps.remove(GAME.lap[GAME.positions[0]])
+                    event=random.choice(GAME.eventOptions)
+                    GAME.eventOptions.remove(event)
+                    if event<3:
+                        index=random.choice(GAME.positions)
+                        driver=GAME.drivers[index]
+                    if event==1:
+                        #Random Puncture
+                        GAME.AddToLog(f"{driver} has an unexpected puncture.")
+                        GAME.tyreRemaining[index]=0
+                    elif event==2:
+                        #Car Issue
+                        GAME.AddToLog(f"{driver} has a car issue.")
+                        if GAME.teams[index]==GAME.team or random.randint(1,4)==4:
+                            GAME.AddToLog("It was a suspension failure, they are out of the race.")
+                            GAME.positions.remove(index)
+                            if GAME.playing==0 and GAME.sound==1:
+                                GAME.Voice(GAME.drivers[index],"Out")
+                        else:
+                            GAME.tyreRemaining[index]=0
+                    elif event==3:
+                        #Engine Failure
+                        reliability=1
+                        while True:
+                            if random.randint(1,10)<=reliability:
+                                options=[]
+                                for i in GAME.positions:
+                                    if GAME.engineReliability[i]<=reliability:
+                                        options.append(i)
+                                if len(options)>0:
+                                    break
+                            reliability+=1
+                        index=random.choice(options)
+                        driver=GAME.drivers[index]
+                        GAME.AddToLog(f"{driver} has an engine failure, they are out of the race.")
+                        GAME.positions.remove(index)
+                        if GAME.playing==0 and GAME.sound==1:
+                            GAME.Voice(GAME.drivers[index],"Out")
+                    else:
+                        #Pace Increase
+                        index=GAME.positions[random.randint(1,5)]
+                        GAME.racePace[index]+=random.randint(5,30)
+                except:
+                    pass
 
             #Pit Stops
             for x in range(len(GAME.positions)):
@@ -4193,14 +4236,11 @@ class Game:
                         GAME.AddToLog(GAME.drivers[index]+" is pitting.")
                         GAME.pitting.append(index)
                         GAME.pitLap[index]=0
-                if len(runOutOfFuel)>=1:
-                    for x in range(len(runOutOfFuel)):
-                        try:
-                            GAME.positions.remove(runOutOfFuel[x])
-                        except:
-                            pass
-                #Pit Stops
-                if len(GAME.pitting)>=1:
+            if len(runOutOfFuel)>=1:
+                for x in range(len(runOutOfFuel)):
+                    GAME.positions.remove(runOutOfFuel[x])
+            #Pit Stops
+            if len(GAME.pitting)>=1:
                     for driverIndex in GAME.pitting:
                         GAME.CalculateTime()
                         pos=GAME.positions.index(driverIndex)
@@ -4276,7 +4316,7 @@ class Game:
                             GAME.tyreCompoundsUsed[driverIndex]+=1
                         GAME.tyreRemaining[driverIndex]=100
                         GAME.stops[driverIndex]+=1
-                        GAME.lapPittedTo[index]=GAME.lap[index]
+                        GAME.lapPittedTo[driverIndex]=GAME.lap[driverIndex]
                         lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
                         if GAME.strategy[driverIndex]>GAME.stops[driverIndex]:
                             if lapsLeft<GAME.expectedTyreLife[0]:
@@ -4298,16 +4338,16 @@ class Game:
                             GAME.pitLap.insert(driverIndex,pitLap)
                             GAME.pitTyre.pop(driverIndex)
                             GAME.pitTyre.insert(driverIndex,pitTyre)
-                #New Positions
-                for x in range(len(GAME.positions)):
-                    for y in range(len(GAME.positions)):
-                        if y<len(GAME.positions)-1:
-                            index=GAME.positions[y]
-                            nextIndex=GAME.positions[y+1]
-                            if GAME.lap[index]<GAME.lap[nextIndex] or (GAME.lap[index]==GAME.lap[nextIndex] and GAME.distance[index]<GAME.distance[nextIndex]):
-                                GAME.positions.pop(y)
-                                GAME.positions.insert(y+1,index)
-                GAME.pitting=[]
+                    #New Positions
+                    for x in range(len(GAME.positions)):
+                        for y in range(len(GAME.positions)):
+                            if y<len(GAME.positions)-1:
+                                index=GAME.positions[y]
+                                nextIndex=GAME.positions[y+1]
+                                if GAME.lap[index]<GAME.lap[nextIndex] or (GAME.lap[index]==GAME.lap[nextIndex] and GAME.distance[index]<GAME.distance[nextIndex]):
+                                    GAME.positions.pop(y)
+                                    GAME.positions.insert(y+1,index)
+                    GAME.pitting=[]
             GAME.CalculateTime()
             GAME.RefreshScreen()
             
@@ -4990,6 +5030,11 @@ class Game:
             canvas.create_image(1200, 590, anchor=tk.NW, image=tyre)
             canvas.create_text(1320, 625, text=(f"{round(GAME.tyreRemaining[index])}%"), fill="black", font=("Arial", 20), anchor="nw")
     def EndSafetyCar(self):
+        for x in range(len(GAME.positions)-1):
+            index=GAME.positions[x+1]
+            ahead=GAME.positions[x]
+            if GAME.distance[index]>GAME.distance[ahead]:
+                GAME.distance[index]=GAME.distance[ahead]-1
         GAME.time.append(0)
         GAME.positions.append(-1)
         if GAME.replay==9:
@@ -5123,7 +5168,6 @@ class Game:
                         pitted.append(driver)
                         GAME.AddToLog(f"{driver} is pitting.")
                         driverIndex=GAME.drivers.index(driver)
-                        GAME.CalculateTime()
                         pos=GAME.positions.index(driverIndex)
                         team=GAME.teams[driverIndex]
                         if GAME.replay==0:
@@ -6468,6 +6512,7 @@ class Game:
         self.fastest=[-1,0,10]
         self.crashScore=0
         self.sprint=0
+        self.eventLaps=[]
         if GAME.replay==2:
             GAME.team="APX GP"
             GAME.car1="Sonny Hayes"
@@ -7411,6 +7456,7 @@ class Game:
         self.rainStopped=0
         self.fastest=[-1,0,10]
         self.crashScore=0
+        self.eventLaps=[]
         if GAME.driver1=="":
             GAME.driver1=0
         if GAME.driver2=="":
@@ -7628,9 +7674,32 @@ class Game:
             GAME.rainStarts=0
             GAME.rainStops=0
             GAME.overtake=[]
+            
+            #Race Events
+            if GAME.sprint==1:
+                if random.randint(1,5)>3:
+                    events=1
+                else:
+                    events=0
+            else:
+                events=random.randint(0,10)
+            for x in range(events):
+                if x==0:
+                    previous=0
+                else:
+                    previous=GAME.eventLaps[x-1]
+                lap=random.randint(previous+1,int((x+1.5)*(GAME.laps/events)))
+                if lap>GAME.laps:
+                    lap=GAME.laps-random.randint(1,5)
+                GAME.eventLaps.append(lap)
+            GAME.eventOptions=[1,1,2,2,3,3,4]
+            
             if random.randint(1,100)<=GAME.rainChance:
                 #Wet
-                num=random.randint(1,4)
+                if GAME.sprint==1:
+                    num=random.randint(1,3)
+                else:
+                    num=random.randint(1,4)
                 GAME.wet=1
                 if num==1:
                    #Raining all race
@@ -7652,7 +7721,10 @@ class Game:
                 elif num==3:
                     #Starts dry and then rains
                     GAME.water=0
-                    GAME.rainStarts=random.randint(10,GAME.laps-15)
+                    if GAME.sprint==1:
+                        GAME.rainStarts=random.randint(5,GAME.laps-5)
+                    else:
+                        GAME.rainStarts=random.randint(10,GAME.laps-15)
                     GAME.maxRain=random.randint(20,80)/100
                     GAME.maxWater=random.randint(100,550)/100
                     GAME.weatherMEssage=[("It looks like it'll be a dry start but rain should start around lap "+str(GAME.rainStarts)+".")]
@@ -9127,7 +9199,7 @@ class Game:
                         screen=f"{GAME.team} Upgrade"
             elif f"2009 {GAME.team} Upgrade" in Images:
                 screen=f"2009 {GAME.team} Upgrade"
-        elif screen=="Car Data" or screen=="Team Data" or screen=="Achievements" or screen=="Team Management":
+        elif screen=="Car Data" or screen=="Team Data" or screen=="Achievements" or screen=="Team Management" or screen=="Engine Data":
             screen="Data Background"
         elif screen not in Images:
             screen="Blank Screen"
@@ -9650,10 +9722,11 @@ class Game:
                     else:
                         index=GAME.car2ID
                     GAME.pitTyre[index]=tyre
-                    GAME.pitting.append(index)
+                    if index not in GAME.pitting:
+                        GAME.pitting.append(index)
+                        GAME.AddToLog(f"{GAME.drivers[index]} is pitting.")
                     GAME.lapPittedTo[index]=GAME.lap[index]
                     GAME.pause=1
-                    GAME.AddToLog(f"{GAME.drivers[index]} is pitting.")
                     GAME.NextMove()
             elif event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
                 #Back
@@ -10056,6 +10129,8 @@ class Game:
                             GAME.costCap-=10000000
                             c.execute("UPDATE Player SET CostCap=?",(GAME.costCap,))
                 GAME.CarData()
+            if event.x>=870 and event.x<=1070 and event.y>=730 and event.y<780:
+                GAME.EngineData()
         elif GAME.screen=="Upgrade":
             if event.x>=1150 and event.x<=1650 and event.y>=500 and event.y<=550:
                 if GAME.maximumUpgradePoints!=GAME.remainingUpgradePoints:
@@ -11345,6 +11420,9 @@ class Game:
         elif GAME.screen=="DHL":
             if event.x>=1235 and event.x<=1430 and event.y>=730 and event.y<=780:
                 GAME.Standings(0)
+        elif GAME.screen=="Engine Data":
+            if event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
+                GAME.CarData()
     def SaveScreen(self):
         if os.path.isfile(GAME.database):
             GAME.ChangeScreen("Save Screen")
@@ -11392,8 +11470,17 @@ class Game:
             ED2=int(GAME.Sanitise(c.execute("SELECT car2EngineDurability FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
         canvas.create_text(870, 200, text=f"Car 1: {EN1}{suffix1} Engine {ED1}%", fill=colour, font=("Arial", 40), anchor="nw")
         canvas.create_text(870, 250, text=f"Car 2: {EN2}{suffix2} Engine {ED2}%", fill=colour, font=("Arial", 40), anchor="nw")
-        #Engine Ranking
         canvas.create_text(870, 375, text="Engine Ranking", fill=GAME.TeamColour(GAME.team,GAME.season), font=("Arial", 40), anchor="nw")
+        engines=GAME.EngineRanking()
+        for x in range(len(engines)):
+            colour=GAME.TeamColour(engines[x],GAME.season)
+            canvas.create_text(870, 445+(x*45), text=f"{x+1}. {engines[x]}", fill=colour, font=("Arial", 30), anchor="nw")
+        GAME.Button("Switch Engine 1",960,320)
+        GAME.Button("Switch Engine 2",1180,320)
+        GAME.Button("Back",5,730)
+        GAME.Button("Engine Data",870,730)
+        GAME.DisplayMoney()
+    def EngineRanking(self):
         with sqlite3.connect(GAME.database) as c:
             f=c.execute("SELECT Name FROM Engines WHERE Power>0").fetchall()
             scores=[]
@@ -11417,13 +11504,48 @@ class Game:
                 engines.append(engine)
                 f.pop(highestIndex)
                 scores.pop(highestIndex)
-            for x in range(i):
-                colour=GAME.TeamColour(engines[x],GAME.season)
-                canvas.create_text(870, 445+(x*45), text=f"{x+1}. {engines[x]}", fill=colour, font=("Arial", 30), anchor="nw")
-        GAME.Button("Switch Engine 1",960,320)
-        GAME.Button("Switch Engine 2",1180,320)
+        return(engines)
+    def EngineData(self):
+        GAME.ChangeScreen("Engine Data")
+        canvas.create_text(40, 5, text="Engine Data", fill=GAME.TeamColour(GAME.team,GAME.season), font=("Arial", 100), anchor="nw")
+        engines=GAME.EngineRanking()
+        teamColours=[]
+        with sqlite3.connect(GAME.database) as c:
+            for x in range(len(engines)):
+                for y in range(3):
+                    if y<2 or GAME.ers==1:
+                        if y==0:
+                            attribute=int(GAME.Sanitise(c.execute("SELECT Power FROM Engines WHERE Name=?",(engines[x],)).fetchall()[0]))
+                        elif y==1:
+                            attribute=int(GAME.Sanitise(c.execute("SELECT Reliability FROM Engines WHERE Name=?",(engines[x],)).fetchall()[0]))
+                        else:
+                            attribute=int(GAME.Sanitise(c.execute("SELECT Battery FROM Engines WHERE Name=?",(engines[x],)).fetchall()[0]))
+                        if attribute==10:
+                            colour="#B400FF"
+                        elif attribute>7:
+                            colour="#00FF00"
+                        elif attribute>5:
+                            colour="#FFED41"
+                        elif attribute==5:
+                            colour="#FF8000"
+                        elif attribute>2:
+                            colour="#FF0000"
+                        else:
+                            colour="#CC0000"
+                        if engines[x]==GAME.engine:
+                            teamColours.append(colour)
+                        X=[670,970,1280]
+                        if attribute==10:
+                            canvas.create_text(X[y]-15, 250+(70*x), text=attribute, fill=colour, font=("Arial", 40), anchor="nw")
+                        else:
+                            canvas.create_text(X[y], 250+(70*x), text=attribute, fill=colour, font=("Arial", 40), anchor="nw")
+                canvas.create_text(40, 250+(70*x), text=engines[x], fill=GAME.TeamColour(engines[x],GAME.season), font=("Arial", 50), anchor="nw")
+        canvas.create_text(40, 170, text="Engine", fill="white", font=("Arial", 50), anchor="nw")
+        canvas.create_text(600, 170, text="Power", fill=teamColours[0], font=("Arial", 50), anchor="nw")
+        canvas.create_text(850, 170, text="Reliability", fill=teamColours[1], font=("Arial", 50), anchor="nw")
+        if GAME.ers==1:
+            canvas.create_text(1200, 170, text="Battery", fill=teamColours[2], font=("Arial", 50), anchor="nw")
         GAME.Button("Back",5,730)
-        GAME.DisplayMoney()
     def UpgradePage(self):
         GAME.ChangeScreen("Upgrade")
         GAME.DisplayLogo()
@@ -13156,7 +13278,7 @@ class Game:
                 #Sprints
                 if GAME.season<2021:
                     F1.execute("UPDATE Tracks SET sprint=0")
-                else:
+                elif GAME.season!=GAME.startYear:
                     F1.execute("UPDATE Tracks SET Sprint=1 WHERE Sprint=-1")
                     sprints=F1.execute("SELECT Name FROM Tracks WHERE Sprint=1").fetchall()
                     for x in range(len(sprints)):
@@ -13169,9 +13291,11 @@ class Game:
                         newSprint=random.choice(calendar)
                         while newSprint in sprints:
                             newSprint=random.choice(calendar)
-                        sprints.remove(random.choice(sprints))
+                        removedSprint=random.choice(sprints)
+                        sprints.remove(removedSprint)
                         sprints.append(newSprint)
                         F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name=?",(newSprint,))
+                        F1.execute("UPDATE Tracks SET Sprint=0 WHERE Name=?",(removedSprint,))
                     for x in range(6-len(sprints)):
                         newSprint=random.choice(calendar)
                         while newSprint in sprints:
@@ -13245,7 +13369,7 @@ class Game:
                     GAME.CalendarDisplay(len(f)//5,z,track)
         if nextSprint[1]==GAME.race:
             canvas.create_text(250, 600, text="Sprint Weekend", fill="#C4C4C4", font=("Arial", 50), anchor="nw")
-        else:
+        elif nextSprint[0]!=0:
             canvas.create_text(250, 600, text=f"Next Sprint: {nextSprint[0]}", fill="#C4C4C4", font=("Arial", 50), anchor="nw")
     def Voice(self, subject, line):
         try:
@@ -13441,7 +13565,8 @@ Buttons=["Next","Quit","Qualifying","Prepare for Race","Tyre Aggression","Fuel A
          "View Contracts","Scout Drivers","Scout Technical Directors","Scout Sporting Directors","Scout Race Engineers","Renew","Reserve & Junior Drivers","Other Contracts",
          "Promote","Propose Contract","Name Selector","Hire","Choose Driver","Choose Engine","Choose","Swap Drivers","End Season","Vote For","Vote Against","Start Season",
          "Length Selector","Stay","Move","Create","Accept","Decline","Team Management","Fired","Stay Out","Start Race","ERS Disabled","Banned","Hire Reserve","Canada 2011",
-         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career","Select Fuel","KERS Off","KERS On","Delete","DHL","Sprint Race","Sprints"]
+         "Brazil 2008","Monaco 1984","Spa 2000","New Game","Load Game","Play Legends","Replay","2009 Career","Select Fuel","KERS Off","KERS On","Delete","DHL","Sprint Race",
+         "Sprints","Engine Data"]
 buttons=[]
 for x in range(len(Buttons)):
     path=os.path.join(os.path.dirname(__file__), "Buttons", (Buttons[x]+" Button.png"))
