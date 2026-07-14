@@ -320,7 +320,7 @@
 	{
           "Name": "Liam Lawson",
           "Team": "Racing Bulls", 
-          "Role": "1", 
+          "Role": "2", 
           "Country": "New Zealand",
           "Salary": 5000000,       
           "Rating": 83,
@@ -593,7 +593,7 @@
 	{
           "Name": "Arvid Lindblad",
           "Team": "Racing Bulls", 
-          "Role": "2", 
+          "Role": "1", 
           "Country": "United Kingdom",
           "Salary": 500000,       
           "Rating": 76,

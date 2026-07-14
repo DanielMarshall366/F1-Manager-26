@@ -252,8 +252,8 @@ class Game:
             data=jsonData["Drivers"]["2009"]
         for driver in data:
             c.execute("""
-                INSERT INTO Drivers (Name, Appearance, Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Drivers (Name, Appearance, Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend, Mentality, Fired, Results) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 driver['Name'],
                 0,
@@ -281,14 +281,17 @@ class Game:
                 0,
                 driver['Championships'],
                 driver['Wins'],
-                0
+                0,
+                20,
+                0,
+                10
             ))
         if GAME.legends==1:
             data=jsonData["Drivers"]["Legends"]
             for driver in data:
                 c.execute("""
-                INSERT INTO Drivers (Name, Appearance, Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Drivers (Name, Appearance, Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend, Mentality, Fired, Results) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 driver['Name'],
                 0,
@@ -316,7 +319,10 @@ class Game:
                 0,
                 driver['Championships'],
                 driver['Wins'],
-                driver['Tier']
+                driver['Tier'],
+                20,
+                0,
+                10
             ))
 
         if GAME.startYear==2009:
@@ -324,8 +330,8 @@ class Game:
             for driver in data:
                 if len(c.execute("SELECT Name FROM Drivers WHERE Name=?",(driver['Name'],)).fetchall())==0 and driver['Age']>24:
                     c.execute("""
-                        INSERT INTO Drivers (Name, Appearance, Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO Drivers (Name, Appearance, Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend, Mentality, Fired, Results) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
                         driver['Name'],
                         0,
@@ -353,7 +359,10 @@ class Game:
                         0,
                         0,
                         0,
-                        0
+                        0,
+                        20,
+                        0,
+                        10
                     ))
             if GAME.team!="Ferrari" and GAME.team!="Renault":
                 c.execute("UPDATE Drivers SET NewTeam='Ferrari',NewRole='1',ContractEnd=2014 WHERE Name='Fernando Alonso'")
@@ -743,7 +752,7 @@ class Game:
                 Control=random.randint(20,85)
                 Reaction=random.randint(20,85)
                 Rating=round((Overtaking+Defending+Pace+Experience+Control+Reaction)/6)
-                c.execute('''INSERT into Drivers (Name, Appearance,Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(Name, appearance, "Free Agent", "Free Agent", random.choice(GAME.countries), 0, 0, 0, "Well", Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, random.randint(0,100), random.randint(12,25), random.randint(50,95), random.randint(70,180), 0, 0, 0, 0, 0, 0, 0))
+                c.execute('''INSERT into Drivers (Name, Appearance,Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend, Mentality, Fired, Results) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(Name, appearance, "Free Agent", "Free Agent", random.choice(GAME.countries), 0, 0, 0, "Well", Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, random.randint(0,100), random.randint(12,25), random.randint(50,95), random.randint(70,180), 0, 0, 0, 0, 0, 0, 0, 20, 0, 10))
             else:
                 if role=="Race Engineer 1" or role=="Race Engineer 2":
                     role="Race Engineer"
@@ -1051,7 +1060,7 @@ class Game:
             driver=GAME.Sanitise(f[x])
             if driver!="Daniel Ricciardo" or GAME.season!=2010:
                 team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Name=?''',(driver,)).fetchall()[0])
-                if team!=Team and team!="Retired":
+                if team!=Team and team!="Retired" and team!="Dead":
                     age=1
                     if GAME.scouting=="Junior Driver":
                         if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Age<18",(driver,)).fetchall())==0:
@@ -1067,14 +1076,13 @@ class Game:
                             if Team==GAME.team and Team=="Racing Bulls" and team=="Red Bull" and contractEnd==GAME.season and GAME.race>=GAME.races-6:
                                 drivers.append(driver)
                             else:
-                                c.execute('''SELECT Ranking FROM Cars WHERE Team=?''',(team,))
-                                ranking=int(GAME.Sanitise(c.fetchall()[0]))
-                                c.execute('''SELECT Position FROM Teams WHERE Name=?''',(team,))
-                                position=int(GAME.Sanitise(c.fetchall()[0]))
+                                ranking=int(GAME.Sanitise(c.execute('''SELECT Ranking FROM Cars WHERE Team=?''',(team,)).fetchall()[0]))
+                                position=int(GAME.Sanitise(c.execute('''SELECT Position FROM Teams WHERE Name=?''',(team,)).fetchall()[0]))
+                                mentality=int(GAME.Sanitise(c.execute("SELECT Mentality FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
                                 if contractEnd==GAME.season:
-                                    if Ranking<=ranking+1 or Position<=position+1 or GAME.race>=20:
+                                    if ((Ranking<ranking or Position<position) and mentality<20) or ((Ranking<=ranking+1 and Position<=position+1) and mentality<16) or ((Ranking<=ranking+2 or Position<=Position+2) and mentality<10) or GAME.race>=20:
                                         drivers.append(driver)
-                                elif Ranking<ranking or Position<position:
+                                elif mentality<20 and (Ranking<ranking or Position<position or mentality<6):
                                     drivers.append(driver)
         F1.commit()
         F1.close()
@@ -2286,6 +2294,7 @@ class Game:
                         GAME.news.append("to replace "+replacing+" for the "+str(GAME.season+1)+" season.")
                     else:
                         GAME.news.append("to replace "+replacing+" for the next "+str(length)+" seasons.")
+                    c.execute("UPDATE Drivers SET Fired=1 WHERE Name=? AND NewTeam='0'",(replacing,))
                 else:
                     replacing=0
                     if length==1:
@@ -4068,51 +4077,48 @@ class Game:
                             GAME.distance.insert(x-driversRemoved, distance)
             #Race Events
             if GAME.lap[GAME.positions[0]] in GAME.eventLaps:
-                try:
-                    GAME.eventLaps.remove(GAME.lap[GAME.positions[0]])
-                    event=random.choice(GAME.eventOptions)
-                    GAME.eventOptions.remove(event)
-                    if event<3:
-                        index=random.choice(GAME.positions)
-                        driver=GAME.drivers[index]
-                    if event==1:
-                        #Random Puncture
-                        GAME.AddToLog(f"{driver} has an unexpected puncture.")
-                        GAME.tyreRemaining[index]=0
-                    elif event==2:
-                        #Car Issue
-                        GAME.AddToLog(f"{driver} has a car issue.")
-                        if GAME.teams[index]==GAME.team or random.randint(1,4)==4:
-                            GAME.AddToLog("It was a suspension failure, they are out of the race.")
-                            GAME.positions.remove(index)
-                            if GAME.playing==0 and GAME.sound==1:
-                                GAME.Voice(GAME.drivers[index],"Out")
-                        else:
-                            GAME.tyreRemaining[index]=0
-                    elif event==3:
-                        #Engine Failure
-                        reliability=1
-                        while True:
-                            if random.randint(1,10)<=reliability:
-                                options=[]
-                                for i in GAME.positions:
-                                    if GAME.engineReliability[i]<=reliability:
-                                        options.append(i)
-                                if len(options)>0:
-                                    break
-                            reliability+=1
-                        index=random.choice(options)
-                        driver=GAME.drivers[index]
-                        GAME.AddToLog(f"{driver} has an engine failure, they are out of the race.")
+                GAME.eventLaps.remove(GAME.lap[GAME.positions[0]])
+                event=random.choice(GAME.eventOptions)
+                GAME.eventOptions.remove(event)
+                if event<3:
+                    index=random.choice(GAME.positions)
+                    driver=GAME.drivers[index]
+                if event==1:
+                    #Random Puncture
+                    GAME.AddToLog(f"{driver} has an unexpected puncture.")
+                    GAME.tyreRemaining[index]=0
+                elif event==2:
+                    #Car Issue
+                    GAME.AddToLog(f"{driver} has a car issue.")
+                    if GAME.teams[index]==GAME.team or random.randint(1,4)==4:
+                        GAME.AddToLog("It was a suspension failure, they are out of the race.")
                         GAME.positions.remove(index)
                         if GAME.playing==0 and GAME.sound==1:
                             GAME.Voice(GAME.drivers[index],"Out")
                     else:
-                        #Pace Increase
-                        index=GAME.positions[random.randint(1,5)]
-                        GAME.racePace[index]+=random.randint(5,30)
-                except:
-                    pass
+                        GAME.tyreRemaining[index]=0
+                elif event==3:
+                    #Engine Failure
+                    reliability=1
+                    while True:
+                        if random.randint(1,10)<=reliability:
+                            options=[]
+                            for i in GAME.positions:
+                                if GAME.engineReliability[i]<=reliability:
+                                    options.append(i)
+                            if len(options)>0:
+                                break
+                        reliability+=1
+                    index=random.choice(options)
+                    driver=GAME.drivers[index]
+                    GAME.AddToLog(f"{driver} has an engine failure, they are out of the race.")
+                    GAME.positions.remove(index)
+                    if GAME.playing==0 and GAME.sound==1:
+                        GAME.Voice(GAME.drivers[index],"Out")
+                else:
+                    #Pace Increase
+                    index=GAME.positions[random.randint(1,5)]
+                    GAME.racePace[index]+=random.randint(5,30)
 
             #Pit Stops
             for x in range(len(GAME.positions)):
@@ -4255,6 +4261,10 @@ class Game:
                         else:
                             pitStopRating=100
                         pitStopScore=random.randint(1, pitStopRating)
+                        for y in range(2):
+                            score=random.randint(1, pitStopRating)
+                            if score>pitStopScore:
+                                pitStopScore=score
                         if pitStopScore <= 20:
                             pitStopTime=random.uniform(4.0, 10.0)  # Terrible
                         elif pitStopScore <= 50:
@@ -5180,6 +5190,10 @@ class Game:
                         else:
                             pitStopRating=120
                         pitStopScore=random.randint(1, pitStopRating)
+                        for y in range(2):
+                            score=random.randint(1, pitStopRating)
+                            if score>pitStopScore:
+                                pitStopScore=score
                         if pitStopScore <= 20:
                             pitStopTime=random.uniform(4.0, 10.0)  # Terrible
                         elif pitStopScore <= 50:
@@ -5233,7 +5247,7 @@ class Game:
                         if GAME.tyre[driverIndex]!=GAME.SCPitTyre[x]:
                             GAME.tyreCompoundsUsed[driverIndex]+=1
                         newPos=min(pos + i - 1, len(GAME.positions) - 1)
-                        distanceLost=round(totalTimeLost/41.67,3)
+                        distanceLost=round(totalTimeLost*41.67,3)
                         GAME.positions.remove(driverIndex)
                         GAME.positions.insert(newPos, driverIndex)
                         GAME.distance[driverIndex]-=distanceLost
@@ -5993,7 +6007,11 @@ class Game:
                 colour=GAME.TeamColour(team,GAME.season)
                 if x<9:
                     if x==0:
-                        canvas.create_text(50, 5, text=GAME.track, fill=colour, font=("Arial", 50), anchor="nw")
+                        if GAME.sprint==1:
+                            sprint="Sprint Race"
+                        else:
+                            sprint=""
+                        canvas.create_text(50, 5, text=f"{GAME.track} {sprint}", fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(50, 80+(x*28), text=f"{x+1}. {GAME.drivers[index]}", fill=colour, font=("Arial", 20), anchor="nw")
                 else:
                     canvas.create_text(45, 80+(x*28), text=f"{x+1}. {GAME.drivers[index]}", fill=colour, font=("Arial", 20), anchor="nw")
@@ -6429,10 +6447,75 @@ class Game:
                 GAME.StopMusic()
             if GAME.sprint==1:
                 GAME.sprint=-1
+            else:
+                GAME.Mentality()
             GAME.drivers.clear()
             GAME.SaveScreen()
         else:
             GAME.ChangeScreen("Missing Required Files")
+    def Mentality(self):
+        with sqlite3.connect(GAME.database) as c:
+            f=c.execute("SELECT Name FROM Drivers WHERE Team!='Free Agent' AND Team!='Retired' AND Team!='Dead'").fetchall()
+            for x in range(len(f)):
+                driver=GAME.Sanitise(f[x])
+                team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                results=int(GAME.Sanitise(c.execute("SELECT Results FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
+                teamPosition=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
+                #Results Mentality
+                if driver in GAME.drivers:
+                    index=GAME.drivers.index(driver)
+                    if index not in GAME.positions:
+                        if results>1:
+                            results-=1
+                    elif GAME.positions.index(index)==0:
+                        if results<10:
+                            results+=1
+                    elif GAME.positions.index(index)>9 and results>1 and random.randint(1,5)>3 and teamPosition<5:
+                        results-=1
+                    c.execute("UPDATE Drivers SET Results=? WHERE Name=?",(results,driver,))
+                else:
+                    results=10
+
+                #Contract Mentality
+                if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND (NewTeam=? OR (NewTeam='0' AND ContractEnd>?))",(driver,team,GAME.season,)).fetchall())>0:
+                    contract=5
+                else:
+                    fired=int(GAME.Sanitise(c.execute("SELECT Fired FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
+                    if fired==0:
+                        contract=4
+                    else:
+                        contract=1
+
+                #Teammate Mentality
+                role=GAME.Sanitise(c.execute("SELECT Role FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                if role=="1" or role=="2":
+                    position=int(GAME.Sanitise(c.execute("SELECT Position FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
+                    teammatePos=int(GAME.Sanitise(c.execute("SELECT Position FROM Drivers WHERE Team=? AND Role=?",(team,str(3-int(role)),)).fetchall()[0]))
+                    if position<teammatePos-1:
+                        teammate=5
+                    elif position<teammatePos:
+                        teammate=4
+                    else:
+                        teammate=4+teammatePos-position
+                        if position<1:
+                            position=1
+                else:
+                    teammate=5
+
+                #Team Mentality
+                previousPos=int(GAME.Sanitise(c.execute("SELECT PreviousPosition FROM Teams WHERE Name=?",(team,)).fetchall()[0]))
+                if teamPosition<previousPos or teamPosition==1:
+                    teamMentality=5
+                elif teamPosition==previousPos:
+                    teamMentality=4
+                else:
+                    teamMentality=4+previousPos-teamPosition
+                    if teamMentality<1:
+                        teamMentality=1
+
+                #Overall Mentality
+                mentality=(results//2)+contract+teammate+teamMentality
+                c.execute("UPDATE Drivers SET Mentality=? WHERE Name=?",(mentality,driver,))
     def DisplayLayout(self,track):
         if track!="Imola" and track!="Miami" and track!="Las Vegas" and track!="Madring":
             with sqlite3.connect(GAME.database) as c:
@@ -7394,6 +7477,8 @@ class Game:
                 if team=="Ferrari" and race=="Monza":
                     pace=round(pace*1.2)
                     Confidence=round(Confidence*1.5)
+                mentality=int(GAME.Sanitise(c.execute("SELECT Mentality FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))
+                pace+=mentality*2
                 GAME.rawPace.append(pace)
                 GAME.confidence.append(Confidence)
             GAME.raceCountry=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(race,)).fetchall()[0])
@@ -7684,7 +7769,7 @@ class Game:
                 else:
                     events=0
             else:
-                events=random.randint(0,10)
+                events=random.randint(0,6)
             for x in range(events):
                 if x==0:
                     previous=0
@@ -7694,7 +7779,7 @@ class Game:
                 if lap>GAME.laps:
                     lap=GAME.laps-random.randint(1,5)
                 GAME.eventLaps.append(lap)
-            GAME.eventOptions=[1,1,2,2,3,3,4]
+            GAME.eventOptions=[1,1,2,2,3,4]
             
             if random.randint(1,100)<=GAME.rainChance:
                 #Wet
@@ -8625,7 +8710,7 @@ class Game:
                 if int(GAME.Sanitise(c.execute("SELECT Legend FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))==0:
                     GAME.Age(name)
             with sqlite3.connect(GAME.database) as c:
-                c.execute("UPDATE Drivers SET NewTeam='0', NewRole='0', NewSalary=0")
+                c.execute("UPDATE Drivers SET NewTeam='0', NewRole='0', NewSalary=0, Mentality=20, Fired=0, Results=10")
                 c.execute("UPDATE Drivers SET Team='Retired', Role='Retired', Condition='Retired' WHERE Team='Free Agent' AND Age>39 AND Condition!='Dead' AND Legend=0")
 
                 #Staff
@@ -10382,7 +10467,23 @@ class Game:
                                 contractEnd=GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                                 rating=GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                                 age=GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                                mentality=int(GAME.Sanitise(c.execute("SELECT Mentality FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
+                                face="☺"
+                                if mentality==20:
+                                    colour="#B400FF"
+                                elif mentality>15:
+                                    colour="#00FF00"
+                                elif mentality>9:
+                                    colour="#FFED41"
+                                else:
+                                    colour="#FF0000"
+                                    face="☹"
+                                if face=="☺":
+                                    X=500
+                                else:
+                                    X=507
                             canvas.create_text(150, 150+(counter*50), text=driver, fill="black", font=("Arial", 20), anchor="nw")
+                            canvas.create_text(X, 150+(counter*50), text=face, fill=colour, font=("Arial", 20), anchor="nw")
                             canvas.create_text(550, 150+(counter*50), text=roles[x], fill="black", font=("Arial", 20), anchor="nw")
                             canvas.create_text(820, 150+(counter*50), text=age, fill="black", font=("Arial", 20), anchor="nw")
                             canvas.create_text(920, 150+(counter*50), text=rating, fill="black", font=("Arial", 20), anchor="nw")
@@ -10414,7 +10515,23 @@ class Game:
                                 contractEnd=GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                                 rating=GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                                 age=GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                                mentality=int(GAME.Sanitise(c.execute("SELECT Mentality FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
+                                face="☺"
+                                if mentality==20:
+                                    colour="#B400FF"
+                                elif mentality>15:
+                                    colour="#00FF00"
+                                elif mentality>9:
+                                    colour="#FFED41"
+                                else:
+                                    colour="#FF0000"
+                                    face="☹"
+                                if face=="☺":
+                                    X=500
+                                else:
+                                    X=507
                             canvas.create_text(150, 150+(counter*50), text=driver, fill="black", font=("Arial", 20), anchor="nw")
+                            canvas.create_text(X, 150+(counter*50), text=face, fill=colour, font=("Arial", 20), anchor="nw")
                             canvas.create_text(550, 150+(counter*50), text="Junior Driver", fill="black", font=("Arial", 20), anchor="nw")
                             canvas.create_text(820, 150+(counter*50), text=age, fill="black", font=("Arial", 20), anchor="nw")
                             canvas.create_text(920, 150+(counter*50), text=rating, fill="black", font=("Arial", 20), anchor="nw")
@@ -10430,7 +10547,7 @@ class Game:
                         if len(f)==1:
                             if len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole=?",(GAME.team,str(x+1),)).fetchall())==0:
                                 driver=GAME.Sanitise(f[0])
-                                if not (GAME.season==2026 and (driver=="Max Verstappen" or driver=="Charles Leclerc" or driver=="Oscar Piastri") and GAME.race<20):
+                                if GAME.race>GAME.races-3 or len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Mentality>9",(driver,)).fetchall())>0:
                                     GAME.options.append(driver)
                     roles=["Technical Director","Sporting Director","Race Engineer 1","Race Engineer 2"]
                     for x in range(4):
@@ -10820,7 +10937,7 @@ class Game:
                             GAME.money-=GAME.buyout
                             c.execute('''UPDATE Teams SET Money=? WHERE Name=?''',(GAME.money,GAME.team,))
                             if role=="1" or role=="2":
-                                c.execute("UPDATE Drivers SET ContractEnd=? WHERE Team=? AND Role=? AND NewTeam='0'",(GAME.season,GAME.team,role,))
+                                c.execute("UPDATE Drivers SET ContractEnd=?, Fired=1 WHERE Team=? AND Role=? AND NewTeam='0'",(GAME.season,GAME.team,role,))
                 else:
                     if GAME.scouting=="Race Engineer":
                         if GAME.role==GAME.car1:
@@ -11386,7 +11503,16 @@ class Game:
                             podium.append(GAME.Sanitise(c.execute("SELECT Second FROM Tracks WHERE Name=?",(track,)).fetchall()[0]))
                             podium.append(GAME.Sanitise(c.execute("SELECT Third FROM Tracks WHERE Name=?",(track,)).fetchall()[0]))
                             team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(podium[0],)).fetchall()[0])
-                            canvas.create_text(50, 5, text=track, fill=GAME.TeamColour(team,GAME.season), font=("Arial", 50), anchor="nw")
+                            country=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(track,)).fetchall()[0])
+                            try:
+                                teamHome=len(c.execute("SELECT Name FROM Teams WHERE Name=? AND Country=?",(team,country,)).fetchall())
+                            except:
+                                teamHome=0
+                            if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Country=?",(podium[0],country,)).fetchall())>0 or teamHome==1:
+                                GAME.ChangeScreen(f"{country} Flag")
+                                GAME.screen="Race Review"
+                            else:
+                                canvas.create_text(50, 5, text=track, fill=GAME.TeamColour(team,GAME.season), font=("Arial", 50), anchor="nw")
                             for i in range(3):
                                 driver=podium[i]
                                 if i==0:
@@ -11396,10 +11522,6 @@ class Game:
                                 else:
                                     x=920
                                 GAME.DisplayDriver(driver,x,500)
-                            country=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(track,)).fetchall()[0])
-                            if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Country=?",(podium[0],country,)).fetchall())>0:
-                                GAME.ChangeScreen(f"{country} Flag")
-                                GAME.screen="Race Review"
                         GAME.Button("Back",5,730)
         elif GAME.screen=="Sprint Calendar":
             if event.x>=5 and event.x<=205 and event.y>=725 and event.y<=775:
@@ -11698,7 +11820,23 @@ class Game:
                     contractEnd=GAME.season
                 rating=GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
                 age=GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                mentality=int(GAME.Sanitise(c.execute("SELECT Mentality FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
+                face="☺"
+                if mentality==20:
+                    colour="#B400FF"
+                elif mentality>15:
+                    colour="#00FF00"
+                elif mentality>9:
+                    colour="#FFED41"
+                else:
+                    colour="#FF0000"
+                    face="☹"
+                if face=="☺":
+                    X=500
+                else:
+                    X=507
             canvas.create_text(150, 150+(counter*50), text=driver, fill="black", font=("Arial", 20), anchor="nw")
+            canvas.create_text(X, 150+(counter*50), text=face, fill=colour, font=("Arial", 20), anchor="nw")
             canvas.create_text(550, 150+(counter*50), text="Driver", fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(820, 150+(counter*50), text=age, fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(920, 150+(counter*50), text=rating, fill="black", font=("Arial", 20), anchor="nw")
@@ -11707,6 +11845,60 @@ class Game:
             counter+=1
         #Staff
         staff=["Technical Director","Sporting Director","Race Engineer 1","Race Engineer 2"]
+
+        #Mentality
+        with sqlite3.connect(GAME.database) as c:
+            position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
+            previousPosition=int(GAME.Sanitise(c.execute("SELECT PreviousPosition FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
+            last=len(c.execute("SELECT Name FROM Teams").fetchall())
+            u=0
+            d=0
+            if (previousPosition==0 or position<=previousPosition) and position!=last:
+                performance="Happy"
+            elif position<=previousPosition+1 and position!=last:
+                performance="Unhappy"
+                u+=1
+            else:
+                performance="Disappointed"
+                d+=1
+            financial=int(GAME.Sanitise(c.execute("SELECT Financial FROM Player").fetchall()[0]))
+            if financial>=4:
+                financial="Happy"
+            elif financial>=2:
+                financial="Unhappy"
+                u+=1
+            else:
+                financial="Disappointed"
+                d+=1
+            management=int(GAME.Sanitise(c.execute("SELECT Management FROM Player").fetchall()[0]))
+            if management==3:
+                management="Happy"
+            elif management==2:
+                management="Unhappy"
+                u+=1
+            else:
+                management="Disappointed"
+                d+=1
+        Face="☺"
+        if d>=2:
+            approval="Lost Confidence"
+            approvalColour="#CC0000"
+            Face="☹"
+        elif d==1 and u>1:
+            approval="Disappointed"
+            approvalColour="#FF0000"
+            Face="☹"
+        elif d==1 or u>1:
+            approval="Unhappy"
+            approvalColour="#FF8000"
+            Face="☹"
+        elif u==1:
+            approval="Satisfied"
+            approvalColour="#FFED41"
+        else:
+            approval="Happy"
+            approvalColour="#00FF00"
+                    
         for x in range(4):
             with sqlite3.connect(GAME.database) as c:
                 name=GAME.Sanitise(c.execute("SELECT Name FROM Staff WHERE Role=? AND Team=?",(staff[x],GAME.team,)).fetchall()[0])
@@ -11715,11 +11907,22 @@ class Game:
                 if GAME.Sanitise(c.execute("SELECT NewTeam FROM Staff WHERE Name=?",(name,)).fetchall()[0])==GAME.team:
                     contractEnd+=1
                 rating=GAME.Sanitise(c.execute("SELECT Rating FROM Staff WHERE Name=?",(name,)).fetchall()[0])
+                if len(c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND NewRole=? AND Name!=?",(GAME.team,staff[x],name,)).fetchall())>0:
+                    face="☹"
+                    colour="#CC0000"
+                else:
+                    colour=approvalColour
+                    face=Face
+                if face=="☺":
+                    X=500
+                else:
+                    X=507
             if x>1:
                 role="Race Engineer"
             else:
                 role=staff[x]
             canvas.create_text(150, 150+(counter*50), text=name, fill="black", font=("Arial", 20), anchor="nw")
+            canvas.create_text(X, 150+(counter*50), text=face, fill=colour, font=("Arial", 20), anchor="nw")
             canvas.create_text(550, 150+(counter*50), text=role, fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(920, 150+(counter*50), text=rating, fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(1000, 150+(counter*50), text=salary, fill="black", font=("Arial", 20), anchor="nw")
@@ -11984,7 +12187,7 @@ class Game:
             pass
         GAME.database=f"F1 Manager 26 Save Data {GAME.database}.db"
         c.execute('''CREATE TABLE Teams(Name str, Appearance str,OriginalName st, Position int, Points int, Money int, Income int, TeamPrincipal str, Country str, Reputation int, Sponsor str, PreviousPosition int, PressConferences int)''')
-        c.execute('''CREATE TABLE Drivers(Name str, Appearance str, Team str, Role str, Country str, Position int, Points int, Salary int, Condition str, Rating int, Overtaking int, Defending int, Pace int, Experience int, Control int, Reaction int, Calmness int, Age int, Marketability int, DevelopmentRate int, ContractEnd int, NewTeam str, NewSalary int, NewRole str, Championships int, Wins int, Legend int)''')
+        c.execute('''CREATE TABLE Drivers(Name str, Appearance str, Team str, Role str, Country str, Position int, Points int, Salary int, Condition str, Rating int, Overtaking int, Defending int, Pace int, Experience int, Control int, Reaction int, Calmness int, Age int, Marketability int, DevelopmentRate int, ContractEnd int, NewTeam str, NewSalary int, NewRole str, Championships int, Wins int, Legend int, Mentality int, Fired int, Results)''')
         c.execute('''CREATE TABLE Staff(Name str, Team str, Role str, Rating int, Salary int, Morale int, Country str, NewTeam str, NewSalary int, NewRole str)''')
         c.execute('''CREATE TABLE Regulations(Regulation str, True int)''')
         c.execute('''CREATE TABLE Engines(Name str, Manufacturer str, Power int, Reliability int, Battery int, Research int)''')
@@ -12054,7 +12257,7 @@ class Game:
                     Control=random.randint(20,85)
                     Reaction=random.randint(20,85)
                     Rating=round((Overtaking+Defending+Pace+Experience+Control+Reaction)/6)
-                    c.execute('''INSERT into Drivers (Name, Appearance,Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(Name, appearance, "Free Agent", "Free Agent", random.choice(GAME.countries), 0, 0, 0, "Well", Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, random.randint(0,100), 18, random.randint(50,95), random.randint(70,100), 0, 0, 0, 0, 0, 0))
+                    c.execute('''INSERT into Drivers (Name, Appearance,Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(Name, appearance, "Free Agent", "Free Agent", random.choice(GAME.countries), 0, 0, 0, "Well", Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, random.randint(0,100), 18, random.randint(50,95), random.randint(70,100), 0, 0, 0, 0, 0, 0, 20, 0, 10))
                 f=c.execute("SELECT Name FROM Drivers WHERE Team='Free Agent' AND Age>17").fetchall()
             for x in range(2):
                 name=random.choice(f)
@@ -13222,7 +13425,7 @@ class Game:
             c.execute('''UPDATE Drivers SET Team=?, Role=?, Salary=? WHERE Name=?''',(GAME.team,x+1,2000000,GAME.driversChosen[x],))
         c.execute('''UPDATE Sponsors SET Team=? WHERE Name=?''',(GAME.team,GAME.sponsor,))
         c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.team, 0, "Player", 12, 0, 5000000, 1000000, GAME.name, GAME.country, 50, GAME.sponsor, 0))
-        c.execute('''INSERT into PitStops(Team, Postion, Points) VALUES(?, 12, 0)''',(GAME.team,))
+        c.execute('''INSERT into PitStops(Team, Position, Points) VALUES(?, 12, 0)''',(GAME.team,))
         #Staff Data
         F1.commit()
         F1.close()
