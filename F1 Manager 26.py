@@ -2530,7 +2530,7 @@ class Game:
                 elif GAME.race==11:
                     with sqlite3.connect(GAME.database) as c:
                         c.execute("UPDATE Drivers SET Condition='Injured' WHERE Name='Felipe Massa'")
-                        GAME.news.append("BREAKING NEWS! Felipe Massa is Injured")
+                        GAME.news.append("BREAKING NEWS! Felipe Massa is injured.")
                         if GAME.team!="Renault":
                             c.execute("UPDATE Drivers SET Team='Free Agent', Role='Free Agent' WHERE Name='Nelson Piquet Jr.'")
                             c.execute("UPDATE Drivers SET Role='2' WHERE Name='Romain Grosjean'")
@@ -2551,7 +2551,7 @@ class Game:
                     with sqlite3.connect(GAME.database) as c:
                         c.execute("UPDATE Drivers SET Team='Free Agent', Role='Free Agent' WHERE Name='Nick Heidfeld'")
                         c.execute("UPDATE Drivers SET Role='2' WHERE Name='Kamui Kobayashi'")
-                    GAME.news.append("BREAKING NEWS! Toro Rosso have replaced Nick Heidfeld with Kamui Kobayashi.")
+                    GAME.news.append("BREAKING NEWS! BMW Sauber have replaced Nick Heidfeld with Kamui Kobayashi.")
             if GAME.races==27 or GAME.races==28:
                 if GAME.race%2==1 and GAME.race!=9 and GAME.race!=19:
                     GAME.Income()
@@ -3199,7 +3199,6 @@ class Game:
                 if GAME.fuel[index]<=0:
                     #Run out of fuel
                     GAME.AddToLog(GAME.drivers[index]+" has run out of fuel.")
-                    GAME.crashMessage.append(GAME.drivers[index]+" has run out of fuel.")
                     runOutOfFuel.append(index)
                     if index in GAME.pitting:
                         GAME.pitting.remove(index)
@@ -4113,6 +4112,7 @@ class Game:
                     driver=GAME.drivers[index]
                     GAME.AddToLog(f"{driver} has an engine failure, they are out of the race.")
                     GAME.positions.remove(index)
+                    GAME.faults[index]="Failure"
                     if GAME.playing==0 and GAME.sound==1:
                         GAME.Voice(GAME.drivers[index],"Out")
                 else:
@@ -4242,9 +4242,6 @@ class Game:
                         GAME.AddToLog(GAME.drivers[index]+" is pitting.")
                         GAME.pitting.append(index)
                         GAME.pitLap[index]=0
-            if len(runOutOfFuel)>=1:
-                for x in range(len(runOutOfFuel)):
-                    GAME.positions.remove(runOutOfFuel[x])
             #Pit Stops
             if len(GAME.pitting)>=1:
                     for driverIndex in GAME.pitting:
@@ -4496,6 +4493,10 @@ class Game:
                                     GAME.confidence.insert(driverID,confidence)
                         except:
                             mistake=1
+            if len(runOutOfFuel)>=1:
+                for x in range(len(runOutOfFuel)):
+                    if runOutOfFuel[x] in GAME.positions:
+                        GAME.positions.remove(runOutOfFuel[x])
         if GAME.raceFinished==0:
             root.after(1250, lambda: GAME.NextMove())
         elif GAME.raceFinished==1:
@@ -4827,9 +4828,9 @@ class Game:
                 GAME.distance.append(GAME.positions.index(x)*-2)
                 #Refueling
                 if GAME.refueling==1:
-                    totalFuelNeeded=round(100*(GAME.laps-lap)/GAME.laps)
-                    if GAME.fuel[driverIndex]<totalFuelNeeded:
-                        GAME.fuel[driverIndex]=totalFuelNeeded
+                    totalFuelNeeded=round(110*(GAME.laps-lap)/GAME.laps)
+                    if GAME.fuel[x]<totalFuelNeeded:
+                        GAME.fuel[x]=totalFuelNeeded
                 if GAME.teams[x]!=GAME.team:
                     compounds=GAME.tyreCompoundsUsed[x]+1
                     GAME.tyreCompoundsUsed.pop(x)
@@ -5043,7 +5044,7 @@ class Game:
         for x in range(len(GAME.positions)-1):
             index=GAME.positions[x+1]
             ahead=GAME.positions[x]
-            if GAME.distance[index]>GAME.distance[ahead]:
+            if GAME.distance[index]>GAME.distance[ahead] and GAME.lap[index]==GAME.lap[ahead]:
                 GAME.distance[index]=GAME.distance[ahead]-1
         GAME.time.append(0)
         GAME.positions.append(-1)
@@ -5206,7 +5207,7 @@ class Game:
                             pitStopTime=random.uniform(1.7, 2.2)   # Amazing
                         #Refueling
                         if GAME.refueling==1:
-                            totalFuelNeeded=round(100*(GAME.laps-lap)/GAME.laps)
+                            totalFuelNeeded=round(110*(GAME.laps-lap)/GAME.laps)
                             if GAME.fuel[driverIndex]<totalFuelNeeded:
                                 fuelNeeded=totalFuelNeeded-GAME.fuel[driverIndex]
                                 pitStopTime+=fuelNeeded/10
@@ -5884,22 +5885,22 @@ class Game:
                 c.execute("UPDATE Drivers SET ContractEnd=? WHERE Name=?",(GAME.season,replacement,))
     def EndOfRace(self):
         #Penalties
+        for x in range(len(GAME.positions)-1):
+            index=GAME.positions[x+1]
+            ahead=GAME.positions[x]
+            if GAME.distance[index]>GAME.distance[ahead] and GAME.lap[index]==GAME.lap[ahead]:
+                GAME.distance[index]=GAME.distance[ahead]-1
         for index in GAME.positions:
             if GAME.penalties[index]>0:
                 GAME.distance[index]-=GAME.penalties[index]*41.67
-        for x in range (len(GAME.positions)):
-            index=GAME.positions[x]
-            position=x
-            distance=GAME.distance[x]
-            while True:
-                if position==len(GAME.positions)-1:
-                    break
-                elif distance<GAME.distance[position+1]:
-                    GAME.distance.pop(position)
-                    GAME.distance.insert(position+1,distance)
-                    position+=1
-                else:
-                    break
+        for x in range(len(GAME.positions)):
+            for y in range(len(GAME.positions)):
+                if y<len(GAME.positions)-1:
+                    index=GAME.positions[y]
+                    nextIndex=GAME.positions[y+1]
+                    if GAME.lap[index]<GAME.lap[nextIndex] or (GAME.lap[index]==GAME.lap[nextIndex] and GAME.distance[index]<GAME.distance[nextIndex]):
+                        GAME.positions.pop(y)
+                        GAME.positions.insert(y+1,index)
         GAME.CalculateTime()
         #Disqualifications
         GAME.disqualified=[]
@@ -5910,15 +5911,10 @@ class Game:
                     disqualified.append(x)
             if len(disqualified)>0:
                 GAME.ChangeScreen("Breaking News")
-                i=0
                 for x in range(len(disqualified)):
-                    try:
-                        GAME.disqualified.append(GAME.positions[disqualified[x]])
-                        GAME.positions.pop(disqualified[x]-i)
-                        canvas.create_text(150, 180+(x*50), text=f"{GAME.drivers[GAME.positions[disqualified[x]]]} is disqualified.", fill="white", font=("Arial", 30), anchor="nw")
-                        i+=1
-                    except:
-                        pass
+                    GAME.disqualified.append(GAME.positions[disqualified[x]])
+                    canvas.create_text(150, 180+(x*50), text=f"{GAME.drivers[GAME.positions[disqualified[x]]]} is disqualified.", fill="white", font=("Arial", 30), anchor="nw")
+                    GAME.positions.pop(disqualified[x]-x)
                 root.after(4000, lambda: GAME.Podium())
             else:
                 GAME.Podium()
@@ -8308,9 +8304,7 @@ class Game:
                         colour="#B60000"
                 else:
                     colour=GAME.TeamColour(team,GAME.season)
-                if team=="Free Agent":
-                    team=""
-                if team=="Dead":
+                if team=="Free Agent" or team=="Dead" or team=="Retired":
                     team=""
                 if x<9:
                     canvas.create_text(770, 130+(x*25), text=f"{x+1}. {name} {team}", fill=colour, font=("Arial", 15), anchor="nw")
@@ -9109,45 +9103,48 @@ class Game:
                         else:
                             with sqlite3.connect(GAME.database) as c:
                                 team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(pos,)).fetchall()[0])
-                    GAME.options.append(team)
-                    if x<6:
-                        X=550
-                        Y=130*x
+                    if team=="Toyota" and GAME.season==2009:
+                        GAME.options.append("")
                     else:
-                        X=1000
-                        Y=130*(x-6)
-                    if team=="Create New Team":
-                        appearance="0"
-                    elif team=="McLaren" and GAME.season<2026:
-                        appearance="Vodafone McLaren"
-                    elif team in steam:
-                        appearance=team
-                    else:
-                        with sqlite3.connect(GAME.database) as c:
-                            appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
-                    if appearance!="0":
-                        try:
-                            GAME.BackgroundColour()
-                            if appearance in steam:
-                                logo=logos[steam.index(appearance)-1]
-                            else:
-                                logo=sponsorLogos[sponsors.index(appearance)]
-                            canvas.image=logo
-                            canvas.create_image(X, Y, anchor=tk.NW, image=logo)
-                        except:
-                            appearance="0"
-                    if appearance=="0":
-                        canvas.create_text(X-(len(team)*4)+55, Y+45, text=team, fill="black", font=("Arial", 12), anchor="nw")
-                    if x==0:
-                        if GAME.fired==0:
-                            button="Stay"
+                        GAME.options.append(team)
+                        if x<6:
+                            X=550
+                            Y=130*x
                         else:
-                            button="Fired"
-                    elif team=="Create New Team":
-                        button="Create"
-                    else:
-                        button="Move"
-                    GAME.Button(button,X+150,Y+30)
+                            X=1000
+                            Y=130*(x-6)
+                        if team=="Create New Team":
+                            appearance="0"
+                        elif team=="McLaren" and GAME.season<2026:
+                            appearance="Vodafone McLaren"
+                        elif team in steam:
+                            appearance=team
+                        else:
+                            with sqlite3.connect(GAME.database) as c:
+                                appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
+                        if appearance!="0":
+                            try:
+                                GAME.BackgroundColour()
+                                if appearance in steam:
+                                    logo=logos[steam.index(appearance)-1]
+                                else:
+                                    logo=sponsorLogos[sponsors.index(appearance)]
+                                canvas.image=logo
+                                canvas.create_image(X, Y, anchor=tk.NW, image=logo)
+                            except:
+                                appearance="0"
+                        if appearance=="0":
+                            canvas.create_text(X-(len(team)*4)+55, Y+45, text=team, fill="black", font=("Arial", 12), anchor="nw")
+                        if x==0:
+                            if GAME.fired==0:
+                                button="Stay"
+                            else:
+                                button="Fired"
+                        elif team=="Create New Team":
+                            button="Create"
+                        else:
+                            button="Move"
+                        GAME.Button(button,X+150,Y+30)
         else:
             GAME.race+=1
             with sqlite3.connect(GAME.database) as c:
@@ -11240,22 +11237,25 @@ class Game:
                     if len(GAME.options)>i and (GAME.fired==0 or i!=0):
                         GAME.oldTeam=GAME.team
                         GAME.team=GAME.options[i]
-                        GAME.BackgroundColour()
-                        if GAME.oldTeam==GAME.team:
-                            GAME.oldTeam=0
-                        if GAME.team=="Create New Team":
-                            root.configure(background='black')
-                            GAME.CreateTeam()
+                        if GAME.team=="":
+                            GAME.team=GAME.oldTeam
                         else:
-                            GAME.race+=1
-                            with sqlite3.connect(GAME.database) as c:
-                                if GAME.oldTeam!=0:
-                                    c.execute("UPDATE Player SET Team=?, Financial=5, Management=3, Warnings=0",(GAME.team,))
-                                    c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
-                                    c.execute("UPDATE Teams SET TeamPrincipal='None' WHERE Name=?",(GAME.oldTeam,))
-                                c.execute("UPDATE Player SET Race=?",(GAME.race,))
                             GAME.BackgroundColour()
-                            GAME.RaceTime()
+                            if GAME.oldTeam==GAME.team:
+                                GAME.oldTeam=0
+                            if GAME.team=="Create New Team":
+                                root.configure(background='black')
+                                GAME.CreateTeam()
+                            else:
+                                GAME.race+=1
+                                with sqlite3.connect(GAME.database) as c:
+                                    if GAME.oldTeam!=0:
+                                        c.execute("UPDATE Player SET Team=?, Financial=5, Management=3, Warnings=0",(GAME.team,))
+                                        c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
+                                        c.execute("UPDATE Teams SET TeamPrincipal='None' WHERE Name=?",(GAME.oldTeam,))
+                                    c.execute("UPDATE Player SET Race=?",(GAME.race,))
+                                GAME.BackgroundColour()
+                                GAME.RaceTime()
         elif GAME.screen=="Sponsor Negotiation":
             choice=0
             if event.x>=350 and event.x<=550 and event.y>=450 and event.y<=500:
@@ -12763,6 +12763,7 @@ class Game:
         GAME.Button("Next",1200,695)
     def PreSeasonEvents(self):
         buyer=0
+        roles=["Technical Director","Sporting Director","Race Engineer","Race Engineer"]
         if GAME.actions>=2:
             F1=sqlite3.connect(GAME.database)
             c=F1.cursor()
@@ -12815,6 +12816,7 @@ class Game:
                 c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("HRT", "Cosworth", 15, 15, 15, 15, 45, 20, 1, 100, 1, 100, 1, 12, 9)''')
                 GAME.news.append("BREAKING NEWS! Formula 1 have introduced a new points system.")
                 GAME.news.append("BREAKING NEWS! Formula 1 has banned refueling.")
+                GAME.news.append("BREAKING NEWS! The KERS system is no longer being used.")
                 GAME.news.append("BREAKING NEWS! Brawn GP has been acquired by Mercedes.")
                 GAME.news.append("BREAKING NEWS! Sauber have ended their partnership with BMW.")
                 GAME.news.append("BREAKING NEWS! Toyota have left Formula 1.")
@@ -12860,7 +12862,7 @@ class Game:
                 GAME.drs=1
                 GAME.ers=2
                 GAME.news.append("BREAKING NEWS! A new system called DRS has been introduced.")
-                GAME.news.append("BREAKING NEWS! The KERS system is no longer being used.")
+                GAME.news.append("BREAKING NEWS! The KERS system is now being used again.")
                 GAME.news.append("BREAKING NEWS! Formula 1 is now using Pirelli tyres.")
                 c.execute("UPDATE Regulations SET True=2 WHERE Regulation='ERS'")
                 c.execute("UPDATE Drivers SET NewTeam='Toro Rosso', NewRole='1', ContractEnd=2013 WHERE Name='Daniel Ricciardo'")
@@ -12964,7 +12966,6 @@ class Game:
                 c.execute("UPDATE Teams SET Appearance='Renault' WHERE Name='Renault'")
                 c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Haas", "Haas", "Haas", 12, 0, 15000000, 1000000, "Guenther Steiner", "United States of America", 55, "0", 0, 0)''')
                 c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Haas", "Ferrari", 40, 40, 40, 40, 40, 30, 1, 100, 1, 100, 1, 10, 15)''')
-                roles=["Technical Director","Sporting Director","Race Engineer","Race Engineer"]
                 for x in range(4):
                     GAME.GeneratePeople(roles[x])
                 for y in range(4):
