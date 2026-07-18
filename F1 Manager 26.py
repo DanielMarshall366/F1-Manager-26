@@ -1636,7 +1636,7 @@ class Game:
                     regulationChange=1
                 else:
                     regulationChange=0
-                if GAME.engine not in GAME.team and not(GAME.team=="Cadillac" and GAME.season==2028) and team!="Red Bull":
+                if GAME.engine not in GAME.team and not(GAME.team=="Cadillac" and GAME.season==2028) and team!="Red Bull" and not (GAME.team=="Lotus" and GAME.season>2011 and GAME.startYear==2009 and GAME.engine=="Renault"):
                     if team!="Racing Bulls" or len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==0:
                         engine=1
                 if GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])!="0" or GAME.team=="Cadillac":
@@ -4244,6 +4244,11 @@ class Game:
                         GAME.pitLap[index]=0
             #Pit Stops
             if len(GAME.pitting)>=1:
+                    for x in range(len(GAME.positions)-1):
+                        index=GAME.positions[x+1]
+                        ahead=GAME.positions[x]
+                        if GAME.distance[index]>GAME.distance[ahead] and GAME.lap[index]==GAME.lap[ahead]:
+                            GAME.distance[index]=GAME.distance[ahead]-1
                     for driverIndex in GAME.pitting:
                         GAME.CalculateTime()
                         pos=GAME.positions.index(driverIndex)
@@ -5393,7 +5398,7 @@ class Game:
                 GAME.Button("Fuel Aggression",5+(x*1132),650)
                 if GAME.ers>0:
                     if GAME.season<2014 or GAME.replay==3:
-                        if GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren":
+                        if (GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren") or GAME.season>2009:
                             if GAME.ERSdeployment[indexes[x]]==2:
                                 kers="Off"
                             else:
@@ -9570,7 +9575,7 @@ class Game:
             elif event.y>=645 and event.y<=695:
                 attribute=2
             if GAME.ers==2 and (GAME.season<2014 or GAME.replay==3) and event.x>=210 and event.x<=510 and event.y>=645 and event.y<=720:
-                if not (GAME.season==2009 and (GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren")):
+                if (GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren") or GAME.season>2009:
                     GAME.aggressions[2]=5-GAME.aggressions[2]
                     GAME.ChooseStartingAggression()
             elif modify!=0 and attribute!=-1:
@@ -9612,7 +9617,7 @@ class Game:
         elif GAME.screen=="Race Screen":
             if GAME.car1ID in GAME.positions:
                 #Driver 1
-                if GAME.ers==2 and (GAME.season<2014 or GAME.replay==3) and event.x>=5 and event.x<=305 and event.y>=715 and event.y<=790 and (GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren"):
+                if GAME.ers==2 and (GAME.season<2014 or GAME.replay==3) and event.x>=5 and event.x<=305 and event.y>=715 and event.y<=790 and ((GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren") or GAME.season>2009):
                     GAME.ERSdeployment[GAME.car1ID]=5-GAME.ERSdeployment[GAME.car1ID]
                     GAME.RefreshScreen()
                 elif event.x>=5 and event.x<=30:
@@ -9665,7 +9670,7 @@ class Game:
                             GAME.RefreshScreen()
             if GAME.car2ID in GAME.positions:
                 #Driver 2
-                if GAME.ers==2 and (GAME.season<2014 or GAME.replay==3) and event.x>=1137 and event.x<=1437 and event.y>=715 and event.y<=790 and (GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren"):
+                if GAME.ers==2 and (GAME.season<2014 or GAME.replay==3) and event.x>=1137 and event.x<=1437 and event.y>=715 and event.y<=790 and ((GAME.team=="Ferrari" or GAME.team=="Renault" or GAME.team=="BMW Sauber" or GAME.team=="McLaren") or GAME.season>2009):
                     GAME.ERSdeployment[GAME.car2ID]=5-GAME.ERSdeployment[GAME.car2ID]
                     GAME.RefreshScreen()
                 elif event.x>=1135 and event.x<=1160:
@@ -9809,6 +9814,8 @@ class Game:
                     if index not in GAME.pitting:
                         GAME.pitting.append(index)
                         GAME.AddToLog(f"{GAME.drivers[index]} is pitting.")
+                    else:
+                        GAME.RefreshScreen()
                     GAME.lapPittedTo[index]=GAME.lap[index]
                     GAME.pause=1
                     GAME.NextMove()
@@ -12872,7 +12879,6 @@ class Game:
                 GAME.TeamAcquired("Virgin","Marussia")
                 GAME.TeamAcquired("Lotus","Caterham")
                 GAME.TeamAcquired("Renault","Lotus")
-                GAME.news.append("BREAKING NEWS! The KERS system is now being used again.")
                 GAME.news.append("BREAKING NEWS! Virgin is now the Marussia Formula 1 team.")
                 GAME.news.append("BREAKING NEWS! Lotus is now the Caterham Formula 1 team.")
                 GAME.news.append("BREAKING NEWS! Renault is now the Lotus Formula 1 team.")
@@ -12897,6 +12903,7 @@ class Game:
                     c.execute("UPDATE Drivers SET Team='Free Agent', Role='Free Agent', ContractEnd=0 WHERE Team='HRT'")
                     c.execute("UPDATE Staff SET Team='Free Agent' WHERE Team='HRT'")
                     position=12
+                    teams=[]
                     while True:
                         f=c.execute("SELECT Name FROM Teams WHERE PreviousPosition=?",(position,)).fetchall()
                         if len(f)==0:
