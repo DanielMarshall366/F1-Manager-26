@@ -213,6 +213,7 @@ class Game:
         self.sprint=0
         self.eventLaps=[]
         self.eventOptions=[]
+        self.suitTest=0
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -388,7 +389,7 @@ class Game:
             if GAME.team!="Brawn GP":
                 c.execute("UPDATE Drivers SET NewTeam='Brawn GP', NewRole='1', NewSalary=8000000, ContractEnd=2012 WHERE Name='Michael Schumacher'")
                 if GAME.team!="Williams":
-                    c.execute("UPDATE Drivers SET NewTeam='Brawn GP', NewRole='2', ContractEnd=2012 WHERE Name='Nico Rosberg'")
+                    c.execute("UPDATE Drivers SET NewTeam='Brawn GP', NewRole='2', ContractEnd=2016 WHERE Name='Nico Rosberg'")
             c.execute("UPDATE Drivers SET NewTeam='HRT', NewRole='1', NewSalary=150000, ContractEnd=2010 WHERE Name='Bruno Senna'")
             c.execute("UPDATE Drivers SET NewTeam='HRT', NewRole='2', ContractEnd=2010 WHERE Name='Karun Chandhok'")
             c.execute("UPDATE Drivers SET NewTeam='Virgin', NewRole='2', ContractEnd=2010 WHERE Name='Lucas di Grassi'")
@@ -623,6 +624,23 @@ class Game:
         c.execute('''INSERT into Player (Name, Country, Team, newTeam, Season, Race, RegulationChange, Points, Wins, Championships, NextYearEngine, Actions, Financial, Management, Warnings, TyreWear, MovingTo, StartYear, CostCap, PitStop, Stopper, StopTrack) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.name, GAME.country, GAME.team, GAME.newTeam, GAME.startYear, -1, regulationChange, 0, 0, 0, 0, 3, 5, 3, 0, 0, 0, GAME.startYear, 135000000, 100, -1, -1))
             
         #History
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1984, "Niki Lauda", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1985, "Alain Prost", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1985, "Alain Prost", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1987, "Nelson Piquet", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1988, "Ayrton Senna", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1989, "Alain Prost", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1990, "Ayrton Senna", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1991, "Ayrton Senna", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1992, "Nigel Mansell", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1993, "Alain Prost", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1994, "Michael Schumacher", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1995, "Michael Schumacher", "Benneton")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1996, "Damon Hill", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1997, "Jacques Villeneuve", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1998, "Mika Hakkinen", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1999, "Mika Hakkinen", "Ferrari")''')        
+        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2000, "Michael Schumacher", "Ferrari")''')
         c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2001, "Michael Schumacher", "Ferrari")''')
         c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2002, "Michael Schumacher", "Ferrari")''')
         c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2003, "Michael Schumacher", "Ferrari")''')
@@ -741,19 +759,20 @@ class Game:
         Name=GAME.GenerateName()
         with sqlite3.connect(GAME.database) as c:
             if role=="Driver":
-                if GAME.gender=="Male":
-                    appearance="Man "+str(random.randint(1,3))
-                else:
-                    appearance="Woman "+str(random.randint(1,2))
-                Overtaking=random.randint(20,85)
-                Defending=random.randint(20,85)
-                Pace=random.randint(20,85)
-                Experience=random.randint(0,60)
-                Control=random.randint(20,85)
-                Reaction=random.randint(20,85)
-                Rating=round((Overtaking+Defending+Pace+Experience+Control+Reaction)/6)
-                c.execute('''INSERT into Drivers (Name, Appearance,Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend, Mentality, Fired, Results) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(Name, appearance, "Free Agent", "Free Agent", random.choice(GAME.countries), 0, 0, 0, "Well", Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, random.randint(0,100), random.randint(12,25), random.randint(50,95), random.randint(70,180), 0, 0, 0, 0, 0, 0, 0, 20, 0, 10))
-            else:
+                if len(c.execute("SELECT Name FROM Drivers").fetchall())<500:
+                    if GAME.gender=="Male":
+                        appearance="Man "+str(random.randint(1,3))
+                    else:
+                        appearance="Woman "+str(random.randint(1,2))
+                    Overtaking=random.randint(20,85)
+                    Defending=random.randint(20,85)
+                    Pace=random.randint(20,85)
+                    Experience=random.randint(0,60)
+                    Control=random.randint(20,85)
+                    Reaction=random.randint(20,85)
+                    Rating=round((Overtaking+Defending+Pace+Experience+Control+Reaction)/6)
+                    c.execute('''INSERT into Drivers (Name, Appearance,Team, Role, Country, Position, Points, Salary, Condition, Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, Calmness, Age, Marketability, DevelopmentRate, ContractEnd, NewTeam, NewSalary, NewRole, Championships, Wins, Legend, Mentality, Fired, Results) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(Name, appearance, "Free Agent", "Free Agent", random.choice(GAME.countries), 0, 0, 0, "Well", Rating, Overtaking, Defending, Pace, Experience, Control, Reaction, random.randint(0,100), random.randint(12,25), random.randint(50,95), random.randint(70,180), 0, 0, 0, 0, 0, 0, 0, 20, 0, 10))
+            elif len(c.execute("SELECT Name FROM Staff WHERE Role=?",(role,)).fetchall())<100:
                 if role=="Race Engineer 1" or role=="Race Engineer 2":
                     role="Race Engineer"
                 rating=random.randint(20,100)
@@ -1636,12 +1655,10 @@ class Game:
                     regulationChange=1
                 else:
                     regulationChange=0
-                if GAME.engine not in GAME.team and not(GAME.team=="Cadillac" and GAME.season==2028) and team!="Red Bull" and not (GAME.team=="Lotus" and GAME.season>2011 and GAME.startYear==2009 and GAME.engine=="Renault"):
+                if GAME.engine not in GAME.team and not(GAME.team=="Cadillac" and GAME.season==2028) and team!="Red Bull" and GAME.season>2025:
                     if team!="Racing Bulls" or len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==0:
                         engine=1
                 if GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])!="0" or GAME.team=="Cadillac":
-                    engine=0
-                if GAME.season>2012 and GAME.season<2017 and GAME.team=="McLaren":
                     engine=0
                 if engine==1:
                     message.append("PRESS CONFERENCE! You are holding a press conference as Team Principal of "+GAME.team)
@@ -1874,7 +1891,7 @@ class Game:
                         manufacturedEngine=0
                     else:
                         manufacturedEngine=GAME.Sanitise(manufacturedEngine[0])
-                    if GAME.money>100000 and ((manufacturedEngine!=0 and(nextEngine=="0" or nextEngine==manufacturedEngine)) or nextEngine=="Honda" or GAME.action==0):
+                    if GAME.money>100000 and ((((manufacturedEngine!=0 and(nextEngine=="0" or nextEngine==manufacturedEngine)) or nextEngine=="Honda") and GAME.season!=2016 and GAME.season!=2021) or GAME.action==0):
                         GAME.Button("Research",870,580)
                 costCap=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Cost Cap'").fetchall()[0]))
                 if GAME.team=="Red Bull":
@@ -2762,7 +2779,7 @@ class Game:
                                 for y in range(4):
                                     actions.append("Research")
                                 engine=c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(team,)).fetchall()
-                                if len(engine)>0:
+                                if len(engine)>0 and GAME.season!=2016 and GAME.season!=2021:
                                     engine=GAME.Sanitise(engine[0])
                                     GAME.EngineResearch(engine,team)
                     if GAME.race>=8:
@@ -5058,7 +5075,6 @@ class Game:
         else:
             lap=GAME.lap[GAME.positions[0]]+GAME.safetyLaps
         lapsLeft=GAME.laps-lap
-        pitted=[]
         for x in range(len(GAME.positions)-1):
             pit=0
             index=GAME.positions[x]
@@ -5174,109 +5190,98 @@ class Game:
         GAME.time.pop(len(GAME.time)-1)
         GAME.positions.pop(len(GAME.positions)-1)
         if len(GAME.pitting)>0:
-            for x in range(len(GAME.pitting)):
-                baseTimeLost=10
-                driver=GAME.pitting[x]
-                try:
-                    driver=int(driver)
-                except:
-                    if driver not in pitted:
-                        pitted.append(driver)
-                        GAME.AddToLog(f"{driver} is pitting.")
-                        driverIndex=GAME.drivers.index(driver)
-                        pos=GAME.positions.index(driverIndex)
-                        team=GAME.teams[driverIndex]
-                        if GAME.replay==0:
-                            with sqlite3.connect(GAME.database) as c:
-                                pitStopRating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Role="Sporting Director" AND Team=?''', (team,)).fetchone()[0]))
-                                role="Race Engineer 1" if GAME.cars[driverIndex] == 1 else "Race Engineer 2"
-                                result=c.execute('''SELECT Rating FROM Staff WHERE Role=? AND Team=?''', (role, team)).fetchone()
-                            engineerRating=int(GAME.Sanitise(result[0])) if result else 50
-                            pitStopRating += round(engineerRating / 2)
-                        else:
-                            pitStopRating=120
-                        pitStopScore=random.randint(1, pitStopRating)
-                        for y in range(2):
-                            score=random.randint(1, pitStopRating)
-                            if score>pitStopScore:
-                                pitStopScore=score
-                        if pitStopScore <= 20:
-                            pitStopTime=random.uniform(4.0, 10.0)  # Terrible
-                        elif pitStopScore <= 50:
-                            pitStopTime=random.uniform(3.0, 5.0)   # Bad
-                        elif pitStopScore <= 80:
-                            pitStopTime=random.uniform(2.3, 3.0)   # Average
-                        elif pitStopScore <= 100:
-                            pitStopTime=random.uniform(2.0, 2.6)   # Good
-                        else:
-                            pitStopTime=random.uniform(1.7, 2.2)   # Amazing
-                        #Refueling
-                        if GAME.refueling==1:
-                            totalFuelNeeded=round(110*(GAME.laps-lap)/GAME.laps)
-                            if GAME.fuel[driverIndex]<totalFuelNeeded:
-                                fuelNeeded=totalFuelNeeded-GAME.fuel[driverIndex]
-                                pitStopTime+=fuelNeeded/10
-                                GAME.fuel[driverIndex]=totalFuelNeeded
-                        if pitStopTime < GAME.bestPitStop[9]:
-                            pos=9
-                            driver=GAME.drivers[driverIndex]
-                            while pitStopTime<GAME.bestPitStop[pos] and pos>-1:
-                                pos-=1
-                            pos+=1
-                            if pos==0:
-                                GAME.AddToLog(f"{GAME.drivers[driverIndex]} has just completed a {pitStopTime:.3f} second pit stop, the fastest of the race so far.")
-                            valid=1
-                            if driver in GAME.bestPitStopper:
-                                if GAME.bestPitStopper.index(driver)<pos:
-                                    GAME.bestPitStop.pop(GAME.bestPitStopper.index(driver))
-                                    GAME.bestPitStopper.remove(driver)
-                                else:
-                                    valid=0
+            positions=GAME.positions.copy()
+            for x in range(len(positions)):
+                index=positions[x]
+                driver=GAME.drivers[index]
+                if driver in GAME.pitting:
+                    GAME.AddToLog(f"{driver} is pitting.")
+                    team=GAME.teams[index]
+                    if GAME.replay==0:
+                        with sqlite3.connect(GAME.database) as c:
+                            pitStopRating=int(GAME.Sanitise(c.execute('''SELECT Rating FROM Staff WHERE Role="Sporting Director" AND Team=?''', (team,)).fetchone()[0]))
+                            role="Race Engineer 1" if GAME.cars[index]==1 else "Race Engineer 2"
+                            result=c.execute('''SELECT Rating FROM Staff WHERE Role=? AND Team=?''', (role, team)).fetchone()
+                        engineerRating=int(GAME.Sanitise(result[0])) if result else 50
+                        pitStopRating += round(engineerRating / 2)
+                    else:
+                        pitStopRating=120
+                    pitStopScore=random.randint(1, pitStopRating)
+                    for y in range(2):
+                        score=random.randint(1, pitStopRating)
+                        if score>pitStopScore:
+                            pitStopScore=score
+                    if pitStopScore <= 20:
+                        pitStopTime=random.uniform(4.0, 10.0)  # Terrible
+                    elif pitStopScore <= 50:
+                        pitStopTime=random.uniform(3.0, 5.0)   # Bad
+                    elif pitStopScore <= 80:
+                        pitStopTime=random.uniform(2.3, 3.0)   # Average
+                    elif pitStopScore <= 100:
+                        pitStopTime=random.uniform(2.0, 2.6)   # Good
+                    else:
+                        pitStopTime=random.uniform(1.7, 2.2)   # Amazing
+                    #Refueling
+                    if GAME.refueling==1:
+                        totalFuelNeeded=round(110*(GAME.laps-lap)/GAME.laps)
+                        if GAME.fuel[index]<totalFuelNeeded:
+                            fuelNeeded=totalFuelNeeded-GAME.fuel[index]
+                            pitStopTime+=fuelNeeded/10
+                            GAME.fuel[index]=totalFuelNeeded
+                    if pitStopTime < GAME.bestPitStop[9]:
+                        pos=9
+                        driver=GAME.drivers[index]
+                        while pitStopTime<GAME.bestPitStop[pos] and pos>-1:
+                            pos-=1
+                        pos+=1
+                        if pos==0:
+                            GAME.AddToLog(f"{driver} has just completed a {pitStopTime:.3f} second pit stop, the fastest of the race so far.")
+                        valid=1
+                        if driver in GAME.bestPitStopper:
+                            if GAME.bestPitStopper.index(driver)<pos:
+                                GAME.bestPitStop.pop(GAME.bestPitStopper.index(driver))
+                                GAME.bestPitStopper.remove(driver)
                             else:
-                                GAME.bestPitStop.pop(9)
-                                GAME.bestPitStopper.pop(9)
-                            if valid==1:
-                                GAME.bestPitStop.insert(pos,pitStopTime)
-                                GAME.bestPitStopper.insert(pos,driver)
-                        if pitStopTime>GAME.bestPitStop[0]:
-                            if pitStopTime>3.5:
-                                GAME.AddToLog(f"{GAME.drivers[driverIndex]} has had a slow pit stop that took {pitStopTime:.3f} seconds.")
-                            elif GAME.teams[driverIndex]==GAME.team:
-                                GAME.AddToLog(f"{GAME.drivers[driverIndex]} has completed a {pitStopTime:.3f} second pit stop.")
-                        if GAME.penalties[driverIndex]>0:
-                            penalty=GAME.penalties[driverIndex]
-                            GAME.penalties.pop(driverIndex)
-                            GAME.penalties.insert(driverIndex,0)
+                                valid=0
                         else:
-                            penalty=0
-                        totalTimeLost=10 + pitStopTime + penalty
-                        if GAME.tyre[driverIndex]!=GAME.SCPitTyre[x]:
-                            GAME.tyreCompoundsUsed[driverIndex]+=1
-                        newPos=min(pos + i - 1, len(GAME.positions) - 1)
-                        distanceLost=round(totalTimeLost*41.67,3)
-                        GAME.positions.remove(driverIndex)
-                        GAME.positions.insert(newPos, driverIndex)
-                        GAME.distance[driverIndex]-=distanceLost
-                        GAME.tyre.pop(driverIndex)
-                        GAME.tyre.insert(driverIndex,GAME.SCPitTyre[x])
-                        GAME.tyreRemaining[driverIndex]=100
-                        GAME.stops[driverIndex]+=1
-                        GAME.lapPittedTo.pop(driverIndex)
-                        GAME.lapPittedTo.insert(driverIndex,lap)
-                        if GAME.pitLap[driverIndex]<=lap+3:
-                            GAME.pitLap.pop(driverIndex)
-                            GAME.pitLap.insert(driverIndex,0)
-                            GAME.pitTyre.pop(driverIndex)
-                            GAME.pitTyre.insert(driverIndex,0)
-        #New Positions
-        for x in range(len(GAME.positions)):
-            for y in range(len(GAME.positions)):
-                if y<len(GAME.positions)-1:
-                    index=GAME.positions[y]
-                    nextIndex=GAME.positions[y+1]
-                    if GAME.lap[index]<GAME.lap[nextIndex] or (GAME.lap[index]==GAME.lap[nextIndex] and GAME.distance[index]<GAME.distance[nextIndex]):
-                        GAME.positions.pop(y)
-                        GAME.positions.insert(y+1,index)
+                            GAME.bestPitStop.pop(9)
+                            GAME.bestPitStopper.pop(9)
+                        if valid==1:
+                            GAME.bestPitStop.insert(pos,pitStopTime)
+                            GAME.bestPitStopper.insert(pos,driver)
+                    if pitStopTime>GAME.bestPitStop[0]:
+                        if pitStopTime>3.5:
+                            GAME.AddToLog(f"{driver} has had a slow pit stop that took {pitStopTime:.3f} seconds.")
+                        elif GAME.teams[index]==GAME.team:
+                            GAME.AddToLog(f"{driver} has completed a {pitStopTime:.3f} second pit stop.")
+                    if GAME.penalties[index]>0:
+                        penalty=GAME.penalties[index]
+                        GAME.penalties.pop(index)
+                        GAME.penalties.insert(index,0)
+                    else:
+                        penalty=0
+                    totalTimeLost=10 + pitStopTime + penalty
+                    if GAME.tyre[index]!=GAME.SCPitTyre[GAME.pitting.index(driver)]:
+                        GAME.tyreCompoundsUsed[index]+=1
+                    distanceLost=round(totalTimeLost*41.67,3)
+                    GAME.distance[index]-=distanceLost
+                    GAME.tyre[index]=GAME.SCPitTyre[GAME.pitting.index(driver)]
+                    GAME.tyreRemaining[index]=100
+                    GAME.stops[index]+=1
+                    GAME.lapPittedTo[index]=lap
+                    if GAME.pitLap[index]<=lap+3:
+                        GAME.pitLap[index]=0
+                        GAME.pitTyre[index]=0
+                    #New Positions
+                    for i in range(len(GAME.positions)):
+                        for y in range(len(GAME.positions)):
+                            if y<len(GAME.positions)-1:
+                                index=GAME.positions[y]
+                                nextIndex=GAME.positions[y+1]
+                                if GAME.lap[index]<GAME.lap[nextIndex] or (GAME.lap[index]==GAME.lap[nextIndex] and GAME.distance[index]<GAME.distance[nextIndex]):
+                                    GAME.positions.pop(y)
+                                    GAME.positions.insert(y+1,index)
+                    GAME.pitting.remove(driver)
         GAME.distance=[]
         GAME.lap=[]
         GAME.pitting=[]
@@ -6518,7 +6523,7 @@ class Game:
                 mentality=(results//2)+contract+teammate+teamMentality
                 c.execute("UPDATE Drivers SET Mentality=? WHERE Name=?",(mentality,driver,))
     def DisplayLayout(self,track):
-        if track!="Imola" and track!="Miami" and track!="Las Vegas" and track!="Madring":
+        if track!="Imola" and track!="Miami" and track!="Las Vegas" and track!="Madring" and track!="Valencia":
             with sqlite3.connect(GAME.database) as c:
                 track=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(track,)).fetchall())
         try:
@@ -8525,8 +8530,8 @@ class Game:
             if regulationChange==GAME.season:
                 championships=int(GAME.Sanitise(c.execute("SELECT Championships FROM Player").fetchall()[0]))
                 if GAME.season==2014 and GAME.team!="Mercedes":
-                    research=int(GAME.Sanitise(c.execute("SELECT Research FROM Cars WHERE Team='Mercedes'").fetchall()[0]))*3
-                    engineResearch=int(GAME.Sanitise(c.execute("SELECT Research FROM Engines WHERE Name='Mercedes'").fetchall()[0]))*3
+                    research=int(GAME.Sanitise(c.execute("SELECT Research FROM Cars WHERE Team='Mercedes'").fetchall()[0]))*8
+                    engineResearch=int(GAME.Sanitise(c.execute("SELECT Research FROM Engines WHERE Name='Mercedes'").fetchall()[0]))*8
                     c.execute("UPDATE Cars SET Research=? WHERE Team='Mercedes'",(research,))
                     c.execute("UPDATE Engines SET Research=? WHERE Name='Mercedes'",(engineResearch,))
                 #Aerodynamic Changes
@@ -8569,43 +8574,44 @@ class Game:
                 c.execute("UPDATE Cars SET Research=1")
                 
                 #Engine Changes
-                f=c.execute('''SELECT Name FROM Engines''').fetchall()
-                engines=[]
-                research=[]
-                for x in range(len(f)):
-                    name=GAME.Sanitise(f[x])
-                    r=int(GAME.Sanitise(c.execute('''SELECT Research FROM Engines WHERE Name=?''',(name,)).fetchall()[0]))
-                    manufacturer=GAME.Sanitise(c.execute("SELECT Manufacturer FROM Engines WHERE Name=?",(name,)).fetchall()[0])
-                    if len(c.execute("SELECT Name FROM Staff WHERE Role='Technical Director' AND Rating=100 AND Team=?",(manufacturer,)).fetchall())>0:
-                        r=random.randint(r,round(r*3.5))
-                    research.append(r)
-                for x in range(len(f)):
-                    highest=0
-                    highestIndex=0
-                    for y in range(len(f)):
-                        name=GAME.Sanitise(f[y])
-                        r=research[y]
-                        if r>highest:
-                            highest=r
-                            highestIndex=y
-                    engine=GAME.Sanitise(f[highestIndex])
-                    if engine not in engines:
-                        engines.append(engine)
-                    f.pop(highestIndex)
-                    research.pop(highestIndex)
-                for x in range(len(engines)):
-                    for y in range(2):
-                        stat=0
-                        for z in range(10):
-                            if stat==0 and ((x<=z and random.randint(1,3)==3) or random.randint(1,10)==10):
-                                stat=10-z
-                        if y==0:
-                            c.execute("UPDATE Engines SET Power=? WHERE Name=?",(stat,engines[x],))
-                        else:
-                            c.execute("UPDATE Engines SET Reliability=? WHERE Name=?",(stat,engines[x],))
-                c.execute("UPDATE Engines SET Research=1")
-                c.execute("UPDATE Engines SET Power=1 WHERE Power=0")
-                c.execute("UPDATE Engines SET Reliability=1 WHERE Reliability=0")
+                if GAME.season!=2017 and GAME.season!=2022:
+                    f=c.execute('''SELECT Name FROM Engines''').fetchall()
+                    engines=[]
+                    research=[]
+                    for x in range(len(f)):
+                        name=GAME.Sanitise(f[x])
+                        r=int(GAME.Sanitise(c.execute('''SELECT Research FROM Engines WHERE Name=?''',(name,)).fetchall()[0]))
+                        manufacturer=GAME.Sanitise(c.execute("SELECT Manufacturer FROM Engines WHERE Name=?",(name,)).fetchall()[0])
+                        if len(c.execute("SELECT Name FROM Staff WHERE Role='Technical Director' AND Rating=100 AND Team=?",(manufacturer,)).fetchall())>0:
+                            r=random.randint(r,round(r*3.5))
+                        research.append(r)
+                    for x in range(len(f)):
+                        highest=0
+                        highestIndex=0
+                        for y in range(len(f)):
+                            name=GAME.Sanitise(f[y])
+                            r=research[y]
+                            if r>highest:
+                                highest=r
+                                highestIndex=y
+                        engine=GAME.Sanitise(f[highestIndex])
+                        if engine not in engines:
+                            engines.append(engine)
+                        f.pop(highestIndex)
+                        research.pop(highestIndex)
+                    for x in range(len(engines)):
+                        for y in range(2):
+                            stat=0
+                            for z in range(10):
+                                if stat==0 and ((x<=z and random.randint(1,3)==3) or random.randint(1,10)==10):
+                                    stat=10-z
+                            if y==0:
+                                c.execute("UPDATE Engines SET Power=? WHERE Name=?",(stat,engines[x],))
+                            else:
+                                c.execute("UPDATE Engines SET Reliability=? WHERE Name=?",(stat,engines[x],))
+                    c.execute("UPDATE Engines SET Research=1")
+                    c.execute("UPDATE Engines SET Power=1 WHERE Power=0")
+                    c.execute("UPDATE Engines SET Reliability=1 WHERE Reliability=0")
                 if GAME.season==2017:
                     regulationChange=2022
                 elif GAME.season==2022:
@@ -8756,7 +8762,9 @@ class Game:
                     c.execute("UPDATE Cars SET Engine=? WHERE Team=?",(nextEngine,GAME.team,))
                     c.execute("UPDATE Player SET NextYearEngine=0")
                 regulationChange=int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))
-                if regulationChange!=GAME.season+1:
+                if GAME.season==2021:
+                    c.execute("UPDATE Engines SET Power=8 WHERE Name='Renault'")
+                elif regulationChange!=GAME.season+1 and (GAME.season<2021 or GAME.season>2024):
                     f=c.execute("SELECT Name FROM Engines").fetchall()
                     for x in range(len(f)):
                         engine=GAME.Sanitise(f[x])
@@ -8771,7 +8779,7 @@ class Game:
                                         e="Ferrari"
                                     c.execute("UPDATE Cars SET Engine=? WHERE Team=?",(e,team,))
                             c.execute("DELETE FROM Engines WHERE Name=?",(engine,))
-                        else:
+                        elif GAME.season>2025 or GAME.season%2==1:
                             power=int(GAME.Sanitise(c.execute("SELECT Power FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))
                             if power<10:
                                 power+=1
@@ -9074,6 +9082,8 @@ class Game:
                                 name="Scuderia Toro Rosso Ferrari"
                             elif name=="Red Bull":
                                 name="Red Bull Racing"
+                            elif name=="Mercedes":
+                                name="Mercedes-AMG Petronas F1 Team"
                             else:
                                 engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
                                 if engine in name:
@@ -9171,7 +9181,7 @@ class Game:
         elif GAME.race==GAME.races+1:
             GAME.Championships()
         elif GAME.race==GAME.races+2:
-            if GAME.season>2013:
+            if GAME.season>2025:
                 GAME.RuleVote()
             else:
                 GAME.race+=1
@@ -9307,6 +9317,10 @@ class Game:
         canvas.create_image(150, 400, anchor=tk.NW, image=image)
     def ReplayScreen(self):
         GAME.screen="Replay screen"
+    def SuitTest(self,team):
+        GAME.ChangeScreen(1)
+        GAME.suitTest=team
+        GAME.DisplayDriver("Daniel Ricciardo",500,500)
     def OnClick(self, event):
         if GAME.screen=="Title Screen":
             GAME.replay=0
@@ -9956,7 +9970,7 @@ class Game:
                             manufacturedEngine=0
                         else:
                             manufacturedEngine=GAME.Sanitise(manufacturedEngine[0])
-                        if (manufacturedEngine!=0 and(nextEngine=="0" or nextEngine==manufacturedEngine)) or nextEngine=="Honda":
+                        if ((manufacturedEngine!=0 and(nextEngine=="0" or nextEngine==manufacturedEngine)) or nextEngine=="Honda") and GAME.season!=2016 and GAME.season!=2021:
                             if GAME.action==0:
                                 GAME.ChangeScreen("Select Research Type")
                                 GAME.Button("Aerodynamic Regulations",350,450)
@@ -10081,12 +10095,8 @@ class Game:
                 canvas.create_text(400, 135, text="Year", fill="black", font=("Arial", 20), anchor="nw")
                 canvas.create_text(470, 135, text="Driver", fill="black", font=("Arial", 20), anchor="nw")
                 canvas.create_text(750, 135, text="Constructor", fill="black", font=("Arial", 20), anchor="nw")
-                if GAME.season<2026:
-                    i=GAME.season-2001
-                else:
-                    i=25
-                for x in range(i):
-                    year=GAME.season-i+x
+                for x in range(25):
+                    year=GAME.season-25+x
                     with sqlite3.connect(GAME.database) as c:
                         driver=GAME.Sanitise(c.execute("SELECT Driver FROM History WHERE Year=?",(year,)).fetchall()[0])
                         constructor=GAME.Sanitise(c.execute("SELECT Constructor FROM History WHERE Year=?",(year,)).fetchall()[0])
@@ -12074,7 +12084,7 @@ class Game:
         GAME.Button("Name Selector",250,100)
         canvas.create_text(350, 170, text=GAME.options[GAME.displayed], fill="black", font=("Arial", 40), anchor="nw")
     def TeamColour(self,team,season):
-        if team=="McLaren" and season>2025 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5:
+        if team=="McLaren" and season>2016 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5:
             colour="#FF8700"
         elif team=="Mercedes":
             colour="#1AE2CE"
@@ -12106,6 +12116,8 @@ class Game:
             colour="#1E5BFF"
         elif team=="Toyota":
             colour="#B40000"
+        elif team=="Racing Point" or (team=="Force India" and season==2018):
+            colour="#FF69B4"
         elif team=="Force India":
             colour="#FF7800"
         elif team=="HRT":
@@ -12114,8 +12126,6 @@ class Game:
             colour="#8C0014"
         elif team=="Caterham":
             colour="#006E3C"
-        elif team=="Racing Point":
-            colour="#FF69B4"
         elif team=="Kick sauber":
             colour="#00FF78"
         elif team=="Sauber" or team=="Alfa Romeo":
@@ -12529,7 +12539,9 @@ class Game:
                 canvas.create_text(950-(650-(650*x)), 340, text=driver, fill="black", font=("Arial", 20), anchor="nw")
     def DisplayDriver(self,driver,x,y):
             with sqlite3.connect(GAME.database) as c:
-                if GAME.screen=="Contract":
+                if GAME.suitTest!=0:
+                    team=GAME.suitTest
+                elif GAME.screen=="Contract":
                     team=GAME.team
                 elif GAME.replay>0:
                     team=GAME.teams[GAME.drivers.index(driver)]
@@ -12541,10 +12553,12 @@ class Game:
                 if driver=="Sonny Hayes" or driver=="Joshua Pearce":
                     team=driver
                 elif team=="McLaren":
-                    if GAME.replay==3 or GAME.replay==4 or GAME.season<2026:
+                    if GAME.replay==3 or GAME.replay==4 or GAME.season<2015:
                         team="Vodafone McLaren"
                     elif GAME.replay==5:
                         team="West McLaren"
+                    elif GAME.season>2014 and GAME.season<2021:
+                        team="McLaren Honda"
                 elif team=="Ferrari":
                     if GAME.replay==5 or GAME.replay==4 or GAME.season<2026:
                         team="Marlboro Ferrari"
@@ -12609,6 +12623,8 @@ class Game:
                 else:
                     try:
                         head=GAME.Sanitise(c.execute("SELECT Appearance FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                        if head=="Man 2":
+                            Y-=10
                     except:
                         head="Man 3"
                 try:
@@ -12665,7 +12681,9 @@ class Game:
         F1.commit()
         F1.close()
         if GAME.season<2026:
-            if f"2009 {team} Display" in Images:
+            if GAME.season>2014:
+                screen="2015 McLaren Display"
+            elif f"2009 {team} Display" in Images:
                 screen=f"2009 {team} Display"
             elif team=="McLaren":
                 screen=f"Vodafone McLaren Display"
@@ -12865,6 +12883,10 @@ class Game:
                 if GAME.team!="Renault":
                     c.execute("UPDATE Cars SET DragReduction=?, LowSpeed=?, MediumSpeed=?, HighSpeed=? WHERE Team='Renault'",(dragReduction+10,lowSpeed+10,mediumSpeed+10,highSpeed+10,))
                 c.execute("UPDATE Cars SET DragReduction=?, LowSpeed=?, MediumSpeed=?, HighSpeed=? WHERE Team='Lotus'",(dragReduction-10,lowSpeed-10,mediumSpeed-10,highSpeed-10,))
+                if GAME.engine=="BMW":
+                    GAME.engine="Ferrari"
+                elif GAME.engine=="Toyota":
+                    GAME.engine="Cosworth"
             elif GAME.season==2011:
                 GAME.drs=1
                 GAME.ers=2
@@ -12882,17 +12904,23 @@ class Game:
                 GAME.news.append("BREAKING NEWS! Virgin is now the Marussia Formula 1 team.")
                 GAME.news.append("BREAKING NEWS! Lotus is now the Caterham Formula 1 team.")
                 GAME.news.append("BREAKING NEWS! Renault is now the Lotus Formula 1 team.")
+                GAME.news.append("BREAKING NEWS! Williams are now using Renault engines.")
                 F1=sqlite3.connect(GAME.database)
                 c=F1.cursor()
                 c.execute("UPDATE Teams SET Appearance='Marussia' WHERE Name='Marussia'")
                 c.execute("UPDATE Teams SET Appearance='Caterham' WHERE Name='Caterham'")
-                c.execute("UPDATE Teams SET Appearance='Lotus' WHERE Name='Lotus'")
-                c.execute("UPDATE Cars SET Engine='Renault' WHERE Team='Caterham'")
+                c.execute("UPDATE Teams SET Appearance='Lotus', Country='United Kingdom' WHERE Name='Lotus'")
+                c.execute("UPDATE Cars SET Engine='Renault' WHERE Team='Caterham' OR Team='Williams'")
+                if GAME.team=="Caterham" or GAME.team=="Williams":
+                    GAME.engine="Renault"
                 if GAME.team!="Mercedes" and GAME.team!="McLaren":
-                    c.execute("UPDATE Drivers SET NewTeam='Mercedes', NewRole='2', NewSalary=20000000, ContractEnd=2015 WHERE Name='Lewis Hamilton'")
+                    c.execute("UPDATE Drivers SET NewTeam='Mercedes', NewRole='2', NewSalary=20000000, ContractEnd=2024 WHERE Name='Lewis Hamilton' AND Team='McLaren'")
             elif GAME.season==2013:
                 if GAME.team!="Mercedes":
-                    c.execute("UPDATE Teams SET Income=2000000 WHERE Name='Mercedes'")
+                    GAME.news.append("BREAKING NEWS! Toto Wolff is now the Team Principal of Mercedes.")
+                    money=int(GAME.Sanitise(c.execute("SELECT Money FROM Teams WHERE Name='Mercedes'").fetchall()[0]))+50000000
+                    c.execute("UPDATE Teams SET Money=?, Income=2000000, TeamPrincipal='Toto Wolff' WHERE Name='Mercedes'",(money,))
+                    c.execute("UPDATE TeamPrincipals SET Name='Toto Wolff' WHERE Name='Ross Brawn'")
                 if GAME.team!="Red Bull":
                     if len(c.execute("SELECT Name FROM Drivers WHERE Team='Toro Rosso' AND Name='Daniel Ricciardo'").fetchall())>0:
                         c.execute("UPDATE Drivers SET NewTeam='Red Bull', NewRole='2', NewSalary=1000000, ContractEnd=2016 WHERE Name='Daniel Ricciardo'")
@@ -12913,8 +12941,19 @@ class Game:
                             position-=1
                     for x in range(len(teams)):
                         c.execute("UPDATE Teams SET Position=?, PreviousPosition=? WHERE Name=?",(11-x, 11-x,teams[x],))
-            elif GAME.season==2014 and GAME.team!="Ferrari" and GAME.team!="Red Bull":
-                c.execute("UPDATE Drivers SET NewTeam='Ferrari', NewRole='1', NewSalary=28000000, ContractEnd=2017 WHERE Name='Sebastian Vettel'")
+                if GAME.team!="Williams":
+                    GAME.news.append("BREAKING NEWS! Claire Williams has taken over the Williams team.")
+                    c.execute("UPDATE Teams SET TeamPrincipal='Claire Williams' WHERE Name='Williams'")
+                    c.execute("UPDATE TeamPrincipals SET Name='Claire Williams' WHERE Name='Frank Williams'")
+            elif GAME.season==2014:
+                if GAME.team!="Ferrari" and GAME.team!="Red Bull":
+                    c.execute("UPDATE Drivers SET NewTeam='Ferrari', NewRole='1', NewSalary=28000000, ContractEnd=2020 WHERE Name='Sebastian Vettel'")
+                c.execute("UPDATE Teams SET Sponsor='0' WHERE Team='McLaren'")
+                c.execute("UPDATE Cars SET Engine='Mercedes' WHERE Team='Williams'")
+                GAME.news.append("Vodafone have ended their partnership with McLaren.")
+                GAME.news.append("Williams are now using Mercedes engines.")
+                if GAME.team=="Williams":
+                    GAME.engine="Mercedes"
             elif GAME.season==2015:
                 if GAME.team!="Caterham":
                     GAME.news.append("BREAKING NEWS! Caterham have left Formula 1.")
@@ -12967,14 +13006,14 @@ class Game:
                 F1.close()
                 GAME.TeamAcquired("Marussia","Manor")
                 GAME.TeamAcquired("Lotus","Renault")
+                for x in range(4):
+                    GAME.GeneratePeople(roles[x])
                 F1=sqlite3.connect(GAME.database)
                 c=F1.cursor()
                 c.execute("UPDATE Teams SET Appearance='Manor' WHERE Name='Manor'")
-                c.execute("UPDATE Teams SET Appearance='Renault' WHERE Name='Renault'")
+                c.execute("UPDATE Teams SET Appearance='Renault', Country='France' WHERE Name='Renault'")
                 c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition, PressConferences) VALUES ("Haas", "Haas", "Haas", 12, 0, 15000000, 1000000, "Guenther Steiner", "United States of America", 55, "0", 0, 0)''')
                 c.execute('''INSERT into Cars (Team, Engine, DragReduction, LowSpeed, MediumSpeed, HighSpeed, Cooling, TyrePreservation, car1Engine, car1EngineDurability, car2Engine, car2EngineDurability, Research, Ranking, Driveability) VALUES ("Haas", "Ferrari", 40, 40, 40, 40, 40, 30, 1, 100, 1, 100, 1, 10, 15)''')
-                for x in range(4):
-                    GAME.GeneratePeople(roles[x])
                 for y in range(4):
                     f=c.execute("SELECT Name FROM Staff WHERE Team='Free Agent' AND Role=?",(roles[y],)).fetchall()
                     if y>1:
@@ -12982,15 +13021,51 @@ class Game:
                     else:
                         role=roles[y]
                     c.execute("UPDATE Staff SET Team='Haas', Role=?, Salary=1000000 WHERE Name=?",(role,GAME.Sanitise(random.choice(f)),))
-            elif GAME.season==2017 and GAME.team!="Manor":
-                GAME.news.append("BREAKING NEWS! Manor has left Formula 1.")
-                c.execute("DELETE FROM Teams WHERE Name='Manor'")
-                c.execute("DELETE FROM Cars WHERE Name='Manor'")
-                c.execute("UPDATE Drivers SET Team='Free Agent, Role='Free Agent', ContractEnd=0 WHERE Team='Manor'")
-                c.execute("UPDATE Staff SET Team='Free Agent' WHERE Team='Manor'")
+                for y in range(2):
+                    f=c.execute("SELECT Name FROM Drivers WHERE Team='Free Agent' AND Age>17").fetchall()
+                    c.execute("UPDATE Drivers SET Team='Haas', Role=?, Salary=1000000, ContractEnd=? WHERE Name=?",(str(y+1),2016,GAME.Sanitise(random.choice(f)),))
+            elif GAME.season==2017:
+                if GAME.team!="Manor":
+                    GAME.news.append("BREAKING NEWS! Manor has left Formula 1.")
+                    c.execute("DELETE FROM Teams WHERE Name='Manor'")
+                    c.execute("DELETE FROM Cars WHERE Team='Manor'")
+                    c.execute("UPDATE Drivers SET Team='Free Agent', Role='Free Agent', ContractEnd=0 WHERE Team='Manor'")
+                    c.execute("UPDATE Staff SET Team='Free Agent' WHERE Team='Manor'")
+                    teams=[]
+                    maximum=len(c.execute("SELECT Name FROM Teams").fetchall())
+                    position=maximum+1
+                    while True:
+                        f=c.execute("SELECT Name FROM Teams WHERE PreviousPosition=?",(position,)).fetchall()
+                        if len(f)==0:
+                            break
+                        else:
+                            teams.append(GAME.Sanitise(f[0]))
+                            position-=1
+                    for x in range(len(teams)):
+                        c.execute("UPDATE Teams SET Position=?, PreviousPosition=? WHERE Name=?",(maximum-x, maximum-x,teams[x],))
+                c.execute("UPDATE Teams SET Appearance='McLaren' WHERE Team='McLaren'")
+            elif GAME.season==2018:
+                c.execute("UPDATE Cars SET Engine='Honda' WHERE Team='Toro Rosso'")
+                c.execute("UPDATE Cars SET Engine='Renault' WHERE Team='McLaren'")
+                c.execute("UPDATE Engines SET Power=9, Reliability=9 WHERE Name='Honda'")
+                GAME.news.append("BREAKING NEWS! Toro Rosso are now using Honda engines.")
+                GAME.news.append("BREAKING NEWS! McLaren are now using Renault engines.")
+                if GAME.team!="Force India":
+                    GAME.news.append("BREAKING NEWS! Otmar Szafnauer is now Team Principal of Force India.")
+                    c.execute("UPDATE Teams SET TeamPrincipal='Otmar Szafnauer' WHERE Name='Force India'")
+                    c.execute("UPDATE TeamPrincipals SET Name='Otmar Szafnauer' WHERE Team='Force India'")
+                if GAME.team=="Toro Rosso":
+                    GAME.engine="Honda"
+                if GAME.team=="McLaren":
+                    GAME.engine="Renault"
+                else:
+                    GAME.news.append("BREAKING NEWS! Zak Brown has taken over the McLaren team.")
+                    c.execute("UPDATE Teams SET TeamPrincipal='Zak Brown' WHERE Name='McLaren'")
+                    c.execute("UPDATE TeamPrincipals SET Name='Zak Brown' WHERE Team='McLaren'")
             elif GAME.season==2019:
                 GAME.news.append("BREAKING NEWS! Force India is now the Racing Point Formula 1 team.")
                 GAME.news.append("BREAKING NEWS! Sauber is now the Alfa Romeo Formula 1 team.")
+                GAME.news.append("BREAKING NEWS! Red Bull are now partnering with Honda for their engines.")
                 GAME.news.append("BREAKING NEWS! Formula 1 have reintroduced the fastest lap point.")
                 c.execute("UPDATE Regulations SET True=1 WHERE Regulation='Fastest Lap Point'")
                 F1.commit()
@@ -13001,9 +13076,13 @@ class Game:
                 c=F1.cursor()
                 c.execute("UPDATE Teams SET Sponsor='0' WHERE Sponsor='BWT'")
                 c.execute("UPDATE Sponsors SET Team='None' WHERE Team='Racing Point'")
-                c.execute("UPDATE Sponsors SET Team='Racing Point WHERE Name='BWT'")
+                c.execute("UPDATE Sponsors SET Team='Racing Point' WHERE Name='BWT'")
                 c.execute("UPDATE Teams SET Appearance='Racing Point', Sponsor='BWT' WHERE Name='Racing Point'")
                 c.execute("UPDATE Teams SET Appearance='Alfa Romeo' WHERE Name='Alfa Romeo'")
+                c.execute("UPDATE Cars SET Engine='Honda' WHERE Team='Red Bull'")
+                c.execute("UPDATE Engines SET Manufacturer='Red Bull' WHERE Name='Honda'")
+                if GAME.team=="Red Bull":
+                    GAME.engine="Honda"
             elif GAME.season==2020:
                 GAME.news.append("BREAKING NEWS! Toro Rosso have rebranded as AlphaTauri.")
                 F1.commit()
@@ -13016,6 +13095,7 @@ class Game:
                 GAME.news.append("BREAKING NEWS! F1 have introduced sprint races to the calendar.")
                 GAME.news.append("BREAKING NEWS! Racing Point have rebranded as Aston Martin.")
                 GAME.news.append("BREAKING NEWS! Renault have rebranded as Alpine.")
+                GAME.news.append("BREAKING NEWS! McLaren are now using Mercedes engines.")
                 F1.commit()
                 F1.close()
                 GAME.TeamAcquired("Racing Point","Aston Martin")
@@ -13027,6 +13107,7 @@ class Game:
                 c.execute("UPDATE Sponsors SET Team='Aston Martin' WHERE Name='Aramco'")
                 c.execute("UPDATE Teams SET Appearance='Aston Martin', Sponsor='Aramco' WHERE Name='Aston Martin'")
                 c.execute("UPDATE Teams SET Appearance='Alpine' WHERE Name='Alpine'")
+                c.execute("UPDATE Cars SET Engine='Mercedes' WHERE Team='McLaren'")
             elif GAME.season==2024:
                 GAME.news.append("BREAKING NEWS! Alfa Romeo have rebranded as Kick Sauber")
                 GAME.news.append("BREAKING NEWS! AlphaTauri have rebranded as RB.")
@@ -13041,6 +13122,8 @@ class Game:
                 c.execute("UPDATE Sponsors SET Team='RB' WHERE Name='Visa & Cash App'")
                 c.execute("UPDATE Teams SET Appearance='Racing Bulls', Sponsor='Visa & Cash App' WHERE Name='RB'")
                 c.execute("UPDATE Teams SET Appearance='Kick Sauber' WHERE Name='Kick Sauber'")
+                if GAME.team!="Ferrari":
+                    c.execute("UPDATE Drivers SET NewTeam='Ferrari' NewRole='2', ContractEnd=2026 WHERE Name='Lewis Hamilton' AND Team!='Ferrari'")
             elif GAME.season==2025:
                 GAME.news.append("BREAKING NEWS! RB have rebranded as Racing Bulls.")
                 F1.commit()
@@ -13323,7 +13406,7 @@ class Game:
                             GAME.news.append(f"{GAME.Sanitise(f[x])} has switched to using {engine} engines.")
                     c.execute('''UPDATE Cars SET Engine="Honda" WHERE Team=?''',(name,))
                     c.execute("UPDATE Engines SET Manufacturer=? WHERE Name='Honda'",(name,))
-                if GAME.season!=2014 and GAME.season!=2015:
+                if GAME.season>2026:
                     #New Engine
                     f=c.execute('''SELECT Name FROM Teams WHERE Name!="Cadillac" AND Name!="Red Bull"''').fetchall()
                     regulationChange=int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))
@@ -13720,7 +13803,8 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Virgin Upgrade","HRT Upgrade","Lotus Upgrade","Sauber Display","Virgin Display","HRT Display","Lotus Renault Display","Lotus Renault Upgrade","Caterham Display",
         "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display",
         "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade",
-        "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade","Qualifying Grid"]
+        "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade","Qualifying Grid",
+        "2015 McLaren Display"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
@@ -13751,10 +13835,10 @@ for x in range(len(driverHeads)):
     else:
         missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
-       "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","Amazon","Ford",
-       "Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","Alfa Romeo","HRT","Manor"]
-xDif=[90,82,88,95,110,95,92,100,95,90,105,98,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99]
-yDif=[115,90,95,108,105,80,90,70,122,80,108,135,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75]
+       "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","McLaren Honda",
+       "Alfa Romeo","Caterham","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","HRT","Manor"]
+xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88]
+yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,77]
 path=os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 if os.path.isfile(path):
     GAME.suits=[tk.PhotoImage(file=path)]
