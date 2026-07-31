@@ -214,6 +214,7 @@ class Game:
         self.eventLaps=[]
         self.eventOptions=[]
         self.suitTest=0
+        self.appearance=0
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -589,7 +590,7 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Miami", "United States of America", 5.412, 57, 50, 5, 25, "Low", 50, 1, 1, 3, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Imola", "Italy", 4.909, 63, 70, 5, 20, "Medium", 30, 0, 0, 2, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Monte Carlo", "Monaco", 3.337, 78, 88, 25, 15, "Low", 5, 0, 0, 1, 0, 0, 0)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Catalunya", "Spain"0, 5, 25, "Medium", 65, 0, 0, 3, 0, 0, 0)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Catalunya", "Spain", 4.657, 66, 20, 5, 25, "Medium", 65, 0, 0, 3, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Montreal", "Canada", 4.361, 70, 40, 10, -15, "Low", 48, 1, 1, 3, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Red Bull Ring", "Austria", 4.318, 71, 65, 5, 15, "High", 75, 0, 0, 4, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Silverstone", "United Kingdom", 5.891, 52, 50, 65, 18, "High", 65, 1, 0, 4, 0, 0, 0)''')
@@ -628,49 +629,49 @@ class Game:
         c.execute('''INSERT into Player (Name, Country, Team, newTeam, Season, Race, RegulationChange, Points, Wins, Championships, NextYearEngine, Actions, Financial, Management, Warnings, TyreWear, MovingTo, StartYear, CostCap, PitStop, Stopper, StopTrack) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.name, GAME.country, GAME.team, GAME.newTeam, GAME.startYear, -1, regulationChange, 0, 0, 0, 0, 3, 5, 3, 0, 0, 0, GAME.startYear, 135000000, 100, -1, -1))
             
         #History
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1984, "Niki Lauda", "McLaren")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1985, "Alain Prost", "McLaren")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1986, "Alain Prost", "Williams")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1987, "Nelson Piquet", "Williams")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1988, "Ayrton Senna", "McLaren")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1989, "Alain Prost", "McLaren")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1990, "Ayrton Senna", "McLaren")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1991, "Ayrton Senna", "McLaren")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1992, "Nigel Mansell", "Williams")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1993, "Alain Prost", "Williams")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1994, "Michael Schumacher", "Williams")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1995, "Michael Schumacher", "Benneton")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1996, "Damon Hill", "Williams")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1997, "Jacques Villeneuve", "Williams")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1998, "Mika Hakkinen", "McLaren")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (1999, "Mika Hakkinen", "Ferrari")''')        
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2000, "Michael Schumacher", "Ferrari")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2001, "Michael Schumacher", "Ferrari")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2002, "Michael Schumacher", "Ferrari")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2003, "Michael Schumacher", "Ferrari")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2004, "Michael Schumacher", "Ferrari")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2005, "Fernando Alonso", "Renault")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2006, "Fernando Alonso", "Renault")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2007, "Kimi Raikkonen", "Ferrari")''')
-        c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2008, "Lewis Hamilton", "Ferrari")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1984, "Niki Lauda", "McLaren", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1985, "Alain Prost", "McLaren", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1986, "Alain Prost", "McLaren", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1987, "Nelson Piquet", "Williams", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1988, "Ayrton Senna", "McLaren", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1989, "Alain Prost", "McLaren", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1990, "Ayrton Senna", "McLaren", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1991, "Ayrton Senna", "McLaren", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1992, "Nigel Mansell", "Williams", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1993, "Alain Prost", "Williams", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1994, "Michael Schumacher", "Benneton", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1995, "Michael Schumacher", "Benneton", "Benneton")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1996, "Damon Hill", "Williams", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1997, "Jacques Villeneuve", "Williams", "Williams")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1998, "Mika Hakkinen", "McLaren", "McLaren")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1999, "Mika Hakkinen", "McLaren", "Ferrari")''')        
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2000, "Michael Schumacher", "Ferrari", "Ferrari")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2001, "Michael Schumacher", "Ferrari", "Ferrari")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2002, "Michael Schumacher", "Ferrari", "Ferrari")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2003, "Michael Schumacher", "Ferrari", "Ferrari")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2004, "Michael Schumacher", "Ferrari", "Ferrari")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2005, "Fernando Alonso", "Renault", "Renault")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2006, "Fernando Alonso", "Renault", "Renault")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2007, "Kimi Raikkonen", "Ferrari", "Ferrari")''')
+        c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2008, "Lewis Hamilton", "McLaren", "Ferrari")''')
         if GAME.startYear==2026:
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2009, "Jenson Button", "Brawn")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2010, "Sebastian Vettel", "Red Bull")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2011, "Sebastian Vettel", "Red Bull")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2012, "Sebastian Vettel", "Red Bull")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2013, "Sebastian Vettel", "Red Bull")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2014, "Lewis Hamilton", "Mercedes")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2015, "Lewis Hamilton", "Mercedes")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2016, "Nico Rosberg", "Mercedes")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2017, "Lewis Hamilton", "Mercedes")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2018, "Lewis Hamilton", "Mercedes")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2019, "Lewis Hamilton", "Mercedes")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2020, "Lewis Hamilton", "Mercedes")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2021, "Max Verstappen", "Mercedes")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2022, "Max Verstappen", "Red Bull")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2023, "Max Verstappen", "Red Bull")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2024, "Max Verstappen", "McLaren")''')
-            c.execute('''INSERT into History (Year, Driver, Constructor) VALUES (2025, "Lando Norris", "McLaren")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2009, "Jenson Button", "Brawn GP", "Brawn GP")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2010, "Sebastian Vettel", "Red Bull", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2011, "Sebastian Vettel", "Red Bull", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2012, "Sebastian Vettel", "Red Bull", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2013, "Sebastian Vettel", "Red Bull", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2014, "Lewis Hamilton", "Mercedes", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2015, "Lewis Hamilton", "Mercedes", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2016, "Nico Rosberg", "Mercedes", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2017, "Lewis Hamilton", "Mercedes", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2018, "Lewis Hamilton", "Mercedes", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2019, "Lewis Hamilton", "Mercedes", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2020, "Lewis Hamilton", "Mercedes", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2021, "Max Verstappen", "Red Bull", "Mercedes")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2022, "Max Verstappen", "Red Bull", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2023, "Max Verstappen", "Red Bull", "Red Bull")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2024, "Max Verstappen", "Red Bull", "McLaren")''')
+            c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (2025, "Lando Norris", "McLaren", "McLaren")''')
 
         #Buyers
         c.execute('''INSERT into Buyers(Name, Country) VALUES("BMW", "Germany")''')
@@ -1651,23 +1652,7 @@ class Game:
                                         else:
                                             c.execute("UPDATE Engines SET Reliability=? WHERE Name=?",(stat,engine,))
                         root.after(10000, lambda: GAME.Menu())
-                    if team=="McLaren" and GAME.season<2026:
-                        appearance="Vodafone McLaren"
-                    elif team in steam:
-                        appearance=team
-                    else:
-                        appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
-                    if appearance!="0":
-                        if appearance in steam:
-                            logo=logos[steam.index(appearance)-1]
-                        else:
-                            try:
-                                logo=sponsorLogos[sponsors.index(appearance)]
-                            except:
-                                logo=0
-                        if logo!=0:
-                            canvas.image=logo
-                            canvas.create_image(1250, 685, anchor=tk.NW, image=logo)
+                    GAME.DisplayLogo(team,GAME.season,1250,685)
                     if topic!="Upgrade":
                         c.execute('''UPDATE Teams SET PressConferences=? WHERE Name=?''',(pressConferenceNumber,team,))
                     F1.commit()
@@ -1730,23 +1715,11 @@ class Game:
                         GAME.Button("Decline",350,550)
                         GAME.Button("Accept",890,550)
                         GAME.screen="Team Offer"
-                        if GAME.offer=="McLaren" and GAME.season<2026:
-                            appearance="Vodafone McLaren"
-                        elif GAME.offer in steam:
-                            appearance=GAME.offer
-                        else:
-                            appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.offer,)).fetchall()[0])
-                        if appearance!="0":
-                            if appearance in steam:
-                                logo=logos[steam.index(appearance)-1]
-                            else:
-                                try:
-                                    logo=sponsorLogos[sponsors.index(appearance)]
-                                except:
-                                    logo=0
-                            if logo!=0:
-                                canvas.image=logo
-                                canvas.create_image(675, 480, anchor=tk.NW, image=logo)
+                        F1.commit()
+                        F1.close()
+                        GAME.DisplayLogo(GAME.offer,GAME.season,675,480)
+                        F1=sqlite3.connect(GAME.database)
+                        c=F1.cursor()
                     else:
                         message.append("PRESS CONFERENCE! You are holding a press conference as Team Principal of "+GAME.team)
                         c.execute('''SELECT Track FROM Calendar WHERE ID=?''',(GAME.race,))
@@ -1758,25 +1731,9 @@ class Game:
                         GAME.displayed=0
                         GAME.Expectations()
                 c.execute('''UPDATE Teams SET PressConferences=? WHERE Name=?''',(pressConferenceNumber,GAME.team,))
-                if GAME.team=="McLaren" and GAME.season<2026:
-                        appearance="Vodafone McLaren"
-                elif GAME.team in steam:
-                    appearance=GAME.team
-                else:
-                    appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
-                    if appearance!="0":
-                        if appearance in steam:
-                            logo=logos[steam.index(appearance)-1]
-                        else:
-                            try:
-                                logo=sponsorLogos[sponsors.index(appearance)]
-                            except:
-                                logo=0
-                        if logo!=0:
-                            canvas.image=logo
-                            canvas.create_image(1400, 730, anchor=tk.NW, image=logo)
                 F1.commit()
                 F1.close()
+                GAME.DisplayLogo(GAME.team,GAME.season,1400,730)
         for x in range(len(message)):
             canvas.create_text(80, 240+(x*30), text=message[x], fill="black", font=("Arial", 20), anchor="nw")
     def NextEngine(self):
@@ -1851,27 +1808,6 @@ class Game:
             canvas.create_text(60, 470, text="Consequences:", fill="#D4D4D4", font=("Arial", 30), anchor="nw")
             for x in range(len(consequence)):
                 canvas.create_text(60, 520+(50*x), text=consequence[x], fill="#D4D4D4", font=("Arial", 30), anchor="nw")
-            if GAME.team=="McLaren" and GAME.season<2026:
-                appearance="Vodafone McLaren"
-            elif GAME.team in steam:
-                appearance=GAME.team
-            else:
-                appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
-            if appearance!="0":
-                if appearance in steam:
-                    logo=logos[steam.index(appearance)-1]
-                else:
-                    try:
-                        logo=sponsorLogos[sponsors.index(appearance)]
-                    except:
-                        logo=0
-                if logo!=0:
-                    canvas.image=logo
-                    canvas.create_image(950, 400, anchor=tk.NW, image=logo)
-            logo=sponsorLogos[sponsors.index(GAME.sponsor)]
-            canvas.image=logo
-            canvas.create_image(1150, 400, anchor=tk.NW, image=logo)
-
             reputation=int(GAME.Sanitise(c.execute("SELECT Reputation FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
             income=int(GAME.Sanitise(c.execute("SELECT Income FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
             if approval=="Happy":
@@ -1898,6 +1834,7 @@ class Game:
                 income=1
             c.execute("UPDATE Teams SET Reputation=?, Income=? WHERE Name=?",(reputation,income,GAME.team,))
             c.execute("UPDATE Player SET Financial=?, Management=?",(financial,management,))
+        GAME.DisplayLogo(GAME.team,GAME.season,950,400)
         root.after(10000, lambda: GAME.Menu())
     def Menu(self):
         if os.path.isfile(GAME.database):
@@ -1978,25 +1915,8 @@ class Game:
             text=f"${money}"
         canvas.create_text(1190, 700, text=text, fill="#DADADA", font=("Arial", 30), anchor="nw")
     def BoardRoomLogo(self):
-        if GAME.team=="McLaren" and GAME.season<2026:
-            appearance="Vodafone McLaren"
-        elif GAME.team in steam:
-            appearance=GAME.team
-        else:
-            with sqlite3.connect(GAME.database) as c:
-                appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
-        if appearance!="0":
-            if appearance in steam:
-                logo=logos[steam.index(appearance)-1]
-            else:
-                try:
-                    logo=sponsorLogos[sponsors.index(appearance)]
-                except:
-                    logo=0
-            if logo!=0:
-                canvas.image=logo
-                canvas.create_image(1090, 220, anchor=tk.NW, image=logo)
-                canvas.create_image(240, 220, anchor=tk.NW, image=logo)
+        GAME.DisplayLogo(GAME.team,GAME.season,1090,220)
+        GAME.DisplayLogo(GAME.team,GAME.season,240,220)
     def Hire(self,team):
         F1=sqlite3.connect(GAME.database)
         c=F1.cursor()
@@ -8290,108 +8210,79 @@ class Game:
                 constructorsPoints=0
                 driversPoints=0
             won=0
-            for x in range(len(f)):
+        for x in range(len(f)):
+            with sqlite3.connect(GAME.database) as c:
                 name=GAME.Sanitise(c.execute('''SELECT Name FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0])
                 points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Teams WHERE Position=?''',(x+1,)).fetchall()[0]))
-                if x==0:
-                    colour="#F5C939"
-                    firstPoints=points
-                    if name=="McLaren" and GAME.season<2026:
-                        appearance="Vodafone McLaren"
-                    elif name in steam:
-                        appearance=name
-                    else:
-                        appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(name,)).fetchall()[0])
-                    if appearance!="0":
-                        if appearance in steam:
-                            logo=logos[steam.index(appearance)-1]
-                        else:
-                            try:
-                                logo=sponsorLogos[sponsors.index(appearance)]
-                            except:
-                                logo=0
-                        if logo!=0:
-                            canvas.image=logo
-                            canvas.create_image(280, 500, anchor=tk.NW, image=logo)
-                elif firstPoints-points>=constructorsPoints and GAME.race<=GAME.races:
-                    if x==1:
-                        won=1
-                    if won==1:
-                        colour="#DADADA"
-                    else:
-                        colour="#B60000"
+            if x==0:
+                colour="#F5C939"
+                firstPoints=points
+                GAME.DisplayLogo(name,GAME.season,280,500)
+            elif firstPoints-points>=constructorsPoints and GAME.race<=GAME.races:
+                if x==1:
+                    won=1
+                if won==1:
+                    colour="#DADADA"
                 else:
-                    colour=GAME.TeamColour(name,GAME.season)
-                engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
-                if engine in name:
-                    engine=""
-                fullName=f"{name} {engine}"
-                if len(fullName)>30:
-                    fullName=name
-                if x<9:
-                    canvas.create_text(150, 130+(x*25), text=f"{x+1}. {fullName}", fill=colour, font=("Arial", 15), anchor="nw")
-                else:
-                    canvas.create_text(145, 130+(x*25), text=f"{x+1}. {fullName}", fill=colour, font=("Arial", 15), anchor="nw")
-                if points==1:
-                    canvas.create_text(500, 130+(x*25), text="1 Point", fill=colour, font=("Arial", 15), anchor="nw")
-                elif points<10:
-                    canvas.create_text(500, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
-                elif points<100:
-                    canvas.create_text(495, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
-                elif points<1000:
-                    canvas.create_text(490, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
-                else:
-                    canvas.create_text(485, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
-        f=c.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall()
-        won=0
-        for x in range(len(f)):
-            if x<26:
-                name=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
-                team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
-                points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0]))
-                if x==0:
-                    colour="#F5C939"
-                    firstPoints=points
-                elif firstPoints-points>=driversPoints and GAME.race<=GAME.races:
-                    if x==1:
-                        won=1
-                    if won==1:
-                        colour="#DADADA"
-                    else:
-                        colour="#B60000"
-                else:
-                    colour=GAME.TeamColour(team,GAME.season)
-                if team=="Free Agent" or team=="Dead" or team=="Retired":
-                    team=""
-                if x<9:
-                    canvas.create_text(770, 130+(x*25), text=f"{x+1}. {name} {team}", fill=colour, font=("Arial", 15), anchor="nw")
-                else:
-                    canvas.create_text(765, 130+(x*25), text=f"{x+1}. {name} {team}", fill=colour, font=("Arial", 15), anchor="nw")
-                if points==1:
-                    canvas.create_text(1290, 130+(x*25), text="1 Point", fill=colour, font=("Arial", 15), anchor="nw")
-                elif points<10:
-                    canvas.create_text(1290, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
-                elif points<100:
-                     canvas.create_text(1285, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
-                else:
-                    canvas.create_text(1280, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
-        if GAME.team=="McLaren" and GAME.season<2026:
-            appearance="Vodafone McLaren"
-        elif GAME.team in steam:
-            appearance=GAME.team
-        else:
-            appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
-        if appearance!="0":
-            if appearance in steam:
-                logo=logos[steam.index(appearance)-1]
+                    colour="#B60000"
             else:
-                try:
-                    logo=sponsorLogos[sponsors.index(appearance)]
-                except:
-                    logo=0
-            if logo!=0:
-                canvas.image=logo
-                canvas.create_image(1300, 5, anchor=tk.NW, image=logo)
+                colour=GAME.TeamColour(name,GAME.season)
+            with sqlite3.connect(GAME.database) as c:
+                engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(name,)).fetchall()[0])
+            if engine in name:
+                engine=""
+            fullName=f"{name} {engine}"
+            if len(fullName)>30:
+                fullName=name
+            if x<9:
+                canvas.create_text(150, 130+(x*25), text=f"{x+1}. {fullName}", fill=colour, font=("Arial", 15), anchor="nw")
+            else:
+                canvas.create_text(145, 130+(x*25), text=f"{x+1}. {fullName}", fill=colour, font=("Arial", 15), anchor="nw")
+            if points==1:
+                canvas.create_text(500, 130+(x*25), text="1 Point", fill=colour, font=("Arial", 15), anchor="nw")
+            elif points<10:
+                canvas.create_text(500, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+            elif points<100:
+                canvas.create_text(495, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+            elif points<1000:
+                canvas.create_text(490, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+            else:
+                canvas.create_text(485, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+        with sqlite3.connect(GAME.database) as c:
+            f=c.execute('''SELECT Name FROM Drivers WHERE Position!=0''').fetchall()
+            won=0
+            for x in range(len(f)):
+                if x<26:
+                    name=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
+                    team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
+                    points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0]))
+                    if x==0:
+                        colour="#F5C939"
+                        firstPoints=points
+                    elif firstPoints-points>=driversPoints and GAME.race<=GAME.races:
+                        if x==1:
+                            won=1
+                        if won==1:
+                            colour="#DADADA"
+                        else:
+                            colour="#B60000"
+                    else:
+                        colour=GAME.TeamColour(team,GAME.season)
+                    if team=="Free Agent" or team=="Dead" or team=="Retired":
+                        team=""
+                    if x<9:
+                        canvas.create_text(770, 130+(x*25), text=f"{x+1}. {name} {team}", fill=colour, font=("Arial", 15), anchor="nw")
+                    else:
+                        canvas.create_text(765, 130+(x*25), text=f"{x+1}. {name} {team}", fill=colour, font=("Arial", 15), anchor="nw")
+                    if points==1:
+                        canvas.create_text(1290, 130+(x*25), text="1 Point", fill=colour, font=("Arial", 15), anchor="nw")
+                    elif points<10:
+                        canvas.create_text(1290, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+                    elif points<100:
+                         canvas.create_text(1285, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+                    else:
+                        canvas.create_text(1280, 130+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+        GAME.DisplayLogo(GAME.team,GAME.season,1300,5)
         if final==0:
             GAME.Button("Back",5,730)
             if GAME.startYear==2026:
@@ -8412,22 +8303,7 @@ class Game:
                 points=int(GAME.Sanitise(c.execute("SELECT Points FROM PitStops WHERE Position=?",(x+1,)).fetchall()[0]))
             if x==0:
                 colour="#F5C939"
-                if name in steam:
-                    appearance=name
-                else:
-                    with sqlite3.connect(GAME.database) as c:
-                        appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(name,)).fetchall()[0])
-                if appearance!="0":
-                    if appearance in steam:
-                        logo=logos[steam.index(appearance)-1]
-                    else:
-                        try:
-                            logo=sponsorLogos[sponsors.index(appearance)]
-                        except:
-                            logo=0
-                    if logo!=0:
-                        canvas.image=logo
-                        canvas.create_image(280, 600, anchor=tk.NW, image=logo)
+                GAME.DisplayLogo(name,GAME.season,280,600)
                 if final==1:
                     with sqlite3.connect(GAME.database) as c:
                         money=int(GAME.Sanitise(c.execute("SELECT Money FROM Teams WHERE Name=?",(name,)).fetchall()[0]))+10000000
@@ -9102,27 +8978,8 @@ class Game:
                         else:
                             X=1000
                             Y=130*(x-6)
-                        if team=="Create New Team":
-                            appearance="0"
-                        elif team=="McLaren" and GAME.season<2026:
-                            appearance="Vodafone McLaren"
-                        elif team in steam:
-                            appearance=team
-                        else:
-                            with sqlite3.connect(GAME.database) as c:
-                                appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
-                        if appearance!="0":
-                            try:
-                                GAME.BackgroundColour()
-                                if appearance in steam:
-                                    logo=logos[steam.index(appearance)-1]
-                                else:
-                                    logo=sponsorLogos[sponsors.index(appearance)]
-                                canvas.image=logo
-                                canvas.create_image(X, Y, anchor=tk.NW, image=logo)
-                            except:
-                                appearance="0"
-                        if appearance=="0":
+                        GAME.DisplayLogo(team,GAME.season,X,Y)
+                        if GAME.appearance=="0":
                             canvas.create_text(X-(len(team)*4)+55, Y+45, text=team, fill="black", font=("Arial", 12), anchor="nw")
                         if x==0:
                             if GAME.fired==0:
@@ -9240,26 +9097,11 @@ class Game:
         canvas.create_text(30, 200, text=driver, fill="black", font=("Arial", 40), anchor="nw")
         canvas.create_text(820, 150, text="Constructors' Champion:", fill="black", font=("Arial", 40), anchor="nw")
         canvas.create_text(880, 400, text=constructor, fill="black", font=("Arial", 60), anchor="nw")
-        if constructor in steam:
-            GAME.BackgroundColour()
-            if constructor=="McLaren" and GAME.season<2026:
-                appearance="Vodafone McLaren"
-            else:
-                appearance=constructor
-        else:
-            with sqlite3.connect(GAME.database) as c:
-                appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(constructor,)).fetchall()[0])
-        if appearance!="0":
-            if appearance in steam:
-                logo=logos[steam.index(appearance)-1]
-            else:
-                logo=sponsorLogos[sponsors.index(appearance)]
-            canvas.image=logo
-            canvas.create_image(980, 500, anchor=tk.NW, image=logo)
+        GAME.DisplayLogo(constructor,GAME.season,980,500)
         with sqlite3.connect(GAME.database) as c:
             GAME.race+=1
             c.execute("UPDATE Player SET Race=?",(GAME.race,))
-            c.execute("INSERT into History (Year, Driver, Constructor) VALUES (?, ?, ?)",(GAME.season,driver,constructor,))
+            c.execute("INSERT into History (Year, Driver, Team, Constructor) VALUES (?, ?, ?, ?)",(GAME.season,driver,team,constructor,))
             championships=int(GAME.Sanitise(c.execute("SELECT Championships FROM Drivers WHERE Position=1").fetchall()[0]))+1
             if championships==1:
                 canvas.create_text(30, 250, text=f"First World Championship!", fill="black", font=("Arial", 40), anchor="nw")
@@ -10054,7 +9896,7 @@ class Game:
             if event.x>=400 and event.x<=600 and event.y>=510 and event.y<=560:
                 #Team Data
                 GAME.ChangeScreen("Team Data")
-                GAME.DisplayLogo()
+                GAME.DisplayLogo(GAME.team,GAME.season,1250,30)
                 with sqlite3.connect(GAME.database) as c:
                     country=GAME.Sanitise(c.execute("SELECT Country FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
                     position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
@@ -10106,7 +9948,7 @@ class Game:
             elif event.x>=870 and event.x<=1070 and event.y>=580 and event.y<=630:
                 #Achievements
                 GAME.ChangeScreen("Achievements")
-                GAME.DisplayLogo()
+                GAME.DisplayLogo(GAME.team,GAME.season,1250,30)
                 GAME.DisplayMoney()
                 GAME.Button("Back",5,730)
                 with sqlite3.connect(GAME.database) as c:
@@ -10134,14 +9976,17 @@ class Game:
                     year=GAME.season-25+x
                     with sqlite3.connect(GAME.database) as c:
                         driver=GAME.Sanitise(c.execute("SELECT Driver FROM History WHERE Year=?",(year,)).fetchall()[0])
+                        team=GAME.Sanitise(c.execute("SELECT Team FROM History WHERE Year=?",(year,)).fetchall()[0])
                         constructor=GAME.Sanitise(c.execute("SELECT Constructor FROM History WHERE Year=?",(year,)).fetchall()[0])
+                    driverColour=GAME.TeamColour(team,year)
+                    constructorColour=GAME.TeamColour(constructor,year)
                     canvas.create_text(400, 160+(x*25), text=year, fill="black", font=("Arial", 20), anchor="nw")
-                    canvas.create_text(470, 160+(x*25), text=driver, fill="black", font=("Arial", 20), anchor="nw")
-                    canvas.create_text(750, 160+(x*25), text=constructor, fill="black", font=("Arial", 20), anchor="nw")
+                    canvas.create_text(470, 160+(x*25), text=driver, fill=driverColour, font=("Arial", 20), anchor="nw")
+                    canvas.create_text(750, 160+(x*25), text=constructor, fill=constructorColour, font=("Arial", 20), anchor="nw")
             elif event.x>=300 and event.x<=500 and event.y>=650 and event.y<=700:
                 #Team Management
                 GAME.ChangeScreen("Team Management")
-                GAME.DisplayLogo()
+                GAME.DisplayLogo(GAME.team,GAME.season,1250,30)
                 GAME.DisplayMoney()
                 GAME.Button("Back",5,730)
                 colour=GAME.TeamColour(GAME.team,GAME.season)
@@ -10798,20 +10643,7 @@ class Game:
                             else:
                                 GAME.Button("Promote",800,660)
                             GAME.Button("Back",5,730)
-                            if GAME.team=="McLaren" and GAME.season<2026:
-                                appearance="Vodafone McLaren"
-                            elif GAME.team in steam:
-                                appearance=GAME.team
-                            else:
-                                with sqlite3.connect(GAME.database) as c:
-                                    appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
-                            if appearance!="0":
-                                if appearance in steam:
-                                    logo=logos[steam.index(appearance)-1]
-                                else:
-                                    logo=sponsorLogos[sponsors.index(appearance)]
-                                canvas.image=logo
-                                canvas.create_image(900, 80, anchor=tk.NW, image=logo)
+                            GAME.DisplayLogo(GAME.team,GAME.season,900,80)
                             if GAME.role==GAME.car1 or GAME.role==GAME.car2:
                                 role="Driver"
                             else:
@@ -10859,20 +10691,7 @@ class Game:
                             GAME.ChangeScreen("Contract")
                             GAME.Button("Hire",800,660)
                             GAME.Button("Back",5,730)
-                            if GAME.team=="McLaren" and GAME.season<2026:
-                                appearance="Vodafone McLaren"
-                            elif GAME.team in steam:
-                                appearance=GAME.team
-                            else:
-                                with sqlite3.connect(GAME.database) as c:
-                                    appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
-                            if appearance!="0":
-                                if appearance in steam:
-                                    logo=logos[steam.index(appearance)-1]
-                                else:
-                                    logo=sponsorLogos[sponsors.index(appearance)]
-                                canvas.image=logo
-                                canvas.create_image(900, 80, anchor=tk.NW, image=logo)
+                            GAME.DisplayLogo(GAME.team,GAME.season,900,80)
                             salary="{:,}".format(GAME.salary)
                             canvas.create_text(445, 80, text=name, fill="black", font=("Arial", 40), anchor="nw")
                             canvas.create_text(445, 550, text=f"Salary: ${salary}", fill="black", font=("Arial", 30), anchor="nw")
@@ -11644,7 +11463,7 @@ class Game:
     def CarData(self):
         GAME.CarRanking()
         GAME.ChangeScreen("Car Data")
-        GAME.DisplayLogo()
+        GAME.DisplayLogo(GAME.team,GAME.season,1250,30)
         canvas.create_text(40, 5, text="Aero Ranking", fill=GAME.TeamColour(GAME.team,GAME.season), font=("Arial", 100), anchor="nw")
         with sqlite3.connect(GAME.database) as c:
             f=c.execute("SELECT Name FROM Teams").fetchall()
@@ -11761,7 +11580,7 @@ class Game:
         GAME.Button("Back",5,730)
     def UpgradePage(self):
         GAME.ChangeScreen("Upgrade")
-        GAME.DisplayLogo()
+        GAME.DisplayLogo(GAME.team,GAME.season,1250,30)
         GAME.DisplayMoney()
         if GAME.actions==-1:
             cost=(GAME.maximumUpgradePoints-GAME.remainingUpgradePoints)*300000
@@ -11783,7 +11602,7 @@ class Game:
     def AerodynamicResearch(self):
         GAME.ChangeScreen("Research")
         GAME.DisplayMoney()
-        GAME.DisplayLogo()
+        GAME.DisplayLogo(GAME.team,GAME.season,1250,30)
         maxResearch=(round(GAME.money/3)//100000)*100000
         research=simpledialog.askstring(" ", f"Maximum ${'{:,}'.format(maxResearch)}")
         try:
@@ -11822,7 +11641,7 @@ class Game:
     def ResearchEngine(self):
         GAME.ChangeScreen("Research")
         GAME.DisplayMoney()
-        GAME.DisplayLogo()
+        GAME.DisplayLogo(GAME.team,GAME.season,1250,30)
         research=simpledialog.askstring(" ", "Engine Research")
         try:
             research=int(research)
@@ -12065,7 +11884,7 @@ class Game:
     def ContractParameters(self):
         GAME.ChangeScreen("Contract Parameters")
         GAME.DisplayMoney()
-        GAME.DisplayLogo()
+        GAME.DisplayLogo(GAME.team,GAME.season,1250,30)
         name=GAME.options[GAME.displayedName]
         canvas.create_text(10, 50, text=name, fill="black", font=("Arial", 50), anchor="nw")
         data=[]
@@ -12129,8 +11948,13 @@ class Game:
         GAME.Button("Name Selector",250,100)
         canvas.create_text(350, 170, text=GAME.options[GAME.displayed], fill="black", font=("Arial", 40), anchor="nw")
     def TeamColour(self,team,season):
-        if team=="McLaren" and season>2016 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5:
-            colour="#FF8700"
+        if team=="McLaren":
+            if season>2016 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5:
+                colour="#FF8700"
+            elif season<1997:
+                colour="#F54B28"
+            else:
+                colour="#C8CDD2"
         elif team=="Mercedes":
             colour="#1AE2CE"
         elif team=="Red Bull" or "Ford" in team:
@@ -12153,8 +11977,6 @@ class Game:
             colour="#C70000"
         elif "Cadillac" in team or "General Motors" in team:
             colour="#E6E6E6"
-        elif "McLaren" in team:
-            colour="#C8CDD2"
         elif team=="Brawn GP":
             colour="#CDFF00"
         elif team=="Toro Rosso":
@@ -12199,6 +12021,8 @@ class Game:
             colour="#002F6C"
         elif team=="APX GP":
             colour="#F5F5F5"
+        elif GAME.screen=="History" and "Honda" not in team:
+            colour="black"
         else:
             colour="white"
         return colour
@@ -12258,7 +12082,7 @@ class Game:
         c.execute('''CREATE TABLE Calendar(ID int, Track str)''')
         c.execute('''CREATE TABLE Tracks(Name str, Country str, Length float, Laps int, Risk int, RainChance int, Temperature int, Corners str, Straights int, Sprint int, Street int, Overtakeability int, First str, Second str, Third str)''')
         c.execute('''CREATE TABLE Player(Name str, Country str, Team str, newTeam int, Season int, Race int, RegulationChange int, Points int, Wins int, Championships int, NextYearEngine str, Actions int, Financial int, Management int, Warnings int, TyreWear int, MovingTo str, StartYear int, CostCap int, PitStop float, Stopper str, StopTrack str)''')
-        c.execute('''CREATE TABLE History(Year int, Driver str, Constructor str)''')
+        c.execute('''CREATE TABLE History(Year int, Driver str, Team str, Constructor str)''')
         c.execute('''CREATE TABLE Buyers(Name str, Country str)''')
         c.execute('''CREATE TABLE TeamPrincipals(Name str, Team str)''')
         c.execute('''CREATE TABLE PitStops(Team str, Position int, Points int)''')
@@ -12440,20 +12264,7 @@ class Game:
         GAME.screen="Renewal"
         GAME.Button("Renew",800,660)
         GAME.Button("Back",5,730)
-        if GAME.team=="McLaren" and GAME.season<2026:
-                        appearance="Vodafone McLaren"
-        elif GAME.team in steam:
-            appearance=GAME.team
-        else:
-            with sqlite3.connect(GAME.database) as c:
-                appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
-        if appearance!="0":
-            if appearance in steam:
-                logo=logos[steam.index(appearance)-1]
-            else:
-                logo=sponsorLogos[sponsors.index(appearance)]
-            canvas.image=logo
-            canvas.create_image(900, 80, anchor=tk.NW, image=logo)
+        GAME.DisplayLogo(GAME.team,GAME.season,900,80)
         salary="{:,}".format(GAME.salary)
         canvas.create_text(445, 80, text=name, fill="black", font=("Arial", 40), anchor="nw")
         canvas.create_text(445, 550, text=f"Salary: ${salary}", fill="black", font=("Arial", 30), anchor="nw")
@@ -12507,23 +12318,7 @@ class Game:
                         else:
                             canvas.create_text(400, 440, text="Post-Season", fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(400, 510, text=team, fill=colour, font=("Arial", 50), anchor="nw")
-                    if team=="McLaren" and season<2026:
-                        appearance="Vodafone McLaren"
-                    elif team in steam:
-                        appearance=team
-                    else:
-                        appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
-                    if appearance!="0":
-                        if appearance in steam:
-                            logo=logos[steam.index(appearance)-1]
-                        else:
-                            try:
-                                logo=sponsorLogos[sponsors.index(appearance)]
-                            except:
-                                logo=0
-                        if logo!=0:
-                            canvas.image=logo
-                            canvas.create_image(1050, 270, anchor=tk.NW, image=logo)
+                    GAME.DisplayLogo(team,season,1050,270)
                     if len(c.execute("SELECT Name FROM Drivers WHERE Legend!=0").fetchall())>0:
                         canvas.create_text(275, 265, text="Legends", fill="#F5C939", font=("Algerian", 30), anchor="nw")
             c.commit()
@@ -12696,16 +12491,25 @@ class Game:
         if len(GAME.team)>10:
             X-100
         canvas.create_text(400, 50, text=("Welcome to "+GAME.team), fill="black", font=("Algerian", 40), anchor="nw")
-        GAME.DisplayLogo()
+        GAME.DisplayLogo(GAME.team,GAME.season,1250,30)
         GAME.DisplayTeam(GAME.team)
-    def DisplayLogo(self):
-        if GAME.team=="McLaren" and GAME.season<2026:
+    def DisplayLogo(self,team,season,x,y):
+        if team=="Create New Team":
+            appearance="0"
+        elif team=="McLaren" and season<2015:
             appearance="Vodafone McLaren"
-        elif GAME.team in steam:
-            appearance=GAME.team
+        elif team=="Williams" and season<2026:
+            if season<2014:
+                appearance="2009 Williams"
+            else:
+                appearance="2014 Williams"
+        elif team=="Mercedes" and season<2026:
+            appearance="2010 Mercedes"
+        elif team in steam:
+            appearance=team
         else:
             with sqlite3.connect(GAME.database) as c:
-                appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
+                appearance=GAME.Sanitise(c.execute("SELECT Appearance FROM Teams WHERE Name=?",(team,)).fetchall()[0])
         if appearance!="0":
             if appearance in steam:
                 logo=logos[steam.index(appearance)-1]
@@ -12716,7 +12520,8 @@ class Game:
                     logo=0
             if logo!=0:
                 canvas.image=logo
-                canvas.create_image(1250, 30, anchor=tk.NW, image=logo)
+                canvas.create_image(x, y, anchor=tk.NW, image=logo)
+        GAME.appearance=appearance
                 
     def DisplayGridLoop(self,position):
         F1=sqlite3.connect(GAME.database)
@@ -14137,7 +13942,8 @@ for x in range(len(driverHeads)):
         missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","McLaren Honda",
-       "Alfa Romeo","Caterham","White Mercedes","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","HRT","Manor"]
+       "Alfa Romeo","Caterham","White Mercedes","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams",
+       "2014 Williams","2010 Mercedes"]
 xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,100]
 yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,80]
 path=os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
