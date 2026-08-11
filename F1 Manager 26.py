@@ -215,6 +215,7 @@ class Game:
         self.eventOptions=[]
         self.suitTest=0
         self.appearance=0
+        self.pirelli=1
 
     def FillDatabase(self):
         F1=sqlite3.connect(GAME.database)
@@ -485,11 +486,17 @@ class Game:
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 1)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Refueling", 0)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Cost Cap", 1)''')
+            c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Pirelli", 1)''')
+            GAME.refueling=0
+            GAME.pirelli=1
         else:
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Old Points System", 1)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("ERS", 2)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Refueling", 1)''')
             c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Cost Cap", 0)''')
+            c.execute('''INSERT into Regulations (Regulation, True) VALUES ("Pirelli", 0)''')
+            GAME.refueling=1
+            GAME.pirelli=0
 
         #Engines
         if GAME.startYear==2026:
@@ -2750,7 +2757,7 @@ class Game:
                                 for y in range(4):
                                     actions.append("Research")
                                 engine=c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(team,)).fetchall()
-                                if len(engine)>0 and GAME.season!=2016 and GAME.season!=2021 and not (GAME.team!="Mercedes" and team=="Mercedes" and GAME.season==2013):
+                                if len(engine)>0 and GAME.season!=2016 and GAME.season!=2021 and not (GAME.team!="Mercedes" and team=="Mercedes" and GAME.season==2013) and not (GAME.season==2025 and team=="Alpine"):
                                     engine=GAME.Sanitise(engine[0])
                                     GAME.EngineResearch(engine,team)
                     if GAME.race>=8:
@@ -3191,13 +3198,15 @@ class Game:
                         GAME.AddToLog(f"{GAME.drivers[index]} has set the fastest lap of the race so far.")
                     
                     distance+=speed
-                if GAME.fuel[index]<=0:
+                if GAME.fuel[index]<=0 and GAME.teams[index]==GAME.team:
                     #Run out of fuel
                     GAME.AddToLog(GAME.drivers[index]+" has run out of fuel.")
                     runOutOfFuel.append(index)
                     if index in GAME.pitting:
                         GAME.pitting.remove(index)
                 else:
+                    if GAME.fuel[index]<0:
+                        GAME.fuel[index]=0
                     if distance>=GAME.length:
                         distance-=GAME.length
                         lap=GAME.lap[index]+1
@@ -4275,7 +4284,9 @@ class Game:
                                 pitStopTime=random.uniform(1.8, 2.3)   # Amazing
                             #Refueling
                             if GAME.refueling==1:
-                                totalFuelNeeded=round(100*(GAME.laps-GAME.lap[GAME.positions[0]])/GAME.laps)
+                                totalFuelNeeded=round(110*(GAME.laps-GAME.lap[GAME.positions[0]])/GAME.laps)
+                                if totalFuelNeeded>100:
+                                    totalFuelNeeded=100
                                 if GAME.fuel[driverIndex]<totalFuelNeeded:
                                     fuelNeeded=totalFuelNeeded-GAME.fuel[driverIndex]
                                     pitStopTime+=fuelNeeded/10
@@ -4311,7 +4322,7 @@ class Game:
                             totalTimeLost=20+pitStopTime+penalty
                             distanceLost=round(totalTimeLost*41.67,3)
                             GAME.distance[driverIndex]-=distanceLost
-                            if GAME.replay==4 or GAME.replay==5 or GAME.season<2011:
+                            if GAME.pirelli==0:
                                 if GAME.pitTyre[driverIndex]=="Medium":
                                     if GAME.tyre[driverIndex]=="Hard":
                                         GAME.pitTyre[driverIndex]="Soft"
@@ -4768,7 +4779,7 @@ class Game:
             for x in range(5):
                 if Tyres[x]=="Wet":
                     text=f"{GAME.expectedTyreLife[3]} Laps"
-                elif Tyres[x]=="Medium" and (GAME.season<2011 or GAME.replay==4):
+                elif Tyres[x]=="Medium" and GAME.pirelli==0:
                     text="Pirelli \U0001F512"
                 else:
                     text=f"{GAME.expectedTyreLife[x]} Laps"
@@ -4788,7 +4799,7 @@ class Game:
                 canvas.create_text(15, 80+(x*25), text=f"{x+1}. {GAME.drivers[index]}", fill=colour, font=("Arial", 15), anchor="nw")
             else:
                 canvas.create_text(10, 80+(x*25), text=f"{x+1}. {GAME.drivers[index]}", fill=colour, font=("Arial", 15), anchor="nw")
-            if GAME.season<2011 or (GAME.replay>3 and GAME.replay<7):
+            if GAME.pirelli==0:
                 colours=["#29E9D0","yellow","#B4B9C3","#00B4DC","#0046FF"]
             else:
                 colours=["red","yellow","white","green","blue"]
@@ -4857,6 +4868,8 @@ class Game:
                 #Refueling
                 if GAME.refueling==1:
                     totalFuelNeeded=round(110*(GAME.laps-lap)/GAME.laps)
+                    if totalFuelNeeded>100:
+                        totalFuelNeeded=100
                     if GAME.fuel[x]<totalFuelNeeded:
                         GAME.fuel[x]=totalFuelNeeded
                 if GAME.teams[x]!=GAME.team:
@@ -4869,7 +4882,7 @@ class Game:
                                 tyre="Medium"
                             elif (GAME.tyre[x]=="Medium" and GAME.tyreCompoundsUsed[x]==1) or random.randint(1,2)==1:
                                 tyre="Soft"
-                            elif GAME.season<2011:
+                            elif GAME.pirelli==0:
                                 tyre="Hard"
                             else:
                                 tyre="Medium"
@@ -4879,7 +4892,7 @@ class Game:
                                 num-=1
                             elif num==1 and GAME.tyre[x]=="Soft" and GAME.tyreCompoundsUsed[x]==1:
                                 num=3
-                            if num==1 or (GAME.season<2011 and GAME.tyre[x]=="Hard"):
+                            if num==1 or (GAME.pirelli==0 and GAME.tyre[x]=="Hard"):
                                 tyre="Soft"
                             elif num==2 and GAME.season>2010:
                                 tyre="Medium"
@@ -4970,7 +4983,7 @@ class Game:
                 tyre=tyres[x]
                 canvas.image=tyre
                 canvas.create_image(510+(300*x), 230, anchor=tk.NW, image=tyre)
-                if x==1 and (GAME.season<2011 or GAME.replay==4):
+                if x==1 and GAME.pirelli==0:
                     canvas.create_text(650+(300*x), 260, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
                 else:
                     canvas.create_text(650+(300*x), 260, text=(f"{GAME.expectedTyreLife[x]} Laps"), fill="black", font=("Arial", 20), anchor="nw")
@@ -5054,7 +5067,7 @@ class Game:
                 tyre=tyres[x]
                 canvas.image=tyre
                 canvas.create_image(510+(300*x), 230, anchor=tk.NW, image=tyre)
-                if x==1 and (GAME.replay==4 or GAME.season<2011):
+                if x==1 and GAME.pirelli==0:
                     canvas.create_text(650+(300*x), 260, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
                 else:
                     canvas.create_text(650+(300*x), 260, text=(f"{GAME.expectedTyreLife[x]} Laps"), fill="black", font=("Arial", 20), anchor="nw")
@@ -5124,7 +5137,7 @@ class Game:
                                 tyre="Medium"
                             elif GAME.tyre[index]!="Hard" or GAME.tyreCompoundsUsed[index]>1:
                                 tyre="Hard"
-                            elif GAME.season<2011:
+                            elif GAME.pirelli==0:
                                 tyre="Soft"
                             else:
                                 tyre="Medium"
@@ -5230,6 +5243,8 @@ class Game:
                     #Refueling
                     if GAME.refueling==1:
                         totalFuelNeeded=round(110*(GAME.laps-lap)/GAME.laps)
+                        if totalFuelNeeded>100:
+                            totalFuelNeeded=100
                         if GAME.fuel[index]<totalFuelNeeded:
                             fuelNeeded=totalFuelNeeded-GAME.fuel[index]
                             pitStopTime+=fuelNeeded/10
@@ -5301,7 +5316,7 @@ class Game:
         GAME.RefreshScreen()
         GAME.NextMove()
     def Leaderboard(self):
-        if GAME.season<2011 or (GAME.replay>3 and GAME.replay<7):
+        if GAME.pirelli==0:
             colours=["#29E9D0","yellow","#B4B9C3","#00B4DC","#0046FF"]
         else:
             colours=["red","yellow","white","green","blue"]
@@ -6695,6 +6710,7 @@ class Game:
             GAME.weatherMessage=[]
             GAME.tyreWear=[6,3,2,20]
             GAME.expectedTyreLife=[12,23,35,5]
+            GAME.pirelli=1
 
             for x in range(len(GAME.drivers)):
                 driver=GAME.drivers[x]
@@ -6832,6 +6848,7 @@ class Game:
             GAME.tyreWear=[6,3,2,20]
             GAME.expectedTyreLife=[12,23,35,5]
             GAME.rainChance=0
+            GAME.pirelli=1
                 
             GAME.ChangeScreen("Choose a Team 2021")
         elif GAME.replay==3:
@@ -6886,6 +6903,7 @@ class Game:
             GAME.tyreWear=[6,3,2,2]
             GAME.expectedTyreLife=[12,23,35,35]
             GAME.rainChance=0
+            GAME.pirelli=1
             for x in range(23):
                 GAME.positions.append(x)
                 GAME.tyrePreservation.append(0)
@@ -7005,6 +7023,7 @@ class Game:
             GAME.car1ID=11
             GAME.car2ID=20
             GAME.BackgroundColour()
+            GAME.pirelli=0
             for x in range(24):
                     GAME.positions.append(x)
                     GAME.tyrePreservation.append(0)
@@ -7199,6 +7218,7 @@ class Game:
         GAME.expectedTyreLife=[12,0,23,18]
         GAME.rainChance=0
         GAME.refueling=1
+        GAME.pirelli=0
         for x in range(22):
                 GAME.positions.append(x)
                 GAME.tyrePreservation.append(0)
@@ -7301,6 +7321,7 @@ class Game:
         GAME.expectedTyreLife=[12,23,35,35]
         GAME.rainChance=0
         GAME.refueling=1
+        GAME.pirelli=0
         for x in range(20):
                 GAME.positions.append(x)
                 GAME.tyrePreservation.append(0)
@@ -7880,7 +7901,7 @@ class Game:
                 valid=1
                 GAME.tyreWear=[]
                 for x in range(4):
-                    if x<2 and (GAME.replay==4 or GAME.replay==5 or GAME.season<2011):
+                    if x<2 and GAME.pirelli==0:
                         wear=round(GAME.wearConstant/1.2)
                     elif x==0:
                         wear=GAME.wearConstant
@@ -8112,7 +8133,7 @@ class Game:
                             #1 Stop
                             if GAME.expectedTyreLife[0]+GAME.expectedTyreLife[1]>=GAME.laps-3 and GAME.season>2010:
                                 tyreOptions=["Soft","Medium"]
-                            elif GAME.expectedTyreLife[0]+GAME.expectedTyreLife[2]>=GAME.laps-3 or GAME.season<2011:
+                            elif GAME.expectedTyreLife[0]+GAME.expectedTyreLife[2]>=GAME.laps-3 or GAME.pirelli==0:
                                 tyreOptions=["Soft","Hard"]
                             else:
                                 tyreOptions=["Medium","Hard"]
@@ -8174,7 +8195,7 @@ class Game:
         if GAME.replay==5:
             canvas.create_text(230, 420, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(1180, 380, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
-        elif GAME.replay==4 or GAME.season<2011:
+        elif GAME.pirelli==0:
             canvas.create_text(230, 420, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
             canvas.create_text(1180, 380, text=("Estimated: "+str(GAME.expectedTyreLife[3])+" Laps"), fill="black", font=("Arial", 20), anchor="nw")
         else:
@@ -8391,15 +8412,15 @@ class Game:
             else:
                 canvas.create_text(145, 230+(x*25), text=f"{x+1}. {name}", fill=colour, font=("Arial", 15), anchor="nw")
             if points==1:
-                canvas.create_text(550, 230+(x*25), text="1 Point", fill=colour, font=("Arial", 15), anchor="nw")
+                canvas.create_text(600, 230+(x*25), text="1 Point", fill=colour, font=("Arial", 15), anchor="nw")
             elif points<10:
-                canvas.create_text(550, 230+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+                canvas.create_text(600, 230+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
             elif points<100:
-                canvas.create_text(545, 230+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+                canvas.create_text(595, 230+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
             elif points<1000:
-                canvas.create_text(540, 230+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+                canvas.create_text(590, 230+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
             else:
-                canvas.create_text(535, 230+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
+                canvas.create_text(585, 230+(x*25), text=f"{points} Points", fill=colour, font=("Arial", 15), anchor="nw")
 
         #Fastest Stop
         with sqlite3.connect(GAME.database) as c:
@@ -8822,9 +8843,9 @@ class Game:
                     message="bringing back the points system from 2010 onwards in order to make it easier for more teams to score points."
             elif regulation=="ERS":
                 if GAME.proposed==1:
-                    message="bringing back ERS to make the races more interesting."
+                    message="bringing back the Battery to make the races more interesting."
                 elif GAME.proposed==0:
-                    message="getting rid of ERS in order to have more pure racing."
+                    message="getting rid of the Battery in order to have more pure racing."
                 else:
                     message="bringing back the old ERS system."
             elif regulation=="Fastest Lap Point":
@@ -8842,6 +8863,11 @@ class Game:
                     message="bringing back the cost cap."
                 else:
                     message="removing the cost cap."
+            elif regulation=="Pirelli":
+                if state==0:
+                    message="bringing back Pirelli tyres for more strategy options."
+                else:
+                    message="returning to Bridgestone tyres for different tyre compounds."
         GAME.ChangeScreen("Rule Vote")
         canvas.create_text(10, 150, text="The FIA is proposing", fill="#DADADA", font=("Arial", 20), anchor="nw")
         canvas.create_text(10, 180, text=message, fill="#DADADA", font=("Arial", 20), anchor="nw")
@@ -9097,8 +9123,6 @@ class Game:
                 name="McLaren Mastercard F1 Team"
             elif name=="Haas":
                 name="TGR Haas F1 Team"
-            elif name=="Williams":
-                name="Atlassian Williams F1 Team"
         elif name=="McLaren" and GAME.season<2015:
             name="Vodafone McLaren F1 Team"
         if name==originalName:
@@ -9117,16 +9141,16 @@ class Game:
             else:
                 if sponsor!="":
                     sponsor=f"{sponsor} "
-                if name=="Williams":
+                if name=="Williams" and GAME.season<2026:
                     if sponsor=="Martini ":
                         name="Williams Martini Racing"
                     else:
                         name=f"{sponsor}Williams Racing"
-                elif name=="McLaren" or name=="Cadillac" or name=="Red Bull" or name=="Haas" or name=="Alpine" or name=="Force India" or name=="Renault" or name=="Racing Point" or name=="HRT" or name=="Marussia":
+                elif name=="McLaren" or name=="Cadillac" or name=="Haas" or name=="Alpine" or name=="Force India" or name=="Renault" or name=="Racing Point" or name=="HRT" or name=="Marussia" or "Williams" in name:
                     name=f"{sponsor}{name} F1 Team"
                 elif name=="Kick Sauber" and sponsor=="Stake":
                     name="Kick Sauber Stake F1 Team"
-                elif name=="Toyota" or name=="Virgin" or name=="Manor":
+                elif name=="Red Bull" or name=="Toyota" or name=="Virgin" or name=="Manor":
                     name=f"{sponsor}{name} Racing"
                 elif name=="Lotus":
                     if GAME.season<2012:
@@ -9296,7 +9320,6 @@ class Game:
         elif GAME.screen=="Opening Menu":
             if event.x>=500 and event.x<=700 and event.y>=575 and event.y<=625:
                 GAME.startYear=2026
-                GAME.refueling=0
                 GAME.StartNewGame()
             elif event.x>=735 and event.x<=935 and event.y>=575 and event.y<=625 and GAME.newGame==0:
                 GAME.SelectSave()
@@ -11020,7 +11043,7 @@ class Game:
                         c.execute('''UPDATE Player SET NextYearEngine=?''',(engineChoice,))
                         if engineChoice==GAME.team and len(c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(GAME.team,)).fetchall())==0:
                             c.execute("UPDATE Engines SET Manufacturer='None' WHERE Manufacturer=?",(GAME.team,))
-                            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Research) VALUES (?, ?, 0, 0, 1)''',(GAME.team,GAME.team,))
+                            c.execute('''INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES (?, ?, 0, 0, 0, 1)''',(GAME.team,GAME.team,))
                             reputation=int(GAME.Sanitise(c.execute('''SELECT Reputation FROM Teams WHERE Name=?''',(GAME.team,)).fetchall()[0]))+5
                             c.execute('''UPDATE Teams SET Reputation=? WHERE Name=?''',(reputation,GAME.team,))
                         else:
@@ -11299,7 +11322,6 @@ class Game:
                     GAME.ReplayObjective()
             elif event.x>=1235 and event.x<=1435 and event.y>=730 and event.y<=780:
                 GAME.startYear=2009
-                GAME.refueling=1
                 GAME.StartNewGame()
         elif GAME.screen=="Safety Car Menu":
             tyre=-1
@@ -11741,6 +11763,8 @@ class Game:
             canvas.create_text(90, 190+(x*70), text=GAME.attributes[x], fill="black", font=("Arial", 20), anchor="nw")
             if GAME.upgradePoints[x]==1:
                 canvas.create_text(410, 190+(x*70), text="1 Point", fill="black", font=("Arial", 20), anchor="nw")
+            elif GAME.upgradePoints[x]>9:
+                canvas.create_text(402, 190+(x*70), text=f"{GAME.upgradePoints[x]} Points", fill="black", font=("Arial", 20), anchor="nw")
             else:
                 canvas.create_text(410, 190+(x*70), text=f"{GAME.upgradePoints[x]} Points", fill="black", font=("Arial", 20), anchor="nw")
         canvas.create_text(1080, 160, text="Remaining Available", fill="black", font=("Arial", 30), anchor="nw")
@@ -12207,9 +12231,9 @@ class Game:
             root.configure(background=colour)
     def StartNewGame(self):
         GAME.drivers=[]
-        GAME.database=1
         GAME.season=GAME.startYear
         GAME.costCap=135000000
+        GAME.pirelli=1
         while True:
             database=f"F1 Manager 26 Save Data {GAME.database}.db"
             try:
@@ -12522,6 +12546,7 @@ class Game:
             GAME.costCap=int(GAME.Sanitise(c.execute("SELECT CostCap FROM Player").fetchall()[0]))
             GAME.races=len(c.execute("SELECT Track FROM Calendar").fetchall())
             GAME.ers=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='ERS'").fetchall()[0]))
+            GAME.pirelli=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Pirelli'").fetchall()[0]))
             if GAME.races==0:
                 GAME.races=24
             if len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
@@ -13124,6 +13149,8 @@ class Game:
                     c.execute("UPDATE Drivers SET NewTeam='Ferrari', NewRole='Junior', NewSalary=100000, ContractEnd=2017 WHERE Name='Charles Leclerc' AND Team!=?",(GAME.team,))
                 if GAME.team!="McLaren":
                     c.execute("UPDATE Drivers SET NewTeam='McLaren', NewRole='Junior', NewSalary=100000, ContractEnd=2018 WHERE Name='Lando Norris' AND Team!=?",(GAME.team,))
+                    c.execute("UPDATE Drivers SET ContractEnd=2016 WHERE Team='McLaren' AND Role='2'")
+                    c.execute("UPDATE Drivers SET NewTeam='McLaren', NewRole='2', NewSalary=300000, ContractEnd=2018 WHERE Name='Stoffel Vandoorne' AND Team!=?",(GAME.team,))
                 if GAME.team!="Mercedes":
                     c.execute("UPDATE Drivers SET NewTeam='Mercedes', NewRole='Junior', NewSalary=100000, ContractEnd=2018 WHERE Name='George Russell' AND Team!=?",(GAME.team,))
                     c.execute("UPDATE Drivers SET NewTeam='Mercedes', NewRole='2', NewSalary=5000000, ContractEnd=2021 WHERE Name='Valtteri Bottas' AND Team!=?",(GAME.team,))
@@ -13269,6 +13296,7 @@ class Game:
                     c.execute("UPDATE Drivers SET NewTeam='Renault', NewRole='2', NewSalary=20000000, ContractEnd=2022 WHERE Name='Fernando Alonso' AND Team!=?",(GAME.team,))
             elif GAME.season==2021:
                 GAME.news.append("BREAKING NEWS! F1 have introduced sprint races to the calendar.")
+                GAME.news.append("BREAKING NEWS! F1 have introduced a Cost Cap.")
                 GAME.news.append("BREAKING NEWS! Racing Point have rebranded as Aston Martin.")
                 GAME.news.append("BREAKING NEWS! Renault have rebranded as Alpine.")
                 GAME.news.append("BREAKING NEWS! McLaren are now using Mercedes engines.")
@@ -13278,6 +13306,7 @@ class Game:
                 GAME.TeamAcquired("Renault","Alpine")
                 F1=sqlite3.connect(GAME.database)
                 c=F1.cursor()
+                c.execute("UPDATE Regulations SET True=1 WHERE Regulation='Cost Cap'")
                 c.execute("UPDATE Teams SET Sponsor='0' WHERE Sponsor='Aramco'")
                 c.execute("UPDATE Sponsors SET Team='None' WHERE Team='Aston Martin'")
                 c.execute("UPDATE Sponsors SET Team='Aston Martin' WHERE Name='Aramco'")
@@ -13620,7 +13649,7 @@ class Game:
                         GAME.news.append(f"as their Title Sponsor for the {GAME.season} season.")
                         c.execute("UPDATE Teams SET Sponsor=? WHERE Name=?",(sponsor,team,))
                         c.execute("UPDATE Sponsors SET Team=? WHERE Name=?",(team,sponsor,))
-                if random.randint(1,2)==2 and GAME.startYear==2026:
+                if random.randint(1,2)==2 and GAME.season>2026:
                     team=GAME.Sanitise(random.choice(c.execute("SELECT Name FROM Teams WHERE Name!='McLaren' AND Name!='Ferrari' AND Name!='Red Bull' AND Name!='Mercedes' AND Name!='Aston Martin' AND Name!='Alpine' AND Name!='Haas' AND Name!='Racing Bulls' AND Name!='Williams' AND Name!='Audi' AND Name!=?",(GAME.team,)).fetchall()))
                     if team not in teamsSigned:
                         oldSponsor=GAME.Sanitise(c.execute("SELECT Sponsor FROM Teams WHERE Name=?",(team,)).fetchall()[0])
@@ -13689,7 +13718,32 @@ class Game:
                                 c.execute("UPDATE Engines SET Manufacturer=? WHERE Name='Honda'",(team,))
                             GAME.news.append(f"BREAKING NEWS! {team} has switched from {old}")
                             GAME.news.append(f"to {engine} for their engines.")
-                        
+                    if len(c.execute("SELECT Name FROM Engines").fetchall())>6:
+                        engines=GAME.EngineRanking()
+                        i=len(engines)-1
+                        while True:
+                            engine=engines[i]
+                            valid=1
+                            if engine=="Mercedes" or engine=="Ferrari":
+                                valid=0
+                            else:
+                                manufacturer=GAME.Sanitise(c.execute("SELECT Manufacturer FROM Engines WHERE Name=?",(engine,)).fetchall()[0])
+                                if manufacturer==GAME.team:
+                                    valid=0
+                            if valid==1:
+                                break
+                            else:
+                                i+=1
+                        c.execute("DELETE FROM Engines WHERE Name=?",(engine,))
+                        f=c.execute("SELECT Team FROM Cars WHERE Engine=?",(engine,)).fetchall()
+                        if engines.index("Mercedes")<engines.index("Ferrari"):
+                            engine="Ferrari"
+                        else:
+                            engine="Mercedes"
+                        for x in range(len(f)):
+                            team=GAME.Sanitise(f[x])
+                            c.execute("UPDATE Cars SET Engine=? WHERE Team=?",(team,engine,))
+                            
             c.execute("UPDATE Player SET Actions=1")
             GAME.actions=1
             F1.commit()
