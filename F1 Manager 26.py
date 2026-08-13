@@ -633,7 +633,7 @@ class Game:
             regulationChange=2029
         else:
             regulationChange=2014
-        c.execute('''INSERT into Player (Name, Country, Team, newTeam, Season, Race, RegulationChange, Points, Wins, Championships, NextYearEngine, Actions, Financial, Management, Warnings, TyreWear, MovingTo, StartYear, CostCap, PitStop, Stopper, StopTrack) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.name, GAME.country, GAME.team, GAME.newTeam, GAME.startYear, -1, regulationChange, 0, 0, 0, 0, 3, 5, 3, 0, 0, 0, GAME.startYear, 135000000, 100, -1, -1))
+        c.execute('''INSERT into Player (Name, Country, Team, newTeam, Season, Race, RegulationChange, Points, Wins, Championships, NextYearEngine, Actions, Financial, Management, Warnings, TyreWear, MovingTo, StartYear, CostCap, PitStop, Stopper, StopTrack, JoinedTeam, TeamPoints, TeamWins, TeamChampionships) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.name, GAME.country, GAME.team, GAME.newTeam, GAME.startYear, -1, regulationChange, 0, 0, 0, 0, 3, 5, 3, 0, 0, 0, GAME.startYear, 135000000, 100, -1, -1, GAME.startYear, 0, 0, 0))
             
         #History
         c.execute('''INSERT into History (Year, Driver, Team, Constructor) VALUES (1984, "Niki Lauda", "McLaren", "McLaren")''')
@@ -1340,6 +1340,15 @@ class Game:
             for x in range(7):
                 c.execute("UPDATE Calendar SET ID=? WHERE ID=?",(23-x,22-x,))
             c.execute("INSERT into Calendar (ID, Track) VALUES(16, 'Sepang')")
+            F1.commit()
+            F1.close()
+            root.after(7500, lambda: GAME.Menu())
+        elif GAME.season==2026 and GAME.race==12 and GAME.team!="Cadillac":
+            #Budkowski
+            GAME.ChangeScreen("Budkowski")
+            c.execute("UPDATE TeamPrincipals SET Team='None' WHERE Team='Cadillac'")
+            c.execute("UPDATE Teams SET TeamPrincipal='Marcin Budkowski' WHERE Name='Cadillac'")
+            c.execute("INSERT into TeamPrincipals (Name, Team) VALUES ('Marcin Budkowski', 'Cadillac')")
             F1.commit()
             F1.close()
             root.after(7500, lambda: GAME.Menu())
@@ -2596,8 +2605,8 @@ class Game:
                                     causeOfDeath="illness"
                                 else:
                                     causeOfDeath="injuries"
-                                message="BREAKING NEWS! It is a sad day because "+name+" has died from their "+causeOfDeath+", they will be missed."
-                                GAME.news.append(message)
+                                GAME.news.append(f"BREAKING NEWS! It is a sad day because {name} has died")
+                                GAME.news.append(f"from their {causeOfDeath}, they will be missed.")
                                 dead.append(name)
                                 deadTeam.append(GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
             if len(dead)>0:
@@ -4284,9 +4293,7 @@ class Game:
                                 pitStopTime=random.uniform(1.8, 2.3)   # Amazing
                             #Refueling
                             if GAME.refueling==1:
-                                totalFuelNeeded=round(110*(GAME.laps-GAME.lap[GAME.positions[0]])/GAME.laps)
-                                if totalFuelNeeded>100:
-                                    totalFuelNeeded=100
+                                totalFuelNeeded=round(100*(GAME.laps-GAME.lap[GAME.positions[0]])/GAME.laps)
                                 if GAME.fuel[driverIndex]<totalFuelNeeded:
                                     fuelNeeded=totalFuelNeeded-GAME.fuel[driverIndex]
                                     pitStopTime+=fuelNeeded/10
@@ -4742,6 +4749,10 @@ class Game:
                     else:
                         instructionsGiven=GAME.car2Instructions.copy()
                     GAME.Button("Box",5+(x*1225),550)
+                    if GAME.refueling==1:
+                        image=icons[3]
+                        canvas.image=image
+                        canvas.create_image(7+(x*1225), 550, anchor=tk.NW, image=image)
                     for i in range(3):
                         if i==0 and GAME.teamOrders==0:
                             GAME.Button("Banned",5+(x*1225),610+(i*60))
@@ -6161,7 +6172,8 @@ class Game:
                             team=GAME.Sanitise(cursor.execute('''SELECT Team FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0])
                             if team==GAME.team:
                                 P=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Player''').fetchall()[0]))+GAME.pointsScored[index]
-                                cursor.execute('''UPDATE Player SET Points=?''',(P,))
+                                TP=int(GAME.Sanitise(cursor.execute('''SELECT TeamPoints FROM Player''').fetchall()[0]))+GAME.pointsScored[index]
+                                cursor.execute('''UPDATE Player SET Points=?, TeamPoints=?''',(P,TP,))
                             teamIndex=teams.index(team)
                             points=teamPoints[teamIndex]+GAME.pointsScored[index]
                             teamPoints.pop(teamIndex)
@@ -6405,7 +6417,8 @@ class Game:
                     cursor.execute('''UPDATE Drivers SET Wins=? WHERE Name=?''',(wins,GAME.drivers[GAME.positions[0]],))
                     if GAME.teams[GAME.positions[0]]==GAME.team:
                         wins=int(GAME.Sanitise(cursor.execute("SELECT Wins FROM Player").fetchall()))+1
-                        cursor.execute('''UPDATE Player SET Wins=?''',(wins,))
+                        teamWins=int(GAME.Sanitise(cursor.execute("SELECT TeamWins FROM Player").fetchall()))+1
+                        cursor.execute('''UPDATE Player SET Wins=?, TeamWins=?''',(wins,teamWins,))
 
                 #Expectations
                 if len(GAME.expected)==2 and GAME.sprint!=1:
@@ -7154,15 +7167,7 @@ class Game:
                     index=GAME.positions[(x*2)+y]
                     team=GAME.teams[index]
                     colour=GAME.TeamColour(team,GAME.season)
-                    if len(team)>12:
-                        t=""
-                        i=0
-                        while True:
-                            t+=team[i]
-                            if team[i]==" " and i>7:
-                                break
-                            i+=1
-                        team=t
+                    team=GAME.ShortenName(team)
                     canvas.create_text(100+(650*y), 150+(50*x)+(25*y), text=f"{(x*2)+y+1}. {GAME.drivers[index]} {team}", fill=colour, font=("Arial", 30), anchor="nw")
         GAME.Button("Prepare for Race",1200,725)
     def Spa2000(self):
@@ -8379,7 +8384,7 @@ class Game:
             GAME.Button("Back",5,730)
             if GAME.season>2014:
                 GAME.Button("DHL",1235,730)
-        elif GAME.startYear==2026:
+        elif GAME.season>2014:
             GAME.Button("Next",1200,730)
         else:
             GAME.Button("End Season",1200,730)
@@ -8437,7 +8442,7 @@ class Game:
         canvas.create_text(770, 365, text=f"{track} {time}s", fill=colour, font=("Arial", 15), anchor="nw")
         if final==0:
             GAME.Button("Back",5,730)
-            GAME.Button("Standings",1230,730)
+            GAME.Button("Standings",1235,730)
         else:
             GAME.Button("End Season",1200,730)
     def WinterHiring(self):
@@ -8802,6 +8807,8 @@ class Game:
             developmentRate=int(GAME.Sanitise(c.execute("SELECT DevelopmentRate FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))
             if developmentRate>0:
                 developmentRate-=random.randint(1,15)
+                if developmentRate<0:
+                    developmentRate=0
             elif developmentRate==0:
                 if random.randint(1,5)<=2:
                     developmentRate=-1
@@ -8811,8 +8818,11 @@ class Game:
     def RuleVote(self):
         with sqlite3.connect(GAME.database) as c:
             regulationChange=int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))
-            regulations=c.execute('''SELECT Regulation FROM Regulations''').fetchall()
-            regulation=GAME.Sanitise(random.choice(regulations))
+            if GAME.ers==0 and random.randint(1,5)==5:
+                regulation="ERS"
+            else:
+                regulations=c.execute('''SELECT Regulation FROM Regulations''').fetchall()
+                regulation=GAME.Sanitise(random.choice(regulations))
             state=int(GAME.Sanitise(c.execute('''SELECT True FROM Regulations WHERE Regulation=?''',(regulation,)).fetchall()[0]))
             if regulation=="ERS":
                 while True:
@@ -8958,7 +8968,7 @@ class Game:
                     d+=1
             if d>=2:
                 approval="Lost Confidence"
-            elif d==1 and u>=1:
+            elif d==1 and u>1:
                 approval="Disappointed"
             elif d==1 or u>1:
                 approval="Unhappy"
@@ -8981,14 +8991,16 @@ class Game:
             if GAME.season==2009 and GAME.team=="Toyota":
                 GAME.fired=1
             if GAME.fired==0:
+                GAME.race+=1
                 with sqlite3.connect(GAME.database) as c:
+                    c.execute("UPDATE Player SET Race=?",(GAME.race,))
                     champion=0
                     financial=int(GAME.Sanitise(c.execute("SELECT Financial FROM Player").fetchall()[0]))
                     management=int(GAME.Sanitise(c.execute("SELECT Management FROM Player").fetchall()[0]))
                     if position==1:
-                        champion+=1
+                        champion+=2
                     elif len(c.execute("SELECT Team FROM Drivers WHERE Position=1 AND Team=?",(GAME.team,)).fetchall())>0:
-                        champion+=1
+                        champion+=2
                     if champion>0:
                         warnings-=champion
                         if warnings<0:
@@ -9009,11 +9021,13 @@ class Game:
         else:
             #Move Offer Accepted
             GAME.done=1
+            GAME.race+=1
             with sqlite3.connect(GAME.database) as c:
+                c.execute("UPDATE Player SET Race=?",(GAME.race,))
                 c.execute("UPDATE Teams SET TeamPrincipal='None' WHERE Name=?",(GAME.team,))
                 GAME.oldTeam=GAME.team
                 GAME.team=moving
-                c.execute("UPDATE Player SET Team=?, Financial=5, Management=3, Warnings=0",(GAME.team,))
+                c.execute("UPDATE Player SET Team=?, Financial=5, Management=3, Warnings=0, TeamPoints=0, TeamWins=0, TeamChampionships=0",(GAME.team,))
                 c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
                 research=int(GAME.Sanitise(c.execute("SELECT Research FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
                 GAME.money=int(GAME.Sanitise(c.execute("SELECT Money FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
@@ -9093,9 +9107,6 @@ class Game:
                             button="Move"
                         GAME.Button(button,X+150,Y+30)
         else:
-            GAME.race+=1
-            with sqlite3.connect(GAME.database) as c:
-                c.execute("UPDATE Player SET Race=?",(GAME.race,))
             GAME.RaceTime()
     def TeamName(self,originalName):
         name=originalName
@@ -9161,6 +9172,33 @@ class Game:
                 else:
                     name=f"{sponsor}{name} {engine}"
         return(name)
+    def ShortenName(self,team):
+        if len(team)>12:
+            if " " in team:
+                t=team[0]
+                rest=""
+                for x in range(len(team)):
+                    if team[x]==" " and len(team)>x+2:
+                        if team[x+1]!=" ":
+                            t+=team[x+1]
+                            rest=""
+                    elif y>0:
+                        if team[x-1]!=" ":
+                            rest+=team[x]
+                if len(t+rest)>11:
+                    team=t
+                else:
+                    team=""
+                    for x in range(len(t)-1):
+                        team+=t[x]
+                    team+=f" {t[len(t)-1]}"
+                    team+=rest
+            else:
+                t=""
+                for x in range(12):
+                    t+=team[x]
+                team=t
+        return team
     def RaceTime(self):
         GAME.legendAvailable=0
         if GAME.race==0:
@@ -9202,7 +9240,8 @@ class Game:
         canvas.create_text(30, 150, text="Drivers' Champion:", fill="black", font=("Arial", 40), anchor="nw")
         canvas.create_text(30, 200, text=driver, fill="black", font=("Arial", 40), anchor="nw")
         canvas.create_text(820, 150, text="Constructors' Champion:", fill="black", font=("Arial", 40), anchor="nw")
-        canvas.create_text(880, 400, text=constructor, fill="black", font=("Arial", 60), anchor="nw")
+        con=GAME.ShortenName(constructor)
+        canvas.create_text(880, 400, text=con, fill="black", font=("Arial", 60), anchor="nw")
         GAME.DisplayLogo(constructor,GAME.season,980,500)
         with sqlite3.connect(GAME.database) as c:
             GAME.race+=1
@@ -9218,8 +9257,10 @@ class Game:
             c.execute("UPDATE Drivers SET Championships=? WHERE Position=1",(championships,))
             if team==GAME.team:
                 c.execute("UPDATE Player SET Championships=?",(int(GAME.Sanitise(c.execute("SELECT Championships FROM Player").fetchall()[0]))+1,))
+                c.execute("UPDATE Player SET TeamChampionships=?",(int(GAME.Sanitise(c.execute("SELECT TeamChampionships FROM Player").fetchall()[0]))+1,))
             if constructor==GAME.team:
                 c.execute("UPDATE Player SET Championships=?",(int(GAME.Sanitise(c.execute("SELECT Championships FROM Player").fetchall()[0]))+1,))
+                c.execute("UPDATE Player SET TeamChampionships=?",(int(GAME.Sanitise(c.execute("SELECT TeamChampionships FROM Player").fetchall()[0]))+1,))
         if GAME.sound==1:
             GAME.Voice(driver,"Champion")
         else:
@@ -10064,6 +10105,10 @@ class Game:
                     points=int(GAME.Sanitise(c.execute("SELECT Points FROM Player").fetchall()[0]))
                     wins=int(GAME.Sanitise(c.execute("SELECT Wins FROM Player").fetchall()[0]))
                     championships=int(GAME.Sanitise(c.execute("SELECT Championships FROM Player").fetchall()[0]))
+                    joinedTeam=int(GAME.Sanitise(c.execute("SELECT JoinedTeam FROM Player").fetchall()[0]))
+                    teamPoints=int(GAME.Sanitise(c.execute("SELECT TeamPoints FROM Player").fetchall()[0]))
+                    teamWins=int(GAME.Sanitise(c.execute("SELECT TeamWins FROM Player").fetchall()[0]))
+                    teamChampionships=int(GAME.Sanitise(c.execute("SELECT TeamChampionships FROM Player").fetchall()[0]))
                 colour=GAME.TeamColour(GAME.team,GAME.season)
                 if colour=="black":
                     colour="white"
@@ -10072,10 +10117,15 @@ class Game:
                 canvas.create_text(40, 280, text=f"Current Team: {GAME.team}", fill=colour, font=("Arial", 40), anchor="nw")
                 canvas.create_text(40, 360, text=f"Seasons: {GAME.season-GAME.startYear+1}", fill=colour, font=("Arial", 40), anchor="nw")
                 canvas.create_text(40, 440, text=f"Points: {points}", fill=colour, font=("Arial", 40), anchor="nw")
+                canvas.create_text(840, 280, text="Team Statistics", fill=colour, font=("Arial", 40), anchor="nw")
+                canvas.create_text(840, 360, text=f"Seasons: {GAME.season-joinedTeam+1}", fill=colour, font=("Arial", 40), anchor="nw")
+                canvas.create_text(840, 440, text=f"Points: {teamPoints}", fill=colour, font=("Arial", 40), anchor="nw")
                 if wins>0:
                     canvas.create_text(40, 520, text=f"Wins: {wins}", fill=colour, font=("Arial", 40), anchor="nw")
+                    canvas.create_text(840, 520, text=f"Wins: {teamWins}", fill=colour, font=("Arial", 40), anchor="nw")
                 if championships>0:
                     canvas.create_text(40, 600, text=f"Championships: {championships}", fill=colour, font=("Arial", 40), anchor="nw")
+                    canvas.create_text(840, 600, text=f"Championships: {teamChampionships}", fill=colour, font=("Arial", 40), anchor="nw")
             elif event.x>=920 and event.x<=1120 and event.y>=650 and event.y<=700:
                 #History
                 GAME.ChangeScreen("History")
@@ -10123,6 +10173,7 @@ class Game:
                     decadeColour=decadeColours[(year-1980)//10]
                     canvas.create_text(400, 160+(x*25), text=year, fill=decadeColour, font=("Arial", 20), anchor="nw")
                     canvas.create_text(470, 160+(x*25), text=driver, fill=driverColour, font=("Arial", 20), anchor="nw")
+                    constructor=GAME.ShortenName(constructor)
                     canvas.create_text(750, 160+(x*25), text=constructor, fill=constructorColour, font=("Arial", 20), anchor="nw")
             elif event.x>=300 and event.x<=500 and event.y>=650 and event.y<=700:
                 #Team Management
@@ -10413,15 +10464,7 @@ class Game:
                                     elif role!="Free Agent":
                                         role=role+" Driver"
                                     age=GAME.Sanitise(c.execute("SELECT Age FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
-                                if len(team)>12:
-                                    t=""
-                                    i=0
-                                    while True:
-                                        t+=team[i]
-                                        if team[i]==" " and i>7:
-                                            break
-                                        i+=1
-                                    team=t
+                                team=GAME.ShortenName(team)
                                 canvas.create_text(150, 150+(x*50), text=driver, fill="black", font=("Arial", 20), anchor="nw")
                                 canvas.create_text(450, 150+(x*50), text=team, fill="black", font=("Arial", 20), anchor="nw")
                                 canvas.create_text(650, 150+(x*50), text=age, fill="black", font=("Arial", 20), anchor="nw")
@@ -11274,13 +11317,14 @@ class Game:
                                 root.configure(background='black')
                                 GAME.CreateTeam()
                             else:
-                                GAME.race+=1
                                 with sqlite3.connect(GAME.database) as c:
                                     if GAME.oldTeam!=0:
-                                        c.execute("UPDATE Player SET Team=?, Financial=5, Management=3, Warnings=0",(GAME.team,))
+                                        c.execute("UPDATE Player SET Team=?, Financial=5, Management=3, Warnings=0, JoinedTeam=?, TeamPoints=0, TeamWins=0, TeamChampionships=0",(GAME.team,GAME.season+1,))
                                         c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
                                         c.execute("UPDATE Teams SET TeamPrincipal='None' WHERE Name=?",(GAME.oldTeam,))
-                                    c.execute("UPDATE Player SET Race=?",(GAME.race,))
+                                    if GAME.fired==1:
+                                        GAME.race+=1
+                                        c.execute("UPDATE Player SET Race=?",(GAME.race,))
                                 canvas.delete('all')
                                 GAME.screen="Loading"
                                 GAME.BackgroundColour()
@@ -12274,7 +12318,7 @@ class Game:
         c.execute('''CREATE TABLE Sponsors(Name str, Team str, Pay int)''')
         c.execute('''CREATE TABLE Calendar(ID int, Track str)''')
         c.execute('''CREATE TABLE Tracks(Name str, Country str, Length float, Laps int, Risk int, RainChance int, Temperature int, Corners str, Straights int, Sprint int, Street int, Overtakeability int, First str, Second str, Third str)''')
-        c.execute('''CREATE TABLE Player(Name str, Country str, Team str, newTeam int, Season int, Race int, RegulationChange int, Points int, Wins int, Championships int, NextYearEngine str, Actions int, Financial int, Management int, Warnings int, TyreWear int, MovingTo str, StartYear int, CostCap int, PitStop float, Stopper str, StopTrack str)''')
+        c.execute('''CREATE TABLE Player(Name str, Country str, Team str, newTeam int, Season int, Race int, RegulationChange int, Points int, Wins int, Championships int, NextYearEngine str, Actions int, Financial int, Management int, Warnings int, TyreWear int, MovingTo str, StartYear int, CostCap int, PitStop float, Stopper str, StopTrack str, JoinedTeam int, TeamPoints int, TeamWins int, TeamChampionships int)''')
         c.execute('''CREATE TABLE History(Year int, Driver str, Team str, Constructor str)''')
         c.execute('''CREATE TABLE Buyers(Name str, Country str)''')
         c.execute('''CREATE TABLE TeamPrincipals(Name str, Team str)''')
@@ -12317,7 +12361,8 @@ class Game:
                 GAME.ChangeScreen("Choose Engine 1")
     def CreateNewTeam(self):
         with sqlite3.connect(GAME.database) as c:
-            c.execute("UPDATE Player SET Team=?",(GAME.team,))
+            c.execute("UPDATE Player SET Team=?, Financial=5, Management=3, Warnings=0, JoinedTeam=?, TeamPoints=0, TeamWins=0, TeamChampionships=0",(GAME.team,GAME.season+1,))
+            c.execute("UPDATE Teams SET TeamPrincipal='None' WHERE Name=?",(GAME.oldTeam,))
             pos=len(c.execute("SELECT Name FROM Teams").fetchall())+1
             c.execute('''INSERT into Teams (Name, Appearance, OriginalName, Position, Points, Money, Income, TeamPrincipal, Country, Reputation, Sponsor, PreviousPosition) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(GAME.team, 0, "Player", pos, 12, 5000000, 1000000, GAME.name, GAME.country, 50, 0, 0))
             c.execute('''INSERT into PitStops(Team, Postion, Points) VALUES(?, 12, 0)''',(GAME.team,))
@@ -14180,7 +14225,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Marussia Display","Suzuka Mercedes Upgrade","Manor Display","2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display",
         "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade",
         "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade","Qualifying Grid",
-        "2015 McLaren Display","Malaysia Return"]
+        "2015 McLaren Display","Malaysia Return","Budkowski"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
