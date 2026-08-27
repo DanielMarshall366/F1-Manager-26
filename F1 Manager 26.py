@@ -412,7 +412,10 @@ class Game:
                 c.execute("UPDATE Drivers SET NewTeam='Audi', NewRole='1', ContractEnd=2027 WHERE Name='Nico Hulkenberg'")
                 c.execute("UPDATE Drivers SET NewTeam='Audi', NewRole='2', ContractEnd=2027 WHERE Name='Gabriel Bortoleto'")
             if GAME.team!="Ferrari":
+                c.execute("UPDATE Drivers SET NewTeam='Ferrari', NewRole='1', ContractEnd=2030 WHERE Name='Charles Leclerc'")
                 c.execute("UPDATE Drivers SET NewTeam='Ferrari', NewRole='2', ContractEnd=2027 WHERE Name='Lewis Hamilton'")
+            if GAME.team!="Alpine":
+                c.execute("UPDATE Drivers SET NewTeam='Alpine', NewRole='2', ContractEnd=2027 WHERE Name='Franco Colapinto'")
 
         #Staff
         
@@ -1344,6 +1347,12 @@ class Game:
             F1.commit()
             F1.close()
             root.after(7500, lambda: GAME.Menu())
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.team!="Ferrari" and GAME.race==6:
+            #Leclerc Re-signs
+            GAME.ChangeScreen("Leclerc Re-signs")
+            F1.commit()
+            F1.close()
+            root.after(5000, lambda: GAME.Menu())
         elif GAME.season==2026 and GAME.race==11:
             #Malaysia Return
             GAME.ChangeScreen("Malaysia Return")
@@ -1366,7 +1375,7 @@ class Game:
                 time=0
             F1.commit()
             F1.close()
-            if GAME.team=="Williams" or GAME.startYear==2009 or GAME.legends==1:
+            if GAME.team=="Williams":
                 time-=3000
             else:
                 root.after(time, lambda: GAME.ChangeScreen("Williams Contracts"))
@@ -1377,6 +1386,12 @@ class Game:
                 maxTime=3000
                 root.after(time+6000, lambda: GAME.ChangeScreen("Verstappen Re-signs"))
             root.after(time+maxTime+6000, lambda: GAME.Menu())
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.team!="Alpine" and GAME.race==13:
+            #Colapinto Re-signs
+            GAME.ChangeScreen("Colapinto Re-signs")
+            F1.commit()
+            F1.close()
+            root.after(5000, lambda: GAME.Menu())
         else:
             GAME.ChangeScreen("Press Conference")
             if objective=="Upgrade":
@@ -6149,7 +6164,7 @@ class Game:
                 with sqlite3.connect(GAME.database) as c:
                     for driver in GAME.bestPitStopper:
                         if driver!=-1:
-                            team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall()[0])
+                            team=GAME.teams[GAME.drivers.index(driver)]
                             points=int(GAME.Sanitise(c.execute("SElECT Points FROM PitStops WHERE Team=?",(team,)).fetchall()[0]))
                             points+=pointsAvailable[GAME.bestPitStopper.index(driver)]
                             c.execute("UPDATE PitStops SET Points=? WHERE Team=?",(points,team,))
@@ -6188,8 +6203,6 @@ class Game:
                 f=cursor.execute('''SELECT Name FROM Teams''').fetchall()
                 if GAME.sprint!=1:
                     cursor.execute("UPDATE Player SET Actions=3")
-                    if len(cursor.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
-                        cursor.execute("UPDATE Drivers SET Team='Red Bull' WHERE Team='Racing Bulls' AND Role='Reserve'")
                 else:
                     cursor.execute("UPDATE Player SET Actions=-1")
                     GAME.actions=-1
@@ -6208,7 +6221,7 @@ class Game:
                             points=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0]))
                             points+=GAME.pointsScored[index]
                             cursor.execute('''UPDATE Drivers SET Points=? WHERE Name=?''',(points, GAME.drivers[index],))
-                            team=GAME.Sanitise(cursor.execute('''SELECT Team FROM Drivers WHERE Name=?''',(GAME.drivers[index],)).fetchall()[0])
+                            team=team=GAME.teams[index]
                             if team==GAME.team:
                                 P=int(GAME.Sanitise(cursor.execute('''SELECT Points FROM Player''').fetchall()[0]))+GAME.pointsScored[index]
                                 TP=int(GAME.Sanitise(cursor.execute('''SELECT TeamPoints FROM Player''').fetchall()[0]))+GAME.pointsScored[index]
@@ -7437,13 +7450,64 @@ class Game:
                     if financial>2:
                         financial=3
                 c.execute("UPDATE Player SET Financial=?",(financial,))
-            f=c.execute('''SELECT Name FROM Drivers WHERE Role="1" or Role="2"''').fetchall()
             GAME.drivers=[]
             GAME.teams=[]
             GAME.cars=[]
             GAME.engineDurability=[]
             replacements=[]
             unableToRace=[]
+            redBull=[]
+            f=c.execute("SELECT Name FROM Drivers WHERE Team='Red Bull' AND (Role='1' or Role='2')").fetchall()
+            for x in range(len(f)):
+                name=GAME.Sanitise(f[x])
+                if name==GAME.car1:
+                    GAME.car1ID=len(GAME.drivers)
+                elif name==GAME.car2:
+                    GAME.car2ID=len(GAME.drivers)
+                if name!="":
+                    condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
+                    car=int(GAME.Sanitise(c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
+                    swapped=0
+                    if GAME.season==2026 and GAME.race==12 and GAME.startYear==2026 and name=="Isack Hadjar" and "Liam Lawson" not in GAME.drivers:
+                        name="Liam Lawson"
+                        c.execute("UPDATE Drivers SET Condition='Well' WHERE Name='Liam Lawson'")
+                        swapped=1
+                    if swapped==1 or condition=="Well":
+                        GAME.drivers.append(name)
+                        GAME.teams.append("Red Bull")
+                        GAME.cars.append(car)
+                        if GAME.team=="Red Bull":
+                            if car==1:
+                                GAME.car1ID=x-len(unableToRace)
+                                GAME.driver1=name
+                            else:
+                                GAME.car2ID=x-len(unableToRace)
+                                GAME.driver2=name
+                    else:
+                        unableToRace.append(name)
+                        F=c.execute("SELECT Name FROM Drivers WHERE Team='Racing Bulls' AND Condition='Well'").fetchall()
+                        racingBulls=1
+                        if len(F)==0:
+                            F=c.execute("SELECT Name FROM Drivers WHERE Team='Red Bull' AND Role='Reserve'").fetchall()
+                            racingBulls=0
+                        replacement=0
+                        if len(F)>=1:
+                            while len(F)>=1 and replacement==0:
+                                replacement=random.choice(F)
+                                if GAME.Sanitise(replacement) in GAME.drivers:
+                                    F.remove(replacement)
+                                    replacement=0
+                        if replacement==0:
+                            replacements.append(0)
+                        else:
+                            replacement=GAME.Sanitise(replacement)
+                            replacements.append(replacement)
+                            GAME.drivers.append(replacement)
+                            GAME.teams.append("Red Bull")
+                            GAME.cars.append(car)
+
+                            
+            f=c.execute("SELECT Name FROM Drivers WHERE Team!='Red Bull' AND (Role='1' or Role='2')").fetchall()
             for x in range(len(f)):
                 name=GAME.Sanitise(f[x])
                 if name==GAME.car1:
@@ -7455,16 +7519,11 @@ class Game:
                     condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
                     car=int(GAME.Sanitise(c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
                     swapped=0
-                    if GAME.season==2026 and GAME.race==12 and GAME.startYear==2026:
-                        if team=="Red Bull" and name=="Isack Hadjar" and "Liam Lawson" not in GAME.drivers:
-                            name="Liam Lawson"
-                            c.execute("UPDATE Drivers SET Condition='Well' WHERE Name='Liam Lawson'")
-                            swapped=1
-                        elif team=="Racing Bulls" and name=="Liam Lawson" and "Yuki Tsunoda" not in GAME.drivers:
-                            name="Yuki Tsunoda"
-                            c.execute("UPDATE Drivers SET Condition='Well' WHERE Name='Yuki Tsunoda'")
-                            swapped=1
-                    if swapped==1 or condition=="Well":
+                    if GAME.season==2026 and GAME.race==12 and GAME.startYear==2026 and team=="Racing Bulls" and name=="Liam Lawson" and "Yuki Tsunoda" not in GAME.drivers:
+                        name="Yuki Tsunoda"
+                        c.execute("UPDATE Drivers SET Condition='Well' WHERE Name='Yuki Tsunoda'")
+                        swapped=1
+                    if (swapped==1 or condition=="Well") and (team!="Racing Bulls" or name not in GAME.drivers):
                         GAME.drivers.append(name)
                         GAME.teams.append(team)
                         GAME.cars.append(car)
@@ -7476,8 +7535,10 @@ class Game:
                                 GAME.car2ID=x-len(unableToRace)
                                 GAME.driver2=name
                     else:
+                        if team=="Racing Bulls" and name in GAME.drivers:
+                            redBull.append(name)
                         unableToRace.append(name)
-                        F=c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="Reserve"''',(team,)).fetchall()
+                        F=c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="Reserve" AND Condtion="Well"''',(team,)).fetchall()
                         replacement=0
                         if len(F)>=1:
                             while len(F)>=1 and replacement==0:
@@ -7486,15 +7547,13 @@ class Game:
                                     F.remove(replacement)
                                     replacement=0
                         if replacement==0 and team=="Racing Bulls":
-                            F=c.execute('''SELECT Name FROM Drivers WHERE Team="Red Bull" AND Role="Reserve"''').fetchall()
+                            F=c.execute('''SELECT Name FROM Drivers WHERE Team="Red Bull" AND Role="Reserve" AND Condition="Well"''').fetchall()
                             if len(F)>=1:
                                 while len(F)>=1 and replacement==0:
                                     replacement=random.choice(F)
                                     if GAME.Sanitise(replacement) in GAME.drivers:
                                         F.remove(replacement)
                                         replacement=0
-                                    else:
-                                        c.execute("UPDATE Drivers SET Team='Racing Bulls' WHERE Name=?",(GAME.Sanitise(replacement),))
                         if replacement==0:
                             replacements.append(0)
                         else:
@@ -7509,10 +7568,13 @@ class Game:
             y=130
             for x in range(len(unableToRace)):
                 y+=50
-                canvas.create_text(150, y, text=(unableToRace[x]+" cannot race in the upcoming race."), fill="white", font=("Arial", 30), anchor="nw")
+                if unableToRace[x] in redBull:
+                    canvas.create_text(150, y, text=(f"{unableToRace[x]} is racing for Red Bull in the upcoming race."), fill="white", font=("Arial", 30), anchor="nw")
+                else:
+                    canvas.create_text(150, y, text=(f"{unableToRace[x]} cannot race in the upcoming race."), fill="white", font=("Arial", 30), anchor="nw")
                 if replacements[x]!=0:
                     y+=50
-                    canvas.create_text(150, y, text=(replacements[x]+" will be replacing them."), fill="white", font=("Arial", 30), anchor="nw")
+                    canvas.create_text(150, y, text=(f"{replacements[x]} will be replacing them."), fill="white", font=("Arial", 30), anchor="nw")
                     if unableToRace[x]==GAME.car1:
                         GAME.driver1=replacements[x]
                     elif unableToRace[x]==GAME.car2:
@@ -7802,11 +7864,7 @@ class Game:
         for x in range(drivers):
             position=drivers-x
             driver=GAME.drivers[GAME.positions[position-1]]
-            if GAME.replay==0:
-                with sqlite3.connect(GAME.database) as c:
-                    team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall())
-            else:
-                team=GAME.teams[GAME.drivers.index(driver)]
+            team=GAME.teams[GAME.drivers.index(driver)]
             delay+=800
             if position==1:
                 colour="#F5C939"
@@ -12630,12 +12688,12 @@ class Game:
                         c.close()
                         fullName=GAME.TeamName(team)
                         c=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
-                    if len(fullName)>25:
+                    if len(fullName)>26:
                         if " " in fullName:
                             name=""
                             word=""
                             for x in range(len(fullName)):
-                                if len(name)+len(word)<25:
+                                if len(name)+len(word)<26:
                                     word+=fullName[x]
                                     if fullName[x]==" ":
                                         name+=word
@@ -12740,13 +12798,14 @@ class Game:
                     team=GAME.suitTest
                 elif GAME.screen=="Contract":
                     team=GAME.team
-                elif GAME.replay>0:
-                    team=GAME.teams[GAME.drivers.index(driver)]
                 else:
                     try:
                         team=GAME.teams[GAME.drivers.index(driver)]
                     except:
-                        team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall())
+                        try:
+                            team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(driver,)).fetchall())
+                        except:
+                            team=0
                 if driver=="Sonny Hayes" or driver=="Joshua Pearce":
                     team=driver
                 elif team=="McLaren":
@@ -14371,7 +14430,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade",
         "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade","Qualifying Grid",
         "2015 McLaren Display","Malaysia Return","Budkowski","India Flag","Williams Martini Display","Williams Contracts","ROKiT Williams Display","2021 Williams Display",
-        "Hadjar Injured","Verstappen Re-signs","Alfa Romeo Display","2010 Mercedes Display"]
+        "Hadjar Injured","Verstappen Re-signs","Alfa Romeo Display","2010 Mercedes Display","Colapinto Re-signs","Leclerc Re-signs"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
