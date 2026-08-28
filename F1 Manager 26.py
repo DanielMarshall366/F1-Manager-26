@@ -7597,7 +7597,8 @@ class Game:
             for x in range(len(unableToRace)):
                 y+=50
                 if unableToRace[x] in redBull:
-                    canvas.create_text(150, y, text=(f"{replacements[x]} will be replacing {unableToRace[x]}."), fill="white", font=("Arial", 30), anchor="nw")
+                    if replacements[x]!=0:
+                        canvas.create_text(150, y, text=(f"{replacements[x]} will be replacing {unableToRace[x]}."), fill="white", font=("Arial", 30), anchor="nw")
                 else:
                     canvas.create_text(150, y, text=(f"{unableToRace[x]} cannot race in the upcoming race."), fill="white", font=("Arial", 30), anchor="nw")
                 if replacements[x]!=0:
@@ -10225,13 +10226,11 @@ class Game:
                         suffix2="rd"
                     else:
                         suffix2="th"
-                    sponsor=GAME.Sanitise(c.execute("SELECT Sponsor FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
-                    if sponsor=="0":
+                    if GAME.sponsor=="0":
                         sponsor="None"
                     else:
-                        logo=sponsorLogos[sponsors.index(sponsor)]
-                        canvas.image=logo
-                        canvas.create_image(420+(len(sponsor)*30), 420, anchor=tk.NW, image=logo)
+                        sponsor=GAME.sponsor
+                        GAME.DisplayLogo(GAME.sponsor,GAME.season,450+(len(GAME.sponsor)*25),420)
                     reputation=GAME.Sanitise(c.execute("SELECT Reputation FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0])
                     regulationChange=int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()))
                 colour=GAME.TeamColour(GAME.team,GAME.season)
