@@ -1951,9 +1951,7 @@ class Game:
                     if GAME.actions>-1:
                         GAME.actions=0
                         c.execute("UPDATE Player SET Actions=0")
-                if GAME.swappable==1 and (GAME.team=="Red Bull" or GAME.team=="Racing Bulls") and GAME.race==12 and GAME.season==2026 and GAME.startYear==2026:
-                    GAME.swappable=0
-                if len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND GridPenalty>0",(GAME.team,)).fetchall())>0 or (GAME.team=="Red Bull" and len(c.execute("SELECT Name FROM Drivers WHERE Team='Racing Bulls' AND GridPenalty>0").fetchall())>0):
+                if GAME.season==GAME.startYear:
                     GAME.swappable=0
                 if GAME.swappable==1:
                     GAME.Button("Swap Drivers",300,650)
@@ -6447,12 +6445,6 @@ class Game:
                                     if len(cursor.execute("SELECT Regulation FROM Regulations WHERE Regulation='Cost Cap' AND True=1").fetchall())>0:
                                         GAME.costCap-=10000000
                                         cursor.execute("UPDATE Player SET CostCap=?",(GAME.costCap,))
-                                gridPenalty=int(GAME.Sanitise(cursor.execute("SELECT GridPenalty FROM Drivers WHERE Name=?",(GAME.drivers[x],)).fetchall()[0]))
-                                if engine==5:
-                                    gridPenalty+=10
-                                else:
-                                    gridPenalty+=5
-                                cursor.execute("UPDATE Drivers SET GridPenalty=? WHERE Name=?",(gridPenalty,GAME.drivers[x],))
                         elif car==1:
                             cursor.execute('''UPDATE Cars SET car1EngineDurability=? WHERE Team=?''',(durability,team,))
                         else:
@@ -7492,10 +7484,22 @@ class Game:
                             racingBulls=0
                         replacement=0
                         if len(F)>=1:
+                            options=[]
+                            ratings=[]
+                            for x in range(len(F)):
+                                reserve=GAME.Sanitise(F[x])
+                                rating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(reserve,)).fetchall()[0]))
+                                for y in range(x):
+                                    if reserve not in options and rating>ratings[y]:
+                                        options.insert(y,reserve)
+                                        ratings.insert(y,rating)
+                                if reserve not in options:
+                                    options.append(reserve)
+                                    ratings.append(rating)
                             while len(F)>=1 and replacement==0:
-                                replacement=random.choice(F)
-                                if GAME.Sanitise(replacement) in GAME.drivers:
-                                    F.remove(replacement)
+                                replacement=options[0]
+                                if replacement in GAME.drivers:
+                                    options.remove(replacement)
                                     replacement=0
                         if replacement==0:
                             replacements.append(0)
@@ -7538,21 +7542,45 @@ class Game:
                         if team=="Racing Bulls" and name in GAME.drivers:
                             redBull.append(name)
                         unableToRace.append(name)
-                        F=c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="Reserve" AND Condtion="Well"''',(team,)).fetchall()
-                        replacement=0
+                        F=c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="Reserve" AND Condition="Well"''',(team,)).fetchall()
+                        replacement=0    
                         if len(F)>=1:
+                            options=[]
+                            ratings=[]
+                            for x in range(len(F)):
+                                reserve=GAME.Sanitise(F[x])
+                                rating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(reserve,)).fetchall()[0]))
+                                for y in range(x):
+                                    if reserve not in options and rating>ratings[y]:
+                                        options.insert(y,reserve)
+                                        ratings.insert(y,rating)
+                                if reserve not in options:
+                                    options.append(reserve)
+                                    ratings.append(rating)
                             while len(F)>=1 and replacement==0:
-                                replacement=random.choice(F)
-                                if GAME.Sanitise(replacement) in GAME.drivers:
-                                    F.remove(replacement)
+                                replacement=options[0]
+                                if replacement in GAME.drivers:
+                                    options.remove(replacement)
                                     replacement=0
                         if replacement==0 and team=="Racing Bulls":
-                            F=c.execute('''SELECT Name FROM Drivers WHERE Team="Red Bull" AND Role="Reserve" AND Condition="Well"''').fetchall()
+                            F=c.execute("SELECT Name FROM Drivers WHERE Team='Red Bull' AND Role='Reserve' AND Condition='Well'").fetchall()
                             if len(F)>=1:
+                                options=[]
+                                ratings=[]
+                                for x in range(len(F)):
+                                    reserve=GAME.Sanitise(F[x])
+                                    rating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(reserve,)).fetchall()[0]))
+                                    for y in range(x):
+                                        if reserve not in options and rating>ratings[y]:
+                                            options.insert(y,reserve)
+                                            ratings.insert(y,rating)
+                                    if reserve not in options:
+                                        options.append(reserve)
+                                        ratings.append(rating)
                                 while len(F)>=1 and replacement==0:
-                                    replacement=random.choice(F)
-                                    if GAME.Sanitise(replacement) in GAME.drivers:
-                                        F.remove(replacement)
+                                    replacement=options[0]
+                                    if replacement in GAME.drivers:
+                                        options.remove(replacement)
                                         replacement=0
                         if replacement==0:
                             replacements.append(0)
@@ -7569,12 +7597,13 @@ class Game:
             for x in range(len(unableToRace)):
                 y+=50
                 if unableToRace[x] in redBull:
-                    canvas.create_text(150, y, text=(f"{unableToRace[x]} is racing for Red Bull in the upcoming race."), fill="white", font=("Arial", 30), anchor="nw")
+                    canvas.create_text(150, y, text=(f"{replacements[x]} will be replacing {unableToRace[x]}."), fill="white", font=("Arial", 30), anchor="nw")
                 else:
                     canvas.create_text(150, y, text=(f"{unableToRace[x]} cannot race in the upcoming race."), fill="white", font=("Arial", 30), anchor="nw")
                 if replacements[x]!=0:
-                    y+=50
-                    canvas.create_text(150, y, text=(f"{replacements[x]} will be replacing them."), fill="white", font=("Arial", 30), anchor="nw")
+                    if unableToRace[x] not in redBull:
+                        y+=50
+                        canvas.create_text(150, y, text=(f"{replacements[x]} will be replacing them."), fill="white", font=("Arial", 30), anchor="nw")
                     if unableToRace[x]==GAME.car1:
                         GAME.driver1=replacements[x]
                     elif unableToRace[x]==GAME.car2:
@@ -9674,6 +9703,17 @@ class Game:
                     with sqlite3.connect(GAME.database) as c:
                         for x in range(len(GAME.drivers)):
                             penalty=int(GAME.Sanitise(c.execute("SELECT GridPenalty FROM Drivers WHERE Name=?",(GAME.drivers[x],)).fetchall()[0]))
+                            if GAME.cars[x]==1:
+                                engineDurability=int(GAME.Sanitise(c.execute("SELECT car1EngineDurability FROM Cars WHERE Team=?",(GAME.teams[x],)).fetchall()[0]))
+                                engineNumber=int(GAME.Sanitise(c.execute("SELECT car1Engine FROM Cars WHERE Team=?",(GAME.teams[x],)).fetchall()[0]))
+                            else:
+                                engineDurability=int(GAME.Sanitise(c.execute("SELECT car2EngineDurability FROM Cars WHERE Team=?",(GAME.teams[x],)).fetchall()[0]))
+                                engineNumber=int(GAME.Sanitise(c.execute("SELECT car2Engine FROM Cars WHERE Team=?",(GAME.teams[x],)).fetchall()[0]))
+                            if engineDurability==100 and engineNumber>4:
+                                if engineNumber==5:
+                                    penalty+=10
+                                else:
+                                    penalty+=5
                             if penalty>0:
                                 GAME.gridPenalties.append(GAME.drivers[x])
                                 GAME.penaltyPlaces.append(penalty)
@@ -10237,8 +10277,8 @@ class Game:
                 canvas.create_text(40, 280, text=f"Current Team: {GAME.team}", fill=colour, font=("Arial", 40), anchor="nw")
                 canvas.create_text(40, 360, text=f"Seasons: {GAME.season-GAME.startYear+1}", fill=colour, font=("Arial", 40), anchor="nw")
                 canvas.create_text(40, 440, text=f"Points: {points}", fill=colour, font=("Arial", 40), anchor="nw")
-                canvas.create_text(840, 280, text="Team Statistics", fill=colour, font=("Arial", 40), anchor="nw")
                 if joinedTeam>GAME.startYear:
+                    canvas.create_text(840, 280, text="Team Statistics", fill=colour, font=("Arial", 40), anchor="nw")
                     canvas.create_text(840, 360, text=f"Seasons: {GAME.season-joinedTeam+1}", fill=colour, font=("Arial", 40), anchor="nw")
                     canvas.create_text(840, 440, text=f"Points: {teamPoints}", fill=colour, font=("Arial", 40), anchor="nw")
                 if wins>0:
