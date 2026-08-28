@@ -7599,20 +7599,17 @@ class Game:
                 if unableToRace[x] in redBull:
                     if replacements[x]!=0:
                         canvas.create_text(150, y, text=(f"{replacements[x]} will be replacing {unableToRace[x]}."), fill="white", font=("Arial", 30), anchor="nw")
+                    else:
+                        y-=50
                 else:
                     canvas.create_text(150, y, text=(f"{unableToRace[x]} cannot race in the upcoming race."), fill="white", font=("Arial", 30), anchor="nw")
-                if replacements[x]!=0:
-                    if unableToRace[x] not in redBull:
-                        y+=50
-                        canvas.create_text(150, y, text=(f"{replacements[x]} will be replacing them."), fill="white", font=("Arial", 30), anchor="nw")
-                    if unableToRace[x]==GAME.car1:
-                        GAME.driver1=replacements[x]
-                    elif unableToRace[x]==GAME.car2:
-                        GAME.driver2=replacements[x]
-                elif unableToRace[x]==GAME.car1:
-                    GAME.driver1=0
+                if replacements[x]!=0 and unableToRace[x] not in redBull:
+                    y+=50
+                    canvas.create_text(150, y, text=(f"{replacements[x]} will be replacing them."), fill="white", font=("Arial", 30), anchor="nw")
+                if unableToRace[x]==GAME.car1:
+                    GAME.driver1=replacements[x]
                 elif unableToRace[x]==GAME.car2:
-                    GAME.driver2=0
+                    GAME.driver2=replacements[x]
             root.after(4000, lambda: GAME.RaceStart())
         else:
             GAME.RaceStart()
