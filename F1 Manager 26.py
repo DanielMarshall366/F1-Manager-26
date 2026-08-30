@@ -12344,7 +12344,7 @@ class Game:
         if team=="McLaren":
             if season>2016 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5 and GAME.replay!=6:
                 if season>2025 and GAME.track=="Silverstone":
-                    colour="#D3DDE6"
+                    colour="#D7EDFF"
                 else:
                     colour="#FF8700"
             elif season<1997 or GAME.replay==6:
@@ -12720,6 +12720,7 @@ class Game:
             else:
                 race=int(GAME.Sanitise(race[0]))
                 season=int(GAME.Sanitise(c.execute("SELECT Season FROM Player").fetchall()[0]))
+                GAME.track=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(race,)).fetchall()[0])
                 if race<0:
                     valid=0
                 else:
@@ -12763,7 +12764,7 @@ class Game:
                     canvas.create_text(280, 300, text=GAME.Sanitise(c.execute("SELECT Name FROM Player").fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
                     canvas.create_text(280, 370, text=season, fill=colour, font=("Arial", 50), anchor="nw")
                     try:
-                        canvas.create_text(280, 440, text=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(race,)).fetchall()[0]), fill=colour, font=("Arial", 50), anchor="nw")
+                        canvas.create_text(280, 440, text=GAME.track, fill=colour, font=("Arial", 50), anchor="nw")
                     except:
                         if race==0:
                             canvas.create_text(280, 440, text="Pre-Season", fill=colour, font=("Arial", 50), anchor="nw")
@@ -12803,6 +12804,7 @@ class Game:
             root.after(300, lambda: GAME.SaveReady())
     def SaveReady(self):
         GAME.loaded=1
+        GAME.track=0
     def LoadGame(self):
         GAME.drivers=[]
         with sqlite3.connect(GAME.database) as c:
