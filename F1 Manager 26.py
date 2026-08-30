@@ -7,8 +7,8 @@ class Game:
         self.music=1
         self.sound=1
         self.forenames=["James","Michael","Robert","John","David","William","Richard","Joseph","Thomas","Christopher","Daniel","Charles","Matthew","Anthony","Mark","Donald","Steven",
-        "Paul","Kevin","Joshua","Brian","Timothy","Ronald","Jeffrey","Nicholas","Gary","Eric","Steven","Larry","Nathan","Douglas","Keith","Carl","Gerald","Boris","Frank","Florence","Gurtrude",
-        "Emily","Elisabeth","Matilda","Penelope","Esther","Jessica","Delilah","Doris","Olivia","Amelia"]
+        "Paul","Kevin","Joshua","Brian","Timothy","Ronald","Jeffrey","Nicholas","Gary","Eric","Steven","Larry","Nathan","Douglas","Keith","Carl","Gerald","Boris","Frank","Florence",
+        "Gurtrude","Emily","Elisabeth","Matilda","Penelope","Esther","Jessica","Delilah","Doris","Olivia","Amelia"]
         self.surnames=["Smith","Jones","Williams","Brown","Senna","Mansell","Marshall","Thomas","Johnson","White","Wright","Edwards","Green","Clarke","Morris","King","Allen","Phillips",
                        "Young","Griffiths","Collins","Murphy","Miller","Simpson","Russell","Knight","Jordan","Toleman","Beaumont","Williamson"]
         self.countries=["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina",
@@ -416,6 +416,8 @@ class Game:
                 c.execute("UPDATE Drivers SET NewTeam='Ferrari', NewRole='2', ContractEnd=2027 WHERE Name='Lewis Hamilton'")
             if GAME.team!="Alpine":
                 c.execute("UPDATE Drivers SET NewTeam='Alpine', NewRole='2', ContractEnd=2027 WHERE Name='Franco Colapinto'")
+            if GAME.team!="McLaren":
+                c.execute("UPDATE Drivers SET NewTeam='McLaren', NewRole='2', NewSalary=60000000, ContractEnd=2030 WHERE Name='Lando Norris'")
 
         #Staff
         
@@ -1386,12 +1388,20 @@ class Game:
                 maxTime=3000
                 root.after(time+6000, lambda: GAME.ChangeScreen("Verstappen Re-signs"))
             root.after(time+maxTime+6000, lambda: GAME.Menu())
-        elif GAME.season==2026 and GAME.startYear==2026 and GAME.team!="Alpine" and GAME.race==13:
-            #Colapinto Re-signs
-            GAME.ChangeScreen("Colapinto Re-signs")
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==13:
+            #Colapinto and Norris Re-sign
             F1.commit()
             F1.close()
-            root.after(5000, lambda: GAME.Menu())
+            if GAME.team=="Alpine":
+                time=0
+            else:
+                time=3000
+                GAME.ChangeScreen("Colapinto Re-signs")
+            if GAME.team=="McLaren":
+                time-=3000
+            else:
+                root.after(time, lambda: GAME.ChangeScreen("Norris Re-signs"))
+            root.after(time+3000, lambda: GAME.Menu())
         else:
             GAME.ChangeScreen("Press Conference")
             if objective=="Upgrade":
@@ -1914,6 +1924,7 @@ class Game:
             GAME.Button("Standings",400,510)
             GAME.Button("Data",950,650)
             with sqlite3.connect(GAME.database) as c:
+                GAME.track=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.race,)).fetchall()[0])
                 if int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))==GAME.season+1:
                     nextEngine=GAME.Sanitise(c.execute("SELECT NextYearEngine FROM Player").fetchall()[0])
                     manufacturedEngine=c.execute("SELECT Name FROM Engines WHERE Manufacturer=?",(GAME.team,)).fetchall()
@@ -9478,13 +9489,16 @@ class Game:
         canvas.create_image(150, 400, anchor=tk.NW, image=image)
     def ReplayScreen(self):
         GAME.screen="Replay screen"
-    def SuitTest(self,team):
+    def SuitTest(self,driver,team):
         GAME.ChangeScreen(1)
+        if GAME.music==1:
+            GAME.StopMusic()
         GAME.suitTest=team
-        GAME.DisplayDriver("Daniel Ricciardo",500,500)
+        GAME.DisplayDriver(driver,500,500)
     def OnClick(self, event):
         if GAME.screen=="Title Screen":
             GAME.replay=0
+            GAME.track=0
             GAME.team=""
             GAME.startYear=2026
             GAME.season=2026
@@ -11729,13 +11743,13 @@ class Game:
                     if race<GAME.race:
                         with sqlite3.connect(GAME.database) as c:
                             GAME.ChangeScreen("Race Review")
-                            track=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(race,)).fetchall()[0])
+                            GAME.track=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(race,)).fetchall()[0])
                             podium=[]
-                            podium.append(GAME.Sanitise(c.execute("SELECT First FROM Tracks WHERE Name=?",(track,)).fetchall()[0]))
-                            podium.append(GAME.Sanitise(c.execute("SELECT Second FROM Tracks WHERE Name=?",(track,)).fetchall()[0]))
-                            podium.append(GAME.Sanitise(c.execute("SELECT Third FROM Tracks WHERE Name=?",(track,)).fetchall()[0]))
+                            podium.append(GAME.Sanitise(c.execute("SELECT First FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
+                            podium.append(GAME.Sanitise(c.execute("SELECT Second FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
+                            podium.append(GAME.Sanitise(c.execute("SELECT Third FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
                             team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(podium[0],)).fetchall()[0])
-                            country=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(track,)).fetchall()[0])
+                            country=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0])
                             try:
                                 teamHome=len(c.execute("SELECT Name FROM Teams WHERE Name=? AND Country=?",(team,country,)).fetchall())
                             except:
@@ -11747,7 +11761,8 @@ class Game:
                                 colour=GAME.TeamColour(team,GAME.season)
                                 if colour=="black":
                                     colour="white"
-                                canvas.create_text(50, 5, text=track, fill=colour, font=("Arial", 50), anchor="nw")
+                                canvas.create_text(50, 5, text=GAME.track, fill=colour, font=("Arial", 50), anchor="nw")
+                                GAME.DisplayLayout(GAME.track)
                             for i in range(3):
                                 driver=podium[i]
                                 if i==0:
@@ -12328,7 +12343,10 @@ class Game:
     def TeamColour(self,team,season):
         if team=="McLaren":
             if season>2016 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5 and GAME.replay!=6:
-                colour="#FF8700"
+                if season>2025 and GAME.track=="Silverstone":
+                    colour="#D3DDE6"
+                else:
+                    colour="#FF8700"
             elif season<1997 or GAME.replay==6:
                 colour="#F54B28"
             elif season<2006 or GAME.replay==5:
@@ -12844,6 +12862,8 @@ class Game:
                             team=0
                 if driver=="Sonny Hayes" or driver=="Joshua Pearce":
                     team=driver
+                elif GAME.season>2025 and f"{GAME.track} {team}" in steam:
+                    team=f"{GAME.track} {team}"
                 elif team=="McLaren":
                     if GAME.replay==3 or GAME.replay==4 or GAME.season<2015:
                         team="Vodafone McLaren"
@@ -14466,7 +14486,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade",
         "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade","Qualifying Grid",
         "2015 McLaren Display","Malaysia Return","Budkowski","India Flag","Williams Martini Display","Williams Contracts","ROKiT Williams Display","2021 Williams Display",
-        "Hadjar Injured","Verstappen Re-signs","Alfa Romeo Display","2010 Mercedes Display","Colapinto Re-signs","Leclerc Re-signs"]
+        "Hadjar Injured","Verstappen Re-signs","Alfa Romeo Display","2010 Mercedes Display","Colapinto Re-signs","Leclerc Re-signs","Norris Re-signs"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
@@ -14498,10 +14518,10 @@ for x in range(len(driverHeads)):
         missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","McLaren Honda",
-       "Alfa Romeo","Caterham","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams",
-       "2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia"]
-xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88]
-yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70]
+       "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
+       "HRT","Manor","2009 Williams","2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia"]
+xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95]
+yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80]
 path=os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 if os.path.isfile(path):
     GAME.suits=[tk.PhotoImage(file=path)]
@@ -14515,8 +14535,12 @@ if os.path.isfile(path):
         team=steam[x+1]
         if "Ferrari" in team:
             team="Ferrari"
-        elif "McLaren" in team and team!="McLaren":
+        elif team=="Vodafone McLaren" or team=="West McLaren":
             team="Classic McLaren"
+        elif "McLaren" in team:
+            team="McLaren"
+        elif team=="Miami Mercedes":
+            team="Mercedes"
         path=os.path.join(os.path.dirname(__file__), "Logos", (team+" Logo.png"))
         if os.path.isfile(path):
             logos.append(tk.PhotoImage(file=path))
