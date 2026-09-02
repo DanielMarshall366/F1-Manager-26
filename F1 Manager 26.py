@@ -1955,7 +1955,7 @@ class Game:
                         GAME.Button("Upgrade Car",820,510)
                     GAME.Button("View Contracts",350,580)
                     unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
-                    if unableToRace>0 and len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(GAME.team,)).fetchall())<unableToRace:
+                    if unableToRace>0 and len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(GAME.team,)).fetchall())<unableToRace and (GAME.team!="Racing Bulls" or len(c.execute("SELECT Name FROM Drivers WHERE Team='Red Bull' AND Role='Reserve'").fetchall())<unableToRace):
                         GAME.Button("Hire Reserve",300,650)
                         if GAME.swappable==1:
                             GAME.swappable=0
@@ -1981,6 +1981,7 @@ class Game:
             GAME.Button("Quit",5,730)
             GAME.DisplayMoney()
             GAME.BoardRoomLogo()
+            GAME.BackgroundColour()
         else:
             GAME.ChangeScreen("Missing Required Files")
     def DisplayMoney(self):
@@ -9468,6 +9469,11 @@ class Game:
                         screen=f"{race} {GAME.team} Upgrade"
                     else:
                         screen=f"{GAME.team} Upgrade"
+            elif GAME.team=="McLaren" and GAME.season>2014:
+                if GAME.season<2018:
+                    screen="2015 McLaren Upgrade"
+                else:
+                    screen="2018 McLaren Upgrade"
             elif f"2009 {GAME.team} Upgrade" in Images:
                 screen=f"2009 {GAME.team} Upgrade"
         elif screen=="Car Data" or screen=="Team Data" or screen=="Achievements" or screen=="Team Management" or screen=="Engine Data":
@@ -9490,7 +9496,7 @@ class Game:
     def ReplayScreen(self):
         GAME.screen="Replay screen"
     def SuitTest(self,driver,team):
-        GAME.ChangeScreen(1)
+        GAME.ChangeScreen("Grey Screen")
         if GAME.music==1:
             GAME.StopMusic()
         GAME.suitTest=team
@@ -10150,7 +10156,7 @@ class Game:
                     GAME.Button("Scout Race Engineers",920,650)
                     with sqlite3.connect(GAME.database) as c:
                         unableToRace=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Condition!='Well'",(GAME.team,)).fetchall())
-                        if unableToRace>0 and len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(GAME.team,)).fetchall())<unableToRace:
+                        if unableToRace>0 and len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(GAME.team,)).fetchall())<unableToRace and (GAME.team!="Racing Bulls" or len(c.execute("SELECT Name FROM Drivers WHERE Team='Red Bull' AND Role='Reserve'").fetchall())<unableToRace):
                             GAME.Button("Hire Reserve",300,650)
                     GAME.Button("Back",5,730)
                     GAME.DisplayMoney()
@@ -10197,7 +10203,7 @@ class Game:
                         else:
                             team=GAME.team
                         reserves=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(team,)).fetchall())
-                    if unableToRace>0 and reserves<unableToRace:
+                    if unableToRace>0 and reserves<unableToRace and (GAME.team!="Racing Bulls" or len(c.execute("SELECT Name FROM Drivers WHERE Team='Red Bull' AND Role='Reserve'").fetchall())<unableToRace):
                         GAME.HireReserve()
             elif event.x>=5 and event.x<=205 and event.y>=730 and event.y<=780:
                 #Quit
@@ -10681,7 +10687,7 @@ class Game:
                     else:
                         team=GAME.team
                     reserves=len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Reserve'",(team,)).fetchall())
-                    if unableToRace>0 and reserves<unableToRace:
+                    if unableToRace>0 and reserves<unableToRace and (GAME.team!="Racing Bulls" or len(c.execute("SELECT Name FROM Drivers WHERE Team='Red Bull' AND Role='Reserve'").fetchall())<unableToRace):
                         GAME.HireReserve()
         elif GAME.screen=="View Contracts":
             if event.x>=600 and event.x<=800 and event.y>=730 and event.y<=780:
@@ -12356,7 +12362,10 @@ class Game:
             else:
                 colour="#2C2C2C"
         elif team=="Mercedes":
-            colour="#1AE2CE"
+            if season>2025 and GAME.track=="Miami":
+                colour="#9141D2"
+            else:
+                colour="#1AE2CE"
         elif team=="Red Bull" and season>2012 and season<2016:
             colour="#6305B6"
         elif team=="Red Bull" or "Ford" in team:
@@ -14488,7 +14497,8 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Miami Cadillac Upgrade","Miami Racing Bulls Upgrade","Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade",
         "Catalunya Racing Bulls Upgrade","Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade","Qualifying Grid",
         "2015 McLaren Display","Malaysia Return","Budkowski","India Flag","Williams Martini Display","Williams Contracts","ROKiT Williams Display","2021 Williams Display",
-        "Hadjar Injured","Verstappen Re-signs","Alfa Romeo Display","2010 Mercedes Display","Colapinto Re-signs","Leclerc Re-signs","Norris Re-signs"]
+        "Hadjar Injured","Verstappen Re-signs","Alfa Romeo Display","2010 Mercedes Display","Colapinto Re-signs","Leclerc Re-signs","Norris Re-signs","Monza Ferrari Upgrade",
+        "2015 McLaren Upgrade","2018 McLaren Upgrade","Monza McLaren Upgrade"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
@@ -14520,10 +14530,10 @@ for x in range(len(driverHeads)):
         missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","McLaren Honda",
-       "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR",
-       "HRT","Manor","2009 Williams","2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia"]
-xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95]
-yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80]
+       "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Monza McLaren","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini",
+       "Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams","2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia"]
+xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95,95]
+yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80,97]
 path=os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 if os.path.isfile(path):
     GAME.suits=[tk.PhotoImage(file=path)]
@@ -14535,19 +14545,13 @@ if os.path.isfile(path):
         else:
             GAME.suits.append(GAME.suits[0])
         team=steam[x+1]
-        if "Ferrari" in team:
-            team="Ferrari"
-        elif team=="Vodafone McLaren" or team=="West McLaren":
+        if team=="Vodafone McLaren" or team=="West McLaren":
             team="Classic McLaren"
-        elif "McLaren" in team:
-            team="McLaren"
-        elif team=="Miami Mercedes":
-            team="Mercedes"
         path=os.path.join(os.path.dirname(__file__), "Logos", (team+" Logo.png"))
         if os.path.isfile(path):
             logos.append(tk.PhotoImage(file=path))
         else:
-            missingFiles=1
+            logos.append(0)
     steam.append("Sonny Hayes")
     path=os.path.join(os.path.dirname(__file__), "Suits", ("Sonny Hayes.png"))
     if os.path.isfile(path):
