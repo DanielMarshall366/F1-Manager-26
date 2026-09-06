@@ -4360,7 +4360,10 @@ class Game:
                                 pitStopTime=random.uniform(1.8, 2.3)   # Amazing
                             #Refueling
                             if GAME.refueling==1:
-                                totalFuelNeeded=round(100*(GAME.laps-GAME.lap[GAME.positions[0]])/GAME.laps)
+                                if GAME.sprint==1:
+                                    totalFuelNeeded=round(40*(GAME.laps-GAME.lap[GAME.positions[0]])/GAME.laps)
+                                else:
+                                    totalFuelNeeded=round(100*(GAME.laps-GAME.lap[GAME.positions[0]])/GAME.laps)
                                 if GAME.fuel[driverIndex]<totalFuelNeeded:
                                     fuelNeeded=totalFuelNeeded-GAME.fuel[driverIndex]
                                     pitStopTime+=fuelNeeded/10
@@ -4885,7 +4888,7 @@ class Game:
             tyreColour=colours[tyres.index(GAME.tyre[index])]
             canvas.create_text(265, 80+(x*25), text=GAME.tyre[index], fill=tyreColour, font=("Arial", 15), anchor="nw")
             if GAME.lap[index]==GAME.lapPittedTo[index]+1:
-                canvas.create_text(415, 80+(x*25), text="1 Lap", fill="#00FF00", font=("Arial", 15), anchor="nw")
+                canvas.create_text(415, 80+(x*25), text="1 Lap", fill="#00DF00", font=("Arial", 15), anchor="nw")
             else:
                 if GAME.tyre[index]=="Wet":
                     expectedTyreLife=GAME.expectedTyreLife[3]
@@ -4945,7 +4948,10 @@ class Game:
                 GAME.distance.append(GAME.positions.index(x)*-2)
                 #Refueling
                 if GAME.refueling==1:
-                    totalFuelNeeded=round(110*(GAME.laps-lap)/GAME.laps)
+                    if GAME.sprint==1:
+                        totalFuelNeeded=round(45*(GAME.laps-lap)/GAME.laps)
+                    else:
+                        totalFuelNeeded=round(110*(GAME.laps-lap)/GAME.laps)
                     if totalFuelNeeded>100:
                         totalFuelNeeded=100
                     if GAME.fuel[x]<totalFuelNeeded:
@@ -5311,16 +5317,19 @@ class Game:
                     if pitStopScore <= 20:
                         pitStopTime=random.uniform(4.0, 10.0)  # Terrible
                     elif pitStopScore <= 50:
-                        pitStopTime=random.uniform(3.0, 5.0)   # Bad
+                        pitStopTime=random.uniform(3.5, 5.0)   # Bad
                     elif pitStopScore <= 80:
-                        pitStopTime=random.uniform(2.3, 3.0)   # Average
+                        pitStopTime=random.uniform(2.5, 3.5)   # Average
                     elif pitStopScore <= 100:
-                        pitStopTime=random.uniform(2.0, 2.6)   # Good
+                        pitStopTime=random.uniform(2.2, 2.9)   # Good
                     else:
-                        pitStopTime=random.uniform(1.7, 2.2)   # Amazing
+                        pitStopTime=random.uniform(1.8, 2.3)   # Amazing
                     #Refueling
                     if GAME.refueling==1:
-                        totalFuelNeeded=round(110*(GAME.laps-lap)/GAME.laps)
+                        if GAME.sprint==1:
+                            totalFuelNeeded=round(45*(GAME.laps-lap)/GAME.laps)
+                        else:
+                            totalFuelNeeded=round(110*(GAME.laps-lap)/GAME.laps)
                         if totalFuelNeeded>100:
                             totalFuelNeeded=100
                         if GAME.fuel[index]<totalFuelNeeded:
@@ -7472,10 +7481,15 @@ class Game:
                     condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
                     car=int(GAME.Sanitise(c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
                     swapped=0
-                    if GAME.season==2026 and GAME.race==12 and GAME.startYear==2026 and name=="Isack Hadjar" and "Liam Lawson" not in GAME.drivers:
-                        name="Liam Lawson"
-                        c.execute("UPDATE Drivers SET Condition='Well' WHERE Name='Liam Lawson'")
-                        swapped=1
+                    if GAME.season==2026 and (GAME.race==12 or GAME.race==13) and GAME.startYear==2026 and name=="Isack Hadjar":
+                        unableToRace.append("Isack Hadjar")
+                        if "Liam Lawson" not in GAME.drivers:
+                            name="Liam Lawson"
+                            c.execute("UPDATE Drivers SET Condition='Well' WHERE Name='Liam Lawson'")
+                            swapped=1
+                            replacements.append("Liam Lawson")
+                        else:
+                            replacements.append(0)
                     if swapped==1 or condition=="Well":
                         GAME.drivers.append(name)
                         GAME.teams.append("Red Bull")
@@ -7535,10 +7549,15 @@ class Game:
                     condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
                     car=int(GAME.Sanitise(c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
                     swapped=0
-                    if GAME.season==2026 and GAME.race==12 and GAME.startYear==2026 and team=="Racing Bulls" and name=="Liam Lawson" and "Yuki Tsunoda" not in GAME.drivers:
-                        name="Yuki Tsunoda"
-                        c.execute("UPDATE Drivers SET Condition='Well' WHERE Name='Yuki Tsunoda'")
-                        swapped=1
+                    if GAME.season==2026 and GAME.race==12 and GAME.startYear==2026 and team=="Racing Bulls" and name=="Liam Lawson" and "Liam Lawson" not in GAME.drivers:
+                        unableToRace.append("Liam Lawson")
+                        if "Yuki Tsunoda" not in GAME.drivers:
+                            name="Yuki Tsunoda"
+                            c.execute("UPDATE Drivers SET Condition='Well' WHERE Name='Yuki Tsunoda'")
+                            swapped=1
+                            replacements.append("Yuki Tsunoda")
+                        else:
+                            replacements.append(0)
                     if (swapped==1 or condition=="Well") and (team!="Racing Bulls" or name not in GAME.drivers):
                         GAME.drivers.append(name)
                         GAME.teams.append(team)
@@ -8505,6 +8524,9 @@ class Game:
                     name=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
                     team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0])
                     points=int(GAME.Sanitise(c.execute('''SELECT Points FROM Drivers WHERE Position=?''',(x+1,)).fetchall()[0]))
+                    fullName=f"{name} {team}"
+                    if team=="Red Bull" and len(c.execute("SELECT Name FROM Teams WHERE Name='Racing Bulls'").fetchall())>0 and len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Role='Reserve'",(name,)).fetchall())>0:
+                        team="Racing Bulls"
                     if x==0:
                         colour="#F5C939"
                         firstPoints=points
@@ -8522,9 +8544,9 @@ class Game:
                     if team=="Free Agent" or team=="Dead" or team=="Retired":
                         team=""
                     if x<9:
-                        canvas.create_text(770, 130+(x*25), text=f"{x+1}. {name} {team}", fill=colour, font=("Arial", 15), anchor="nw")
+                        canvas.create_text(770, 130+(x*25), text=f"{x+1}. {fullName}", fill=colour, font=("Arial", 15), anchor="nw")
                     else:
-                        canvas.create_text(765, 130+(x*25), text=f"{x+1}. {name} {team}", fill=colour, font=("Arial", 15), anchor="nw")
+                        canvas.create_text(765, 130+(x*25), text=f"{x+1}. {fullName}", fill=colour, font=("Arial", 15), anchor="nw")
                     if points==1:
                         canvas.create_text(1290, 130+(x*25), text="1 Point", fill=colour, font=("Arial", 15), anchor="nw")
                     elif points<10:
@@ -9161,12 +9183,11 @@ class Game:
                             warnings=0
                         c.execute("UPDATE Player SET Financial=5, Management=3, Warnings=?",(warnings,))
                     else:
-                        financial+=2
-                        if financial>5:
+                        if financial<3:
+                            financial=4
+                        else:
                             financial=5
-                        if management<3:
-                            management+=1
-                        c.execute("UPDATE Player SET Financial=?, Management=?",(financial,management,))
+                        c.execute("UPDATE Player SET Financial=?, Management=3",(financial,))
                     regulationChange=int(GAME.Sanitise(c.execute("SELECT RegulationChange FROM Player").fetchall()[0]))
                 if regulationChange==GAME.season+1:
                     GAME.done=1
@@ -9481,6 +9502,9 @@ class Game:
         elif screen not in Images:
             screen="Blank Screen"
         imageOnCanvas=canvas.create_image(0, 0, anchor=tk.NW, image=images[Images.index(screen)])
+        if screen=="Contract Name":
+            GAME.DisplayLogo(GAME.team,GAME.season,1090,310)
+            GAME.DisplayLogo(GAME.team,GAME.season,240,310)
     def Settings(self):
         GAME.ChangeScreen("Settings")
         GAME.Button("Back",5,730)
@@ -11012,6 +11036,7 @@ class Game:
                                         Salary=int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Team=? AND Role=?",(GAME.team,role,)).fetchall()[0]))
                                         GAME.buyout+=Salary*(ContractEnd-GAME.season)
                             GAME.ChangeScreen("Contract")
+                            GAME.BoardRoomLogo()
                             if GAME.promoting==0:
                                 GAME.Button("Hire",800,660)
                             else:
@@ -11063,6 +11088,7 @@ class Game:
                             root.after(3000, lambda: GAME.EndScouting())
                         else:
                             GAME.ChangeScreen("Contract")
+                            GAME.BoardRoomLogo()
                             GAME.Button("Hire",800,660)
                             GAME.Button("Back",5,730)
                             GAME.DisplayLogo(GAME.team,GAME.season,900,80)
@@ -12349,7 +12375,7 @@ class Game:
     def TeamColour(self,team,season):
         if team=="McLaren":
             if season>2016 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5 and GAME.replay!=6:
-                if season>2025 and GAME.track=="Silverstone":
+                if season>2025 and GAME.track=="Silverstone" and GAME.screen!="History":
                     colour="#D7EDFF"
                 else:
                     colour="#FF8700"
@@ -12362,7 +12388,7 @@ class Game:
             else:
                 colour="#2C2C2C"
         elif team=="Mercedes":
-            if season>2025 and GAME.track=="Miami":
+            if season>2025 and GAME.track=="Miami" and GAME.screen!="History":
                 colour="#9141D2"
             else:
                 colour="#1AE2CE"
@@ -12692,6 +12718,7 @@ class Game:
                 GAME.salary=int(GAME.Sanitise(c.execute("SELECT Salary FROM Staff WHERE Name=?",(name,)).fetchall()[0]))
                 rating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Staff WHERE Name=?",(name,)).fetchall()[0]))
         GAME.ChangeScreen("Contract")
+        GAME.BoardRoomLogo()
         GAME.screen="Renewal"
         GAME.Button("Renew",800,660)
         GAME.Button("Back",5,730)
@@ -14274,11 +14301,14 @@ class Game:
                         tracks.append(finale)
                     Tracks=F1.execute("SELECT Name FROM Tracks WHERE Name!='Abu Dhabi' AND Name!=? AND Name!=?",(opener,finale,)).fetchall()
                     for x in range(GAME.races-len(tracks)):
-                        track=GAME.Sanitise(random.choice(Tracks))
-                        if track in tracks or (track=="Nürburgring" and "Hockenheim" in tracks) or (track=="Hockenheim" and "Nürburgring" in tracks):
-                            while track in tracks  or (track=="Nürburgring" and "Hockenheim" in tracks) or (track=="Hockenheim" and "Nürburgring" in tracks):
-                                track=GAME.Sanitise(random.choice(Tracks))
-                        tracks.append(track)
+                        Track=random.choice(Tracks)
+                        track=GAME.Sanitise(Track)
+                        if track in tracks or (track=="Nürburgring" and "Hockenheim" in tracks) or (track=="Hockenheim" and "Nürburgring" in tracks) or (track=="Imola" and "Mugello" in tracks) or (track=="Mugello" and "Imola" in tracks):
+                            while track in tracks  or (track=="Nürburgring" and "Hockenheim" in tracks) or (track=="Hockenheim" and "Nürburgring" in tracks) or (track=="Imola" and "Mugello" in tracks) or (track=="Mugello" and "Imola" in tracks):
+                                Tracks.remove(Track)
+                                Track=random.choice(Tracks)
+                                track=GAME.Sanitise(Track)
+                        tracks.append(track)    
                     for x in range(GAME.races-2):
                         track=random.choice(tracks)
                         tracks.remove(track)
