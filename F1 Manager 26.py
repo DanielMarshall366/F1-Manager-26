@@ -7479,7 +7479,7 @@ class Game:
                     condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
                     car=int(GAME.Sanitise(c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
                     swapped=0
-                    if GAME.season==2026 and GAME.race>11 and GAME.race<15 and GAME.startYear==2026 and name=="Isack Hadjar":
+                    if GAME.season==2026 and GAME.race>11 and GAME.race<15 and GAME.startYear==2026 and name=="Isack Hadjar" and GAME.custom==0:
                         unableToRace.append("Isack Hadjar")
                         if "Liam Lawson" not in GAME.drivers:
                             name="Liam Lawson"
@@ -7547,7 +7547,7 @@ class Game:
                     condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
                     car=int(GAME.Sanitise(c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
                     swapped=0
-                    if GAME.season==2026 and GAME.race>11 and GAME.race<15 and GAME.startYear==2026 and team=="Racing Bulls" and name=="Liam Lawson" and "Liam Lawson" not in GAME.drivers:
+                    if GAME.season==2026 and GAME.race>11 and GAME.race<15 and GAME.startYear==2026 and team=="Racing Bulls" and name=="Liam Lawson" and "Liam Lawson" not in GAME.drivers and GAME.custom==0:
                         unableToRace.append("Liam Lawson")
                         if "Yuki Tsunoda" not in GAME.drivers:
                             name="Yuki Tsunoda"
@@ -9192,15 +9192,15 @@ class Game:
             #Move Offer Accepted
             GAME.done=1
             GAME.race+=1
+            GAME.oldTeam=GAME.team
+            GAME.team=moving
+            GAME.GetTeamData()
             with sqlite3.connect(GAME.database) as c:
                 c.execute("UPDATE Player SET Race=?",(GAME.race,))
                 c.execute("UPDATE Teams SET TeamPrincipal='None' WHERE Name=?",(GAME.team,))
-                GAME.oldTeam=GAME.team
-                GAME.team=moving
                 c.execute("UPDATE Player SET Team=?, Financial=5, Management=3, Warnings=0, TeamPoints=0, TeamWins=0, TeamChampionships=0",(GAME.team,))
                 c.execute("UPDATE Teams SET TeamPrincipal=? WHERE Name=?",(GAME.name,GAME.team,))
                 research=int(GAME.Sanitise(c.execute("SELECT Research FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
-                GAME.money=int(GAME.Sanitise(c.execute("SELECT Money FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
                 if research>1:
                     research=random.randint(research*5,research*15)
                     c.execute("UPDATE Cars SET Research=? WHERE Team=?",(research,GAME.team,))
@@ -11421,7 +11421,7 @@ class Game:
                         salary=int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(GAME.options[GAME.displayed],)).fetchall()[0]))
                         if salary<1000000:
                             salary=1000000
-                        if Team=="Legend":
+                        if Team=="Legend" or Team=="Free Agent" or Role=="Reserve" or Role=="Junior":
                             Team="Free Agent"
                             Role="Free Agent"
                             contractEnd=0
@@ -11597,6 +11597,7 @@ class Game:
                                     if GAME.fired==1:
                                         GAME.race+=1
                                         c.execute("UPDATE Player SET Race=?",(GAME.race,))
+                                GAME.GetTeamData()
                                 canvas.delete('all')
                                 GAME.screen="Loading"
                                 GAME.BackgroundColour()
@@ -12437,6 +12438,7 @@ class Game:
                         c.execute("UPDATE Player SET Team==?, Race=0",(GAME.team,))
                         canvas.delete('all')
                         GAME.screen="Loading"
+                        GAME.GetTeamData()
                         GAME.BackgroundColour()
                         GAME.race=0
                         root.after(200, lambda: GAME.RaceTime())
@@ -13692,6 +13694,14 @@ class Game:
     def SaveReady(self):
         GAME.loaded=1
         GAME.track=0
+    def GetTeamData(self):
+        with sqlite3.connect(GAME.database) as c:
+            GAME.money=int(GAME.Sanitise(c.execute('''SELECT Money FROM Teams WHERE Name=?''',(GAME.team,)).fetchall()[0]))
+            GAME.engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(GAME.team,)).fetchall()[0])
+            GAME.car1=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="1"''',(GAME.team,)).fetchall()[0])
+            GAME.car2=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="2"''',(GAME.team,)).fetchall()[0])
+            GAME.position=int(GAME.Sanitise(c.execute('''SELECT Position FROM Teams WHERE Name=?''',(GAME.team,)).fetchall()[0]))
+            GAME.sponsor=GAME.Sanitise(c.execute('''SELECT Sponsor FROM Teams WHERE Name=?''',(GAME.team,)).fetchall()[0])
     def LoadGame(self):
         GAME.drivers=[]
         with sqlite3.connect(GAME.database) as c:
@@ -13701,12 +13711,6 @@ class Game:
             GAME.newTeam=int(GAME.Sanitise(c.execute('''SELECT newTeam FROM Player''').fetchall()[0]))
             GAME.season=int(GAME.Sanitise(c.execute('''SELECT Season FROM Player''').fetchall()[0]))
             GAME.race=int(GAME.Sanitise(c.execute('''SELECT Race FROM Player''').fetchall()[0]))
-            GAME.money=int(GAME.Sanitise(c.execute('''SELECT Money FROM Teams WHERE Name=?''',(GAME.team,)).fetchall()[0]))
-            GAME.engine=GAME.Sanitise(c.execute('''SELECT Engine FROM Cars WHERE Team=?''',(GAME.team,)).fetchall()[0])
-            GAME.car1=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="1"''',(GAME.team,)).fetchall()[0])
-            GAME.car2=GAME.Sanitise(c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="2"''',(GAME.team,)).fetchall()[0])
-            GAME.position=int(GAME.Sanitise(c.execute('''SELECT Position FROM Teams WHERE Name=?''',(GAME.team,)).fetchall()[0]))
-            GAME.sponsor=GAME.Sanitise(c.execute('''SELECT Sponsor FROM Teams WHERE Name=?''',(GAME.team,)).fetchall()[0])
             GAME.actions=int(GAME.Sanitise(c.execute("SELECT Actions FROM Player").fetchall()[0]))
             GAME.startYear=int(GAME.Sanitise(c.execute("SELECT StartYear FROM Player").fetchall()))
             GAME.refueling=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Refueling'").fetchall()[0]))
@@ -13721,6 +13725,7 @@ class Game:
                 c.execute("UPDATE Drivers SET Team='Red Bull' WHERE Team='Racing Bulls' AND Role='Reserve'")
             if len(c.execute("SELECT Name FROM Drivers WHERE Legend!=0").fetchall())>0:
                 GAME.legends=1
+        GAME.GetTeamData()
         if GAME.music==1:
             GAME.StopMusic()
         if GAME.season>2010 and GAME.season<2026:
