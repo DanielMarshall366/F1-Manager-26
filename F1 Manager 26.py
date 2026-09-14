@@ -7539,8 +7539,9 @@ class Game:
                     else:
                         condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
                     car=int(GAME.Sanitise(c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                    swapped=0
-                    if condition=="Well":
+                    if team=="Racing Bulls" and name in GAME.drivers:
+                        redBull.append(name)
+                    if condition=="Well" and name not in redBull:
                         GAME.drivers.append(name)
                         GAME.teams.append(team)
                         GAME.cars.append(car)
@@ -7552,8 +7553,6 @@ class Game:
                                 GAME.car2ID=x-len(unableToRace)
                                 GAME.driver2=name
                     else:
-                        if team=="Racing Bulls" and name in GAME.drivers:
-                            redBull.append(name)
                         unableToRace.append(name)
                         F=c.execute('''SELECT Name FROM Drivers WHERE Team=? AND Role="Reserve" AND Condition="Well"''',(team,)).fetchall()
                         replacement=0
@@ -9699,6 +9698,8 @@ class Game:
                     if GAME.custom==1:
                         GAME.tracks=[]
                         with sqlite3.connect(GAME.database) as c:
+                            c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Styria", "Austria", 4.318, 71, 65, 5, 15, "High", 75, 0, 0, 4, 0, 0, 0)''')
+                            c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Sakhir", "Bahrain", 3.543, 87, 40, 0, 25, "Medium", 78, 0, 0, 4, 0, 0, 0)''')
                             f=c.execute("SELECT Name FROM Tracks").fetchall()
                         for track in f:
                             GAME.tracks.append(GAME.Sanitise(track))
