@@ -142,9 +142,6 @@ class Game:
         self.rainChaince=0
         self.temperature=0
         self.weatherMessage=[]
-        self.ta=0
-        self.fa=0
-        self.ed=0
         self.gridPenalties=[]
         self.penaltyPlace=[]
         self.log=[]
@@ -617,7 +614,7 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Albert Park", "Australia", 5.278, 58, 50, 25, 30, "High", 40, 0, 0, 3, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Shanghai", "China", 5.451, 56, 35, 1, 25, "Medium", 50, 1, 0, 2, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Suzuka", "Japan", 5.807, 53, 75, 15, 20, "High", 55, 0, 0, 1, 0, 0, 0)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Sakhir", "Bahrain", 5.412, 57, 40, 0, 25, "Medium", 50, 0, 0, 4, 0, 0, 0)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Bahrain", "Bahrain", 5.412, 57, 40, 0, 25, "Medium", 50, 0, 0, 4, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Jeddah", "Saudi Arabia", 6.174, 50, 60, 0, 35, "Medium", 65, 0, 1, 3, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Miami", "United States of America", 5.412, 57, 50, 5, 25, "Low", 50, 1, 1, 3, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Imola", "Italy", 4.909, 63, 70, 5, 20, "Medium", 30, 0, 0, 2, 0, 0, 0)''')
@@ -638,10 +635,10 @@ class Game:
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Las Vegas", "United States of America", 6.201, 50, 65, 5, 10, "Low", 70, 0, 1, 3, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Qatar", "Qatar", 5.419, 57, 60, 0, 22, "High", 38, 0, 0, 2, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Abu Dhabi", "Abu Dhabi", 5.281, 58, 50, 0, 20, "Medium", 65, 0, 0, 3, 0, 0, 0)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Madring", "Spain", 5.474, 57, 67, 5, 25, "Medium", 45, 0, 1, 3, 0, 0, 0)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Madring", "Spain", 5.474, 57, 80, 5, 25, "Medium", 45, 0, 1, 1, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Istanbul Park", "Turkey", 5.338, 58, 55, 20, 25, "Medium", 40, 0, 0, 3, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Nürburgring", "Germany", 5.148, 60, 95, 23, 20, "High", 45, 0, 0, 3, 0, 0, 0)''')
-        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Hockenheim", "Germany", 4.574, 67, 68, 23, 20, "Medium", 65, 0, 0, 4, 0, 0, 0)''')
+        c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Hockenheim", "Germany", 4.574, 67, 68, 23, 20, "Medium", 90, 0, 0, 4, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Portimão", "Portugal", 4.653, 66, 60, 40, 18, "High", 50, 0, 0, 3, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Sepang", "Malaysia", 5.543, 56, 60, 75, 28, "High", 35, 0, 0, 3, 0, 0, 0)''')
         c.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Valencia", "Spain", 5.419, 57, 55, 50, 25, "Low", 27, 0, 1, 2, 0, 0, 0)''')
@@ -722,6 +719,8 @@ class Game:
         c.execute('''INSERT into Buyers(Name, Country) VALUES("Volkswagen", "Germany")''')
         c.execute('''INSERT into Buyers(Name, Country) VALUES("Volvo", "Sweden")''')
         c.execute('''INSERT into Buyers(Name, Country) VALUES("JLR", "United Kingdom")''')
+        c.execute('''INSERT into Buyers(Name, Country) VALUES("Tyrrell", "United States of America")''')
+        c.execute('''INSERT into Buyers(Name, Country) VALUES("Minardi", "Italy")''')
         c.execute("DELETE FROM Buyers WHERE Name=?",(GAME.team,))
 
         #Team Principals
@@ -1966,8 +1965,6 @@ class Game:
                     if GAME.actions>-1:
                         GAME.actions=0
                         c.execute("UPDATE Player SET Actions=0")
-                if GAME.season==GAME.startYear:
-                    GAME.swappable=0
                 if GAME.swappable==1:
                     GAME.Button("Swap Drivers",300,650)
                 #Board Finances
@@ -2777,7 +2774,7 @@ class Game:
                 #Race Cancellations
                 if GAME.race==3 and GAME.custom==0:
                     GAME.news.append("BREAKING NEWS! The Bahrain and Saudi Arabian Grand Prix have been cancelled.")
-                    GAME.RemoveRace("Sakhir")
+                    GAME.RemoveRace("Bahrain")
                     GAME.RemoveRace("Jeddah")
                             
                 #ADUO
@@ -6664,7 +6661,7 @@ class Game:
                 mentality=(results//2)+contract+teammate+teamMentality
                 c.execute("UPDATE Drivers SET Mentality=? WHERE Name=?",(mentality,driver,))
     def DisplayLayout(self,track):
-        if track!="Imola" and track!="Miami" and track!="Las Vegas" and track!="Madring" and track!="Valencia" and track!="Mugello":
+        if track!="Imola" and track!="Miami" and track!="Las Vegas" and track!="Madring" and track!="Valencia" and track!="Mugello" and track!="Sakhir":
             with sqlite3.connect(GAME.database) as c:
                 track=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(track,)).fetchall())
         if track in tracks:
@@ -7476,19 +7473,12 @@ class Game:
                 elif name==GAME.car2:
                     GAME.car2ID=len(GAME.drivers)
                 if name!="":
-                    condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
+                    if name=="Isack Hadjar" and GAME.season==2026 and GAME.race>11 and GAME.race<15:
+                        condition="Injured"
+                    else:
+                        condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
                     car=int(GAME.Sanitise(c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
-                    swapped=0
-                    if GAME.season==2026 and GAME.race>11 and GAME.race<15 and GAME.startYear==2026 and name=="Isack Hadjar" and GAME.custom==0:
-                        unableToRace.append("Isack Hadjar")
-                        if "Liam Lawson" not in GAME.drivers:
-                            name="Liam Lawson"
-                            c.execute("UPDATE Drivers SET Condition='Well' WHERE Name='Liam Lawson'")
-                            swapped=1
-                            replacements.append("Liam Lawson")
-                        else:
-                            replacements.append(0)
-                    if swapped==1 or condition=="Well":
+                    if condition=="Well":
                         GAME.drivers.append(name)
                         GAME.teams.append("Red Bull")
                         GAME.cars.append(car)
@@ -7544,19 +7534,13 @@ class Game:
                     GAME.car2ID=len(GAME.drivers)
                 team=GAME.Sanitise(c.execute('''SELECT Team FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
                 if name!="":
-                    condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
+                    if name=="Isack Hadjar" and GAME.season==2026 and GAME.race>11 and GAME.race<15:
+                        condition="Injured"
+                    else:
+                        condition=GAME.Sanitise(c.execute('''SELECT Condition FROM Drivers WHERE Name=?''',(name,)).fetchall()[0])
                     car=int(GAME.Sanitise(c.execute('''SELECT Role FROM Drivers WHERE Name=?''',(name,)).fetchall()[0]))
                     swapped=0
-                    if GAME.season==2026 and GAME.race>11 and GAME.race<15 and GAME.startYear==2026 and team=="Racing Bulls" and name=="Liam Lawson" and "Liam Lawson" not in GAME.drivers and GAME.custom==0:
-                        unableToRace.append("Liam Lawson")
-                        if "Yuki Tsunoda" not in GAME.drivers:
-                            name="Yuki Tsunoda"
-                            c.execute("UPDATE Drivers SET Condition='Well' WHERE Name='Yuki Tsunoda'")
-                            swapped=1
-                            replacements.append("Yuki Tsunoda")
-                        else:
-                            replacements.append(0)
-                    if (swapped==1 or condition=="Well") and (team!="Racing Bulls" or name not in GAME.drivers):
+                    if condition=="Well":
                         GAME.drivers.append(name)
                         GAME.teams.append(team)
                         GAME.cars.append(car)
@@ -13071,8 +13055,10 @@ class Game:
             colour="#0055BF"
         elif "Osella" in team:
             colour="#960000"
-        elif "Honda" in team or team=="AlphaTauri" or team=="Toleman":
+        elif "Honda" in team or team=="AlphaTauri" or team=="Toleman" or team=="Tyrrell":
             colour="white"
+        elif "Minardi" in team:
+            colour="#193778"
         else:
             colour="black"
         return colour
@@ -15082,16 +15068,16 @@ class Game:
                         F1.execute("UPDATE Tracks SET Sprint=0")
                         F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Shanghai' OR Name='Miami' OR Name='Montreal' OR Name='Silverstone' OR Name='Zandvoort' OR Name='Marina Bay'")
                     GAME.races=24
-                    calendar=["Albert Park","Shanghai","Suzuka","Sakhir","Jeddah","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
+                    calendar=["Albert Park","Shanghai","Suzuka","Bahrain","Jeddah","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
                               "Spa","Hungaroring","Zandvoort","Monza","Madring","Baku","Marina Bay","Austin","Mexico City","Interlagos",
                               "Las Vegas","Qatar","Abu Dhabi"]
                 elif GAME.season==2009:
                     GAME.races=17
-                    calendar=["Albert Park","Sepang","Shanghai","Sakhir","Catalunya","Monte Carlo","Istanbul Park","Silverstone","Nürburgring","Hungaroring",
+                    calendar=["Albert Park","Sepang","Shanghai","Bahrain","Catalunya","Monte Carlo","Istanbul Park","Silverstone","Nürburgring","Hungaroring",
                               "Valencia","Spa","Monza","Marina Bay","Suzuka","Interlagos","Abu Dhabi"]
                 elif GAME.season==2010:
                     GAME.races=19
-                    calendar=["Sakhir","Albert Park","Sepang","Shanghai","Catalunya","Monte Carlo","Istanbul Park","Montreal","Valencia","Silverstone","Hockenheim",
+                    calendar=["Bahrain","Albert Park","Sepang","Shanghai","Catalunya","Monte Carlo","Istanbul Park","Montreal","Valencia","Silverstone","Hockenheim",
                               "Hungaroring","Spa","Monza","Marina Bay","Suzuka","South Korea","Interlagos","Abu Dhabi"]
                 elif GAME.season==2011:
                     GAME.races=19
@@ -15099,35 +15085,35 @@ class Game:
                               "Hungaroring","Spa","Monza","Marina Bay","Suzuka","South Korea","India","Abu Dhabi","Interlagos"]
                 elif GAME.season==2012:
                     GAME.races=20
-                    calendar=["Albert Park","Sepang","Shanghai","Sakhir","Catalunya","Monte Carlo","Montreal","Valencia","Silverstone","Hockenheim","Hungaroring",
+                    calendar=["Albert Park","Sepang","Shanghai","Bahrain","Catalunya","Monte Carlo","Montreal","Valencia","Silverstone","Hockenheim","Hungaroring",
                               "Spa","Monza","Marina Bay","Suzuka","South Korea","India","Abu Dhabi","Austin","Interlagos"]
                 elif GAME.season==2013:
                     GAME.races=19
-                    calendar=["Albert Park","Sepang","Shanghai","Sakhir","Catalunya","Monte Carlo","Montreal","Silverstone","Nürburgring","Hungaroring","Spa",
+                    calendar=["Albert Park","Sepang","Shanghai","Bahrain","Catalunya","Monte Carlo","Montreal","Silverstone","Nürburgring","Hungaroring","Spa",
                               "Monza","Marina Bay","South Korea","Suzuka","India","Abu Dhabi","Austin","Interlagos"]
                 elif GAME.season==2014:
                     GAME.races=19
-                    calendar=["Albert Park","Sepang","Sakhir","Shanghai","Catalunya","Monte Carlo","Montreal","Red Bull Ring","Silverstone","Hockenheim","Hungaroring",
+                    calendar=["Albert Park","Sepang","Bahrain","Shanghai","Catalunya","Monte Carlo","Montreal","Red Bull Ring","Silverstone","Hockenheim","Hungaroring",
                               "Spa","Monza","Marina Bay","Suzuka","Sochi","Austin","Interlagos","Abu Dhabi"]
                 elif GAME.season==2015:
                     GAME.races=19
-                    calendar=["Albert Park","Sepang","Shanghai","Sakhir","Catalunya","Monte Carlo","Montreal","Red Bull Ring","Silverstone","Hungaroring","Spa",
+                    calendar=["Albert Park","Sepang","Shanghai","Bahrain","Catalunya","Monte Carlo","Montreal","Red Bull Ring","Silverstone","Hungaroring","Spa",
                               "Monza","Marina Bay","Suzuka","Sochi","Austin","Mexico City","Interlagos","Abu Dhabi"]
                 elif GAME.season==2016:
                     GAME.races=21
-                    calendar=["Albert Park","Sakhir","Shanghai","Sochi","Catalunya","Monte Carlo","Montreal","Baku","Red Bull Ring","Silverstone","Hungaroring","Hockenheim",
+                    calendar=["Albert Park","Bahrain","Shanghai","Sochi","Catalunya","Monte Carlo","Montreal","Baku","Red Bull Ring","Silverstone","Hungaroring","Hockenheim",
                               "Spa","Monza","Marina Bay","Sepang","Suzuka","Austin","Mexico City","Interlagos","Abu Dhabi"]
                 elif GAME.season==2017:
                     GAME.races=20
-                    calendar=["Albert Park","Shanghai","Sakhir","Sochi","Catalunya","Monte Carlo","Montreal","Baku","Red Bull Ring","Silverstone","Hungaroring","Spa",
+                    calendar=["Albert Park","Shanghai","Bahrain","Sochi","Catalunya","Monte Carlo","Montreal","Baku","Red Bull Ring","Silverstone","Hungaroring","Spa",
                               "Monza","Marina Bay","Sepang","Suzuka","Austin","Mexico City","Interlagos","Abu Dhabi"]
                 elif GAME.season==2018:
                     GAME.races=21
-                    calendar=["Albert Park","Sakhir","Shanghai","Baku","Catalunya","Monte Carlo","Montreal","Paul Ricard","Red Bull Ring","Silverstone","Hockenheim","Hungaroring",
+                    calendar=["Albert Park","Bahrain","Shanghai","Baku","Catalunya","Monte Carlo","Montreal","Paul Ricard","Red Bull Ring","Silverstone","Hockenheim","Hungaroring",
                               "Spa","Monza","Marina Bay","Sochi","Suzuka","Austin","Mexico City","Interlagos","Abu Dhabi"]
                 elif GAME.season==2019:
                     GAME.races=21
-                    calendar=["Albert Park","Sakhir","Shanghai","Baku","Catalunya","Monte Carlo","Montreal","Paul Ricard","Red Bull Ring","Silverstone","Hockenheim","Hungaroring",
+                    calendar=["Albert Park","Bahrain","Shanghai","Baku","Catalunya","Monte Carlo","Montreal","Paul Ricard","Red Bull Ring","Silverstone","Hockenheim","Hungaroring",
                               "Spa","Monza","Marina Bay","Sochi","Suzuka","Mexico City","Austin","Interlagos","Abu Dhabi"]
                 elif GAME.season==2020:
                     GAME.races=17
@@ -15135,43 +15121,41 @@ class Game:
                               "Istanbul Park","Bahrain","Sakhir","Abu Dhabi"]
                     F1.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Styria", "Austria", 4.318, 71, 65, 5, 15, "High", 75, 0, 0, 4, 0, 0, 0)''')
                     F1.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Anniversary", "United Kingdom", 5.891, 52, 50, 65, 18, "High", 65, 1, 0, 4, 0, 0, 0)''')
-                    F1.execute("UPDATE Tracks SET Name='Bahrain' WHERE Name='Sakhir'")
-                    F1.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Sakhir", "Bahrain", 3.543, 87, 40, 0, 25, "Medium", 90, 0, 0, 4, 0, 0, 0)''')
+                    F1.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Sakhir", "Bahrain", 3.543, 87, 40, 0, 25, "Medium", 78, 0, 0, 4, 0, 0, 0)''')
                 elif GAME.season==2021:
                     F1.execute("DELETE FROM Tracks WHERE Name='Anniversary' OR Name='Sakhir'")
-                    F1.execute("UPDATE Tracks SET Name='Sakhir' WHERE Name='Bahrain'")
                     F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Silverstone' OR Name='Monza' OR Name='Interlagos'")
                     GAME.races=22
-                    calendar=["Sakhir","Imola","Portimão","Catalunya","Monte Carlo","Baku","Paul Ricard","Styria","Red Bull Ring","Silverstone","Hungaroring","Spa",
+                    calendar=["Bahrain","Imola","Portimão","Catalunya","Monte Carlo","Baku","Paul Ricard","Styria","Red Bull Ring","Silverstone","Hungaroring","Spa",
                               "Zandvoort","Monza","Sochi","Istanbul Park","Austin","Mexico City","Interlagos","Qatar","Jeddah","Abu Dhabi"]
                 elif GAME.season==2022:
                     F1.execute("DELETE FROM Tracks WHERE Name='Styria'")
                     F1.execute("UPDATE Tracks SET Sprint=0")
                     F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Imola' OR Name='Red Bull Ring' OR Name='Interlagos'")
                     GAME.races=22
-                    calendar=["Sakhir","Jeddah","Albert Park","Imola","Miami","Catalunya","Monte Carlo","Baku","Montreal","Silverstone","Red Bull Ring","Paul Ricard",
+                    calendar=["Bahrain","Jeddah","Albert Park","Imola","Miami","Catalunya","Monte Carlo","Baku","Montreal","Silverstone","Red Bull Ring","Paul Ricard",
                               "Hungaroring","Spa","Zandvoort","Monza","Marina Bay","Suzuka","Austin","Mexico City","Interlagos","Abu Dhabi"]
                 elif GAME.season==2023:
                     F1.execute("UPDATE Tracks SET Sprint=0")
                     F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Baku' OR Name='Red Bull Ring' OR Name='Spa' OR Name='Qatar' OR Name='Austin' OR Name='Interlagos'")
                     GAME.races=22
-                    calendar=["Sakhir","Jeddah","Albert Park","Baku","Miami","Monte Carlo","Catalunya","Montreal","Red Bull Ring","Silverstone","Hungaroring",
+                    calendar=["Bahrain","Jeddah","Albert Park","Baku","Miami","Monte Carlo","Catalunya","Montreal","Red Bull Ring","Silverstone","Hungaroring",
                               "Spa","Zandvoort","Monza","Marina Bay","Suzuka","Qatar","Austin","Mexico City","Interlagos","Las Vegas","Abu Dhabi"]
                 elif GAME.season==2024:
                     F1.execute("UPDATE Tracks SET Sprint=0")
                     F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Shanghai' OR Name='Miami' OR Name='Red Bull Ring' OR Name='Austin' OR Name='Interlagos' OR Name='Qatar'")
                     GAME.races=24
-                    calendar=["Sakhir","Jeddah","Albert Park","Suzuka","Shanghai","Miami","Imola","Monte Carlo","Montreal","Catalunya","Red Bull Ring","Silverstone",
+                    calendar=["Bahrain","Jeddah","Albert Park","Suzuka","Shanghai","Miami","Imola","Monte Carlo","Montreal","Catalunya","Red Bull Ring","Silverstone",
                               "Hungaroring","Spa","Zandvoort","Monza","Baku","Marina Bay","Austin","Mexico City","Interlagos","Las Vegas","Qatar","Abu Dhabi"]
                 elif GAME.season==2025:
                     F1.execute("UPDATE Tracks SET Sprint=0")
                     F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Shanghai' OR Name='Miami' OR Name='Spa' OR Name='Austin' OR Name='Interlagos' OR Name='Qatar'")
                     GAME.races=24
-                    calendar=["Albert Park","Shanghai","Suzuka","Sakhir","Jeddah","Miami","Imola","Monte Carlo","Catalunya","Montreal","Red Bull Ring","Silverstone",
+                    calendar=["Albert Park","Shanghai","Suzuka","Bahrain","Jeddah","Miami","Imola","Monte Carlo","Catalunya","Montreal","Red Bull Ring","Silverstone",
                               "Spa","Hungaroring","Zandvoort","Monza","Baku","Marina Bay","Austin","Mexico City","Interlagos","Las Vegas","Qatar","Abu Dhabi"]
                 else:
                     if random.randint(1,3)==3:
-                        opener="Sakhir"
+                        opener="Bahrain"
                     else:
                         opener="Albert Park"
                     calendar.append(opener)
@@ -15476,7 +15460,7 @@ for x in range(len(driverHeads)):
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","McLaren Honda",
        "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Monza McLaren","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini",
-       "Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams","2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia"]
+       "Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams","2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia","Tyrrell","Minardi","Jordan"]
 xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95,95]
 yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80,97]
 path=os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
