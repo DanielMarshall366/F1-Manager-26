@@ -6075,6 +6075,8 @@ class Game:
                         GAME.screen="Podium"
                     if driver=="Fernando Alonso":
                         path=os.path.join(os.path.dirname(__file__), "Music", "Fernando Alonso Song.wav")
+                    elif driver=="Max Verstappen":
+                        path=os.path.join(os.path.dirname(__file__), "Music", "33 Max Verstappen.wav")
                 if GAME.music==1:
                     if os.path.isfile(path):
                         winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_LOOP)
