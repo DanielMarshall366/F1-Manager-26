@@ -9609,7 +9609,13 @@ class Game:
                 change=1
                 GAME.ChangeScreen("Get Country 1")
             if change==0 and GAME.country!="":
-                if GAME.startYear==2026:
+                if GAME.custom==1:
+                    if GAME.music==1:
+                        GAME.StopMusic()
+                    GAME.team=0
+                    GAME.FillDatabase()
+                    GAME.CustomiseTeams()
+                elif GAME.startYear==2026:
                     GAME.ChangeScreen("Choose a Team")
                 else:
                     GAME.ChangeScreen("2009 Choose a Team")
@@ -13352,11 +13358,8 @@ class Game:
         GAME.options=[]
         for x in range(len(teams)):
             pos=x+1
-            if pos>len(teams):
-                team="Create New Team"
-            else:
-                with sqlite3.connect(GAME.database) as c:
-                    team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(pos,)).fetchall()[0])
+            with sqlite3.connect(GAME.database) as c:
+                team=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(pos,)).fetchall()[0])
             GAME.options.append(team)
             if x<6:
                 X=550
@@ -15060,6 +15063,7 @@ class Game:
         canvas.create_image(x, y, anchor=tk.NW, image=button)
     def Calendar(self):
         calendar=[]
+        sprints=[]
         GAME.ChangeScreen("calendar")
         if GAME.custom==2 or (GAME.season>2026 and GAME.custom==1):
             GAME.screen="Customise Calendar"
@@ -15067,13 +15071,11 @@ class Game:
                 F1.execute("DELETE FROM Calendar")
                 F1.execute("UPDATE Tracks SET First='0', Second='0', Third='0'")
                 if GAME.season==2026 or GAME.custom==1:
-                    if GAME.startYear==2009:
-                        F1.execute("UPDATE Tracks SET Sprint=0")
-                        F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Shanghai' OR Name='Miami' OR Name='Montreal' OR Name='Silverstone' OR Name='Zandvoort' OR Name='Marina Bay'")
                     GAME.races=24
                     calendar=["Albert Park","Shanghai","Suzuka","Bahrain","Jeddah","Miami","Montreal","Monte Carlo","Catalunya","Red Bull Ring","Silverstone",
                               "Spa","Hungaroring","Zandvoort","Monza","Madring","Baku","Marina Bay","Austin","Mexico City","Interlagos",
                               "Las Vegas","Qatar","Abu Dhabi"]
+                    sprints=["Shanghai","Miami","Montreal","Silverstone","Zandvoort","Marina Bay"]
                 elif GAME.season==2009:
                     GAME.races=17
                     calendar=["Albert Park","Sepang","Shanghai","Bahrain","Catalunya","Monte Carlo","Istanbul Park","Silverstone","Nürburgring","Hungaroring",
@@ -15127,35 +15129,36 @@ class Game:
                     F1.execute('''INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ("Sakhir", "Bahrain", 3.543, 87, 40, 0, 25, "Medium", 78, 0, 0, 4, 0, 0, 0)''')
                 elif GAME.season==2021:
                     F1.execute("DELETE FROM Tracks WHERE Name='Anniversary' OR Name='Sakhir'")
-                    F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Silverstone' OR Name='Monza' OR Name='Interlagos'")
                     GAME.races=22
                     calendar=["Bahrain","Imola","Portimão","Catalunya","Monte Carlo","Baku","Paul Ricard","Styria","Red Bull Ring","Silverstone","Hungaroring","Spa",
                               "Zandvoort","Monza","Sochi","Istanbul Park","Austin","Mexico City","Interlagos","Qatar","Jeddah","Abu Dhabi"]
+                    sprints=["Silverstone","Monza","Interlagos"]
                 elif GAME.season==2022:
                     F1.execute("DELETE FROM Tracks WHERE Name='Styria'")
-                    F1.execute("UPDATE Tracks SET Sprint=0")
-                    F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Imola' OR Name='Red Bull Ring' OR Name='Interlagos'")
                     GAME.races=22
                     calendar=["Bahrain","Jeddah","Albert Park","Imola","Miami","Catalunya","Monte Carlo","Baku","Montreal","Silverstone","Red Bull Ring","Paul Ricard",
                               "Hungaroring","Spa","Zandvoort","Monza","Marina Bay","Suzuka","Austin","Mexico City","Interlagos","Abu Dhabi"]
+                    sprints=["Imola","Red Bull Ring","Interlagos"]
                 elif GAME.season==2023:
-                    F1.execute("UPDATE Tracks SET Sprint=0")
-                    F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Baku' OR Name='Red Bull Ring' OR Name='Spa' OR Name='Qatar' OR Name='Austin' OR Name='Interlagos'")
                     GAME.races=22
                     calendar=["Bahrain","Jeddah","Albert Park","Baku","Miami","Monte Carlo","Catalunya","Montreal","Red Bull Ring","Silverstone","Hungaroring",
                               "Spa","Zandvoort","Monza","Marina Bay","Suzuka","Qatar","Austin","Mexico City","Interlagos","Las Vegas","Abu Dhabi"]
+                    sprints=["Baku","Red Bull Ring","Spa","Qatar","Austin","Interlagos"]
                 elif GAME.season==2024:
-                    F1.execute("UPDATE Tracks SET Sprint=0")
-                    F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Shanghai' OR Name='Miami' OR Name='Red Bull Ring' OR Name='Austin' OR Name='Interlagos' OR Name='Qatar'")
                     GAME.races=24
                     calendar=["Bahrain","Jeddah","Albert Park","Suzuka","Shanghai","Miami","Imola","Monte Carlo","Montreal","Catalunya","Red Bull Ring","Silverstone",
                               "Hungaroring","Spa","Zandvoort","Monza","Baku","Marina Bay","Austin","Mexico City","Interlagos","Las Vegas","Qatar","Abu Dhabi"]
+                    sprints=["Shanghai","Miami","Red Bull Ring","Austin","Interlagos","Qatar"]
                 elif GAME.season==2025:
-                    F1.execute("UPDATE Tracks SET Sprint=0")
-                    F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name='Shanghai' OR Name='Miami' OR Name='Spa' OR Name='Austin' OR Name='Interlagos' OR Name='Qatar'")
                     GAME.races=24
                     calendar=["Albert Park","Shanghai","Suzuka","Bahrain","Jeddah","Miami","Imola","Monte Carlo","Catalunya","Montreal","Red Bull Ring","Silverstone",
                               "Spa","Hungaroring","Zandvoort","Monza","Baku","Marina Bay","Austin","Mexico City","Interlagos","Las Vegas","Qatar","Abu Dhabi"]
+                    sprints=["Shanghai","Miami","Spa","Austin","Interlagos","Qatar"]
+                elif GAME.season==2027:
+                    GAME.races=24
+                    calendar=["Bahrain","Jeddah","Albert Park","Suzuka","Shanghai","Miami","Montreal","Monte Carlo","Portimão","Silverstone","Red Bull Ring","Spa",
+                              "Hungaroring","Monza","Madring","Baku","Istanbul Park","Marina Bay","Austin","Mexico City","Interlagos","Las Vegas","Qatar","Abu Dhabi"]
+                    sprints=["Bahrain","Albert Park","Suzuka","Montreal","Monte Carlo","Silverstone","Monza","Interlagos","Qatar","Abu Dhabi"]
                 else:
                     if random.randint(1,3)==3:
                         opener="Bahrain"
@@ -15209,7 +15212,7 @@ class Game:
                 #Sprints
                 if GAME.season<2021:
                     F1.execute("UPDATE Tracks SET sprint=0")
-                elif GAME.season>2026:
+                elif GAME.season>2027:
                     F1.execute("UPDATE Tracks SET Sprint=1 WHERE Sprint=-1")
                     sprints=F1.execute("SELECT Name FROM Tracks WHERE Sprint=1").fetchall()
                     for x in range(len(sprints)):
@@ -15227,12 +15230,16 @@ class Game:
                         sprints.append(newSprint)
                         F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name=?",(newSprint,))
                         F1.execute("UPDATE Tracks SET Sprint=0 WHERE Name=?",(removedSprint,))
-                    for x in range(6-len(sprints)):
+                    for x in range(10-len(sprints)):
                         newSprint=random.choice(calendar)
                         while newSprint in sprints:
                             newSprint=random.choice(calendar)
                         sprints.append(newSprint)
                         F1.execute("UPDATE Tracks SET Sprint=1 WHERE Name=?",(newSprint,))
+                elif GAME.season!=GAME.startYear:
+                    F1.execute("UPDATE Tracks SET Sprint=0")
+                    for x in range(len(sprints)):
+                        F1.execute("UPDATE Tracks SET sprint=1 WHERE Name=?",(sprints[x],))
         canvas.create_text(570, 10, text=f"{GAME.season} Calendar", fill="#F5C939", font=("Arial", 40), anchor="nw")
         if GAME.custom==1:
             delay=0
