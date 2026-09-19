@@ -23,10 +23,10 @@
   <p>This is the game mode that you will experience if you select New Game. You will choose either an existing team or create your own team to be Team Principal of. You can simulate as many seasons as you want and are responsible for managing the team's driver and staff contracts, finances, development and race strategy. You can also move teams and race against the team that you built.</p>
 
   <h3>Legends</h3>
-  <p>This game mode behaves the same way the standard career mode does except there is bonus drivers known as Legends. Each season, a few Legends will enter the driver pool. These may be returning faces such as Daniel Ricciardo and Sebastian Vettel or they may be historic icons such as Michael Schumacher and Ayrton Senna. These drivers can provide extra challenge to race against or you can hire them yourself to make your team legendary.</p>
+  <p>This game mode behaves the same way the standard career mode does except there are bonus drivers known as Legends. Each season, a few Legends will enter the driver pool. These may be returning faces such as Daniel Ricciardo and Sebastian Vettel or they may be historic icons such as Michael Schumacher and Ayrton Senna. These drivers can provide extra challenge to race against or you can hire them yourself to make your team legendary.</p>
 
   <h3>Replay Mode</h3>
-  <p>This game mode is different from the others as it is just a single race and no progress is saved. These replay races allow you to manage historic races such as Abu Dhabi 2021 or Brazil 2008. See if you can achieve what the legends did or change history in the way you see fit. There are 6 replay races to play through, 5 of these are historic races and the other allows you to play through the final race from F1: The Movie, managing APXGP.</p>
+  <p>This game mode is different from the others as it is just a single race and no progress is saved. These replay races allow you to manage historic races such as Abu Dhabi 2021 or Brazil 2008. See if you can achieve what the legends did or change history in the way you see fit. There are 6 replay races to play through, 5 of these are historic races and the other allows you to play through the final race from F1: The Movie, managing APX GP.</p>
 
   <h3>2009 Career</h3>
   <p>This mode is the same same as a standard career except it's in 2009 with the 2009 drivers and cars. This allows you to experience a different era of rules and racing.</p>
