@@ -406,6 +406,7 @@ class Game:
                 c.execute("UPDATE Drivers SET NewTeam='Williams', NewRole='2', ContractEnd=2028 WHERE Name='Carlos Sainz'")
             if GAME.team!="Red Bull":
                 c.execute("UPDATE Drivers SET NewTeam='Red Bull', NewRole='1', ContractEnd=2030 WHERE Name='Max Verstappen'")
+                c.execute("UPDATE Drivers SET NewTeam='Red Bull', NewRole='2', ContractEnd=2027 WHERE Name='Isack Hadjar'")
             if GAME.team!="Mercedes":
                 c.execute("UPDATE Drivers SET NewTeam='Mercedes', NewRole='1', ContractEnd=2027 WHERE Name='George Russell'")
                 c.execute("UPDATE Drivers SET NewTeam='Mercedes', NewRole='2', ContractEnd=2027 WHERE Name='Kimi Antonelli'")
@@ -1405,6 +1406,12 @@ class Game:
             else:
                 root.after(time, lambda: GAME.ChangeScreen("Norris Re-signs"))
             root.after(time+3000, lambda: GAME.Menu())
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==15 and GAME.custom==0 and GAME.team!="Red Bull":
+            #Hadjar Re-signs
+            F1.commit()
+            F1.close()
+            GAME.ChangeScreen("Hadjar Re-signs")
+            root.after(5000, lambda: GAME.Menu())
         else:
             GAME.ChangeScreen("Press Conference")
             if objective=="Upgrade":
@@ -15437,7 +15444,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade","Qualifying Grid","2015 McLaren Display","Malaysia Return",
         "Budkowski","India Flag","Williams Martini Display","Williams Contracts","ROKiT Williams Display","2021 Williams Display","Hadjar Injured","Verstappen Re-signs",
         "Alfa Romeo Display","2010 Mercedes Display","Colapinto Re-signs","Leclerc Re-signs","Norris Re-signs","Monza Ferrari Upgrade","2015 McLaren Upgrade","2018 McLaren Upgrade",
-        "Monza McLaren Upgrade","Game Modes","Customise Car","Customise Engine","West McLaren Display","Marlboro McLaren Display","Madring Williams Upgrade"]
+        "Monza McLaren Upgrade","Game Modes","Customise Car","Customise Engine","West McLaren Display","Marlboro McLaren Display","Madring Williams Upgrade","Hadjar Re-signs"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
