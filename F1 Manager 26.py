@@ -420,6 +420,9 @@ class Game:
                 c.execute("UPDATE Drivers SET NewTeam='Alpine', NewRole='2', ContractEnd=2027 WHERE Name='Franco Colapinto'")
             if GAME.team!="McLaren":
                 c.execute("UPDATE Drivers SET NewTeam='McLaren', NewRole='2', NewSalary=60000000, ContractEnd=2030 WHERE Name='Lando Norris'")
+            if GAME.team!="Aston Martin":
+                c.execute("UPDATE Drivers SET NewTeam='Aston Martin', NewRole='1', ContractEnd=2027 WHERE Name='Lance Stroll'")
+                c.execute("UPDATE Drivers SET NewTeam='Aston Martin', NewRole='2', ContractEnd=2027 WHERE Name='Fernando Alonso'")
 
         #Staff
         
@@ -1411,6 +1414,12 @@ class Game:
             F1.commit()
             F1.close()
             GAME.ChangeScreen("Hadjar Re-signs")
+            root.after(5000, lambda: GAME.Menu())
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==16 and GAME.custom==0 and GAME.team!="Aston Martin":
+            #Aston Martin Contract Extensions
+            F1.commit()
+            F1.close()
+            GAME.ChangeScreen("Aston Martin Contract Extensions")
             root.after(5000, lambda: GAME.Menu())
         else:
             GAME.ChangeScreen("Press Conference")
@@ -9484,6 +9493,8 @@ class Game:
                     screen="2018 McLaren Upgrade"
             elif f"2009 {GAME.team} Upgrade" in Images:
                 screen=f"2009 {GAME.team} Upgrade"
+            else:
+                screen=f"{GAME.team} Upgrade"
         elif screen=="Car Data" or screen=="Team Data" or screen=="Achievements" or screen=="Team Management" or screen=="Engine Data" or screen=="Customise Team" or screen=="Customise Regulations" or screen=="Customise Regulations 2":
             screen="Data Background"
         elif screen not in Images:
@@ -15435,16 +15446,17 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "McLaren Upgrade","Mercedes Upgrade","Red Bull Upgrade","Ferrari Upgrade","Williams Upgrade","Racing Bulls Upgrade","Aston Martin Upgrade","Haas Upgrade","Audi Upgrade",
         "Alpine Upgrade","Cadillac Upgrade","Data Background","United Kingdom Flag","United States of America Flag","Brazil Flag","Italy Flag","Japan Flag","Germany Flag",
         "Monaco Flag","Netherlands Flag","Spain Flag","Australia Flag","Austria Flag","Missing Required Files","Driver Of The Day","Suzuka Racing Bulls Upgrade","2009 Choose a Team",
-        "2009 Ferrari Upgrade","2009 Ferrari Display","2009 McLaren Upgrade","Vodafone McLaren Display","2009 BMW Sauber Upgrade","2009 BMW Sauber Display","2009 Renault Upgrade",
-        "2009 Renault Display","2009 Toyota Upgrade","2009 Toyota Display","2009 Toro Rosso Upgrade","Toro Rosso Display","2009 Red Bull Upgrade","2009 Red Bull Display",
-        "2009 Williams Upgrade","2009 Williams Display","2009 Brawn GP Upgrade","Brawn GP Display","2009 Force India Upgrade","2009 Mercedes Upgrade","Suzuka Haas Upgrade",
+        "2009 Ferrari Upgrade","2009 Ferrari Display","2009 McLaren Upgrade","Vodafone McLaren Display","BMW Sauber Upgrade","BMW Sauber Display","Renault Upgrade",
+        "Renault Display","Toyota Upgrade","Toyota Display","Toro Rosso Upgrade","Toro Rosso Display","2009 Red Bull Upgrade","2009 Red Bull Display",
+        "2009 Williams Upgrade","2009 Williams Display","Brawn GP Upgrade","Brawn GP Display","Force India Upgrade","2009 Mercedes Upgrade","Suzuka Haas Upgrade",
         "Virgin Upgrade","HRT Upgrade","Lotus Upgrade","Sauber Display","Virgin Display","HRT Display","Caterham Display","Marussia Display","Suzuka Mercedes Upgrade","Manor Display",
         "2009 Haas Display","Racing Point Display","AlphaTauri Display","RB Display","Kick Sauber Display","Miami Cadillac Upgrade","Miami Racing Bulls Upgrade",
         "Miami Alpine Upgrade","DHL","Monte Carlo McLaren Upgrade","Monte Carlo Aston Martin Upgrade","Monte Carlo Audi Upgrade","Catalunya Racing Bulls Upgrade",
         "Silverstone Williams Upgrade","Silverstone McLaren Upgrade","Wheatley Leaving","Silverstone Cadillac Upgrade","Qualifying Grid","2015 McLaren Display","Malaysia Return",
         "Budkowski","India Flag","Williams Martini Display","Williams Contracts","ROKiT Williams Display","2021 Williams Display","Hadjar Injured","Verstappen Re-signs",
         "Alfa Romeo Display","2010 Mercedes Display","Colapinto Re-signs","Leclerc Re-signs","Norris Re-signs","Monza Ferrari Upgrade","2015 McLaren Upgrade","2018 McLaren Upgrade",
-        "Monza McLaren Upgrade","Game Modes","Customise Car","Customise Engine","West McLaren Display","Marlboro McLaren Display","Madring Williams Upgrade","Hadjar Re-signs"]
+        "Monza McLaren Upgrade","Game Modes","Customise Car","Customise Engine","West McLaren Display","Marlboro McLaren Display","Madring Williams Upgrade","Hadjar Re-signs",
+        "Aston Martin Contract Extensions"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
