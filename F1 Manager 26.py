@@ -52,7 +52,7 @@ class Game:
         self.ranking=11
         self.season=2026
         self.race=-1
-        self.races=22
+        self.races=24
         self.drivers=[]
         self.teams=[]
         self.cars=[]
@@ -2805,7 +2805,7 @@ class Game:
                             c.execute("UPDATE Cars SET LowSpeed=? WHERE Team='Aston Martin'",(int(GAME.Sanitise(c.execute("SELECT LowSpeed FROM Cars WHERE Team='Aston Martin'").fetchall()[0]))+15,))
                             c.execute("UPDATE Cars SET MediumSpeed=? WHERE Team='Aston Martin'",(int(GAME.Sanitise(c.execute("SELECT MediumSpeed FROM Cars WHERE Team='Aston Martin'").fetchall()[0]))+15,))
                             c.execute("UPDATE Cars SET HighSpeed=? WHERE Team='Aston Martin'",(int(GAME.Sanitise(c.execute("SELECT HighSpeed FROM Cars WHERE Team='Aston Martin'").fetchall()[0]))+15,))
-                    elif GAME.race==12 and GAME.team!="Aston Martin":
+                    elif (GAME.race==12 or GAME.race==14) and GAME.team!="Aston Martin":
                         GAME.ADUO("Honda")
 
             if GAME.team!="Red Bull" and GAME.season==2016 and GAME.race==4:
@@ -2928,9 +2928,7 @@ class Game:
             reliability=int(GAME.Sanitise(c.execute("SELECT Reliability FROM Engines WHERE Name=?",(engine,)).fetchall()[0]))
             if power<10:
                 c.execute("UPDATE Engines SET Power=? WHERE Name=?",(power+1,engine,))
-            if engine=="Honda":
-                c.execute("UPDATE Engines SET Reliability=? WHERE Name=?",(reliability+2,engine,))
-            elif reliability<10 and engine=="Audi":
+            if reliability<10 and (engine=="Audi" or engine=="Honda"):
                 c.execute("UPDATE Engines SET Reliability=? WHERE Name=?",(reliability+1,engine,))
             GAME.news.append(f"BREAKING NEWS! {engine} have brought an ADUO upgrade to their engine.")
     def CalculateTime(self):
@@ -7803,6 +7801,8 @@ class Game:
             GAME.DisplayLayout(race)
             canvas.create_text(20, 125, text=race, fill="white", font=("Arial", 50), anchor="nw")
             if country!=race:
+                if GAME.season==2026 and country=="Malaysia":
+                    country="Bahrain in Malaysia"
                 canvas.create_text(20, 185, text=country, fill="white", font=("Arial", 50), anchor="nw")
             if GAME.carConfidence==10:
                 carConfidence="The car feels Great to drive."
@@ -13775,8 +13775,8 @@ class Game:
                         sponsor=0
                 if driver=="Sonny Hayes" or driver=="Joshua Pearce":
                     team=driver
-                elif team=="BMW Sauber":
-                    team="BMW"
+                elif GAME.track=="Marina Bay" and driver=="Charles Leclerc" and team=="Ferrari" and sponsor!="Marlboro":
+                    team="Marina Bay Leclerc"
                 elif GAME.season>2025 and f"{GAME.track} {team}" in steam and not (team=="McLaren" and (sponsor=="West" or sponsor=="Vodafone")) and not (team=="Ferrari" and sponsor=="Marlboro"):
                     team=f"{GAME.track} {team}"
                 elif team=="McLaren":
@@ -15488,10 +15488,10 @@ for x in range(len(driverHeads)):
         missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","McLaren Honda",
-       "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Monza McLaren","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini",
-       "Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams","2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia","Tyrrell","Minardi","Jordan"]
-xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95,95]
-yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80,97]
+       "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Monza McLaren","Marina Bay Leclerc","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda",
+       "Lamborghini","Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams","2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia","Tyrrell","Minardi","Jordan"]
+xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95,95,109]
+yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80,97,114]
 path=os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 if os.path.isfile(path):
     GAME.suits=[tk.PhotoImage(file=path)]
