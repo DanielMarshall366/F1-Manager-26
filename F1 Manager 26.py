@@ -2852,11 +2852,15 @@ class Game:
                         #Poaching
                         rating1=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Team=? AND Role='1'",(team,)).fetchall()[0]))
                         rating2=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Team=? AND Role='2'",(team,)).fetchall()[0]))
-                        if len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='1' AND (ContractEnd=? OR (NewTeam!='0' AND NewTeam!=?))",(team,GAME.season,team,)).fetchall())==0:
+                        if len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='1' AND (ContractEnd=? OR (NewTeam!='0' AND NewTeam!=?)))",(team,GAME.season,team,)).fetchall())==0:
+                            driver1=0
+                        elif len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole='1'").fetchall())>0:
                             driver1=0
                         else:
                             driver1=1
                         if len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='2' AND (ContractEnd=? OR (NewTeam!='0' AND NewTeam!=?))",(team,GAME.season,team,)).fetchall())==0:
+                            driver2=0
+                        elif len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole='2'").fetchall())>0:
                             driver2=0
                         else:
                             driver2=1
@@ -13775,8 +13779,8 @@ class Game:
                         sponsor=0
                 if driver=="Sonny Hayes" or driver=="Joshua Pearce":
                     team=driver
-                elif GAME.track=="Marina Bay" and driver=="Charles Leclerc" and team=="Ferrari" and sponsor!="Marlboro":
-                    team="Marina Bay Leclerc"
+                elif GAME.track=="Marina Bay" and driver=="Charles Leclerc" and team=="Ferrari" and sponsor!="Marlboro" and GAME.season>2025:
+                    team="Black Ferrari"
                 elif GAME.season>2025 and f"{GAME.track} {team}" in steam and not (team=="McLaren" and (sponsor=="West" or sponsor=="Vodafone")) and not (team=="Ferrari" and sponsor=="Marlboro"):
                     team=f"{GAME.track} {team}"
                 elif team=="McLaren":
@@ -15488,7 +15492,7 @@ for x in range(len(driverHeads)):
         missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","McLaren Honda",
-       "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Monza McLaren","Marina Bay Leclerc","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda",
+       "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Monza McLaren","Black Ferrari","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda",
        "Lamborghini","Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams","2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia","Tyrrell","Minardi","Jordan"]
 xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95,95,109]
 yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80,97,114]
