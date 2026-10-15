@@ -423,6 +423,8 @@ class Game:
             if GAME.team!="Aston Martin":
                 c.execute("UPDATE Drivers SET NewTeam='Aston Martin', NewRole='1', ContractEnd=2027 WHERE Name='Lance Stroll'")
                 c.execute("UPDATE Drivers SET NewTeam='Aston Martin', NewRole='2', ContractEnd=2027 WHERE Name='Fernando Alonso'")
+            if GAME.team!="Haas":
+                c.execute("UPDATE Drivers SET NewTeam='Haas', NewRole='1', NewSalary=1000000, ContractEnd=2028 WHERE Name='Rafael Camara'")
 
         #Staff
         
@@ -1356,13 +1358,13 @@ class Game:
             F1.commit()
             F1.close()
             root.after(7500, lambda: GAME.Menu())
-        elif GAME.season==2026 and GAME.startYear==2026 and GAME.team!="Ferrari" and GAME.race==6 and GAME.custom==0:
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.team!="Ferrari" and GAME.race==6 and GAME.custom==0 and GAME.legends==0:
             #Leclerc Re-signs
             GAME.ChangeScreen("Leclerc Re-signs")
             F1.commit()
             F1.close()
             root.after(5000, lambda: GAME.Menu())
-        elif GAME.season==2026 and GAME.race==11 and GAME.custom==0:
+        elif GAME.season==2026 and GAME.race==11 and GAME.custom==0 and GAME.legends==0:
             #Malaysia Return
             GAME.ChangeScreen("Malaysia Return")
             GAME.races=23
@@ -1395,7 +1397,7 @@ class Game:
                 maxTime=3000
                 root.after(time+6000, lambda: GAME.ChangeScreen("Verstappen Re-signs"))
             root.after(time+maxTime+6000, lambda: GAME.Menu())
-        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==13 and GAME.custom==0:
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==13 and GAME.custom==0 and GAME.legends==0:
             #Colapinto and Norris Re-sign
             F1.commit()
             F1.close()
@@ -1409,17 +1411,23 @@ class Game:
             else:
                 root.after(time, lambda: GAME.ChangeScreen("Norris Re-signs"))
             root.after(time+3000, lambda: GAME.Menu())
-        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==15 and GAME.custom==0 and GAME.team!="Red Bull":
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==15 and GAME.custom==0 and GAME.team!="Red Bull" and GAME.legends==0:
             #Hadjar Re-signs
             F1.commit()
             F1.close()
             GAME.ChangeScreen("Hadjar Re-signs")
             root.after(5000, lambda: GAME.Menu())
-        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==16 and GAME.custom==0 and GAME.team!="Aston Martin":
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==16 and GAME.custom==0 and GAME.team!="Aston Martin" and GAME.legends==0:
             #Aston Martin Contract Extensions
             F1.commit()
             F1.close()
             GAME.ChangeScreen("Aston Martin Contract Extensions")
+            root.after(5000, lambda: GAME.Menu())
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==18 and GAME.custom==0 and GAME.team!="Haas" and GAME.legends==0:
+            #Camara Signs
+            F1.commit()
+            F1.close()
+            GAME.ChangeScreen("Camara Signs")
             root.after(5000, lambda: GAME.Menu())
         else:
             GAME.ChangeScreen("Press Conference")
@@ -3676,11 +3684,11 @@ class Game:
                                     if GAME.teams[index]!=GAME.team and ERS>40 and GAME.water<1 and x!=0 and GAME.time[index]<1 and random.randint(1,2)==2:
                                         GAME.ERSdeployment[index]=3
                                 elif GAME.overtake[index]==1:
-                                    ERS=GAME.ERS[index]+GAME.battery[index]-25
+                                    ERS=GAME.ERS[index]-round(35-(GAME.battery[index]*2.5))
                                     if ERS<0:
                                         ERS=0
                                 else:
-                                    ERS=GAME.ERS[index]+GAME.battery[index]-40
+                                    ERS=GAME.ERS[index]+GAME.battery[index]-35
                                     if ERS<0:
                                         ERS=0
                             try:
@@ -13908,6 +13916,8 @@ class Game:
             appearance="2010 Mercedes"
         elif team=="Toro Rosso" and season>2016 and season<2020:
             appearance="2017 Toro Rosso"
+        elif "Ferrari" in team:
+            appearance="Ferrari"
         elif team in steam or team in sponsors:
             appearance=team
         else:
@@ -15460,7 +15470,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Budkowski","India Flag","Williams Martini Display","Williams Contracts","ROKiT Williams Display","2021 Williams Display","Hadjar Injured","Verstappen Re-signs",
         "Alfa Romeo Display","2010 Mercedes Display","Colapinto Re-signs","Leclerc Re-signs","Norris Re-signs","Monza Ferrari Upgrade","2015 McLaren Upgrade","2018 McLaren Upgrade",
         "Monza McLaren Upgrade","Game Modes","Customise Car","Customise Engine","West McLaren Display","Marlboro McLaren Display","Madring Williams Upgrade","Hadjar Re-signs",
-        "Aston Martin Contract Extensions","Sepang Mercedes Upgrade","Marina Bay Audi Upgrade"]
+        "Aston Martin Contract Extensions","Sepang Mercedes Upgrade","Marina Bay Audi Upgrade","Camara Signs"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
