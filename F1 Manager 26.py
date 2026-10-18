@@ -481,7 +481,7 @@ class Game:
             c.execute("INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES ('Carlo Santi', 'Ferrari', 'Race Engineer 2', 90, 2000000, 90, 'Italy', 0, 0, 0)")
             c.execute("INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES ('Gianpiero Lambiase', 'Red Bull', 'Race Engineer 1', 91, 2000000, 75, 'Italy', 0, 0, 0)")
             c.execute("INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES ('Richard Wood', 'Red Bull', 'Race Engineer 2', 85, 2000000, 70, 'United Kingdom', 0, 0, 0)")
-            c.execute("INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES ('Marcus Dudley', 'Mercedes', 'Race Engineer 1' 90, 1800000, 70, 'United Kingdom', 0, 0, 0)")
+            c.execute("INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES ('Marcus Dudley', 'Mercedes', 'Race Engineer 1', 90, 1800000, 70, 'United Kingdom', 0, 0, 0)")
             c.execute("INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES ('Peter Bonnington', 'Mercedes', 'Race Engineer 2', 92, 2000000, 70, 'United Kingdom', 0, 0, 0)")
             c.execute("INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES ('Andrew Vizard', 'Aston Martin', 'Race Engineer 2', 85, 1500000, 85, 'United Kingdom', 0, 0, 0)")
             c.execute("INSERT into Staff (Name, Team, Role, Rating, Salary, Morale, Country, NewTeam, NewSalary, NewRole) VALUES ('Gary Gannon', 'Aston Martin', 'Race Engineer 1', 85, 1500000, 65, 'United Kingdom', 0, 0, 0)")
@@ -625,7 +625,7 @@ class Game:
         c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Miami', 'United States of America', 5.412, 57, 50, 5, 25, 'Low', 50, 1, 1, 3, 0, 0, 0)")
         c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Imola', 'Italy', 4.909, 63, 70, 5, 20, 'Medium', 30, 0, 0, 2, 0, 0, 0)")
         c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Monte Carlo', 'Monaco', 3.337, 78, 88, 25, 15, 'Low', 5, 0, 0, 1, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Catalunya', 'Spain', 4.657, 66, 20, 5, 25, 'Medium'd, 65, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Catalunya', 'Spain', 4.657, 66, 20, 5, 25, 'Medium', 65, 0, 0, 3, 0, 0, 0)")
         c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Montreal', 'Canada', 4.361, 70, 40, 10, -15, 'Low', 48, 1, 1, 3, 0, 0, 0)")
         c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Red Bull Ring', 'Austria', 4.318, 71, 65, 5, 15, 'High', 75, 0, 0, 4, 0, 0, 0)")
         c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Silverstone', 'United Kingdom', 5.891, 52, 50, 65, 18, 'High', 65, 1, 0, 4, 0, 0, 0)")
@@ -1147,7 +1147,7 @@ class Game:
         else:
             f=c.execute("SELECT Name FROM Staff WHERE Role=?",(role,)).fetchall()
         Ranking=int(GAME.Sanitise(c.execute("SELECT Ranking FROM Cars WHERE Team=?",(Team,)).fetchall()[0]))
-        Position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(Team,))3.fetchall()[0]))
+        Position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(Team,)).fetchall()[0]))
         staff=[]
         for x in range(len(f)):
             name=GAME.Sanitise(f[x])
@@ -1470,7 +1470,7 @@ class Game:
                         topics=["Expectations","Expectations"]
                     if GAME.startYear==2026:
                         topics.append("Controversy")
-                    oldDrivers=c.execute("SELECT Name FROM Drivers WHERE Age>34 AND Team=? AND NewTeam="0" AND ContractEnd=? AND Legend=0",(team,GAME.season,)).fetchall()
+                    oldDrivers=c.execute("SELECT Name FROM Drivers WHERE Age>34 AND Team=? AND NewTeam='0' AND ContractEnd=? AND Legend=0",(team,GAME.season,)).fetchall()
                     if len(oldDrivers)>0:
                         oldest=0
                         oldestName=""
@@ -1966,7 +1966,7 @@ class Game:
                     contractEnd=int(GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
                     if random.randint(1,3)==3 and contractEnd==GAME.season:
                         #Rehired
-                        currentSalary=int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(driver,))3.fetchall()[0]))
+                        currentSalary=int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
                         rating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
                         minimumSalary=rating*37500
                         if minimumSalary<currentSalary:
@@ -2134,7 +2134,7 @@ class Game:
 
         if gap==0:
             #Race Engineer 2
-            if len(c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND NewRole="Race Engineer 2"",(team,)).fetchall())==0:
+            if len(c.execute("SELECT Name FROM Staff WHERE NewTeam=? AND NewRole='Race Engineer 2'",(team,)).fetchall())==0:
                 name=GAME.Sanitise(c.execute("SELECT Name FROM Staff WHERE Team=? AND Role='Race Engineer 2'",(team,)).fetchall()[0])
                 newTeam=GAME.Sanitise(c.execute("SELECT NewTeam FROM Staff WHERE Name=?",(name,)).fetchall()[0])
                 if newTeam!="0" and newTeam!=team:
@@ -2165,7 +2165,7 @@ class Game:
                 promoted=0
                 if redBull==0:
                     if team=="Ferrari" and len(c.execute("SELECT Team FROM Cars WHERE Team='Haas' AND Engine='Ferrari'").fetchall())>0:
-                        c.execute("SELECT Name FROM Drivers WHERE ((Team=? AND (Role='Junior' OR Role='Reserve')) OR (Team="Haas" AND (Role="1" OR Role="2"))) AND Age>16",(team,))
+                        c.execute("SELECT Name FROM Drivers WHERE ((Team=? AND (Role='Junior' OR Role='Reserve')) OR (Team='Haas' AND (Role='1' OR Role='2'))) AND Age>16",(team,))
                     else:
                         c.execute("SELECT Name FROM Drivers WHERE Team=? AND (Role='Junior' OR Role='Reserve') AND Age>16",(team,))
                 elif redBull==2:
@@ -2279,7 +2279,7 @@ class Game:
                         GAME.scouting=0
                         removed=0
                         for x in range(len(drivers)):
-                            if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Team!=? AND NewTeam="0" AND Age<17 AND Role='Free Agent' AND ContractEnd=?",(drivers[x-removed],team,GAME.season,)).fetchall())==0:
+                            if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Team!=? AND NewTeam='0' AND Age<17 AND Role='Free Agent' AND ContractEnd=?",(drivers[x-removed],team,GAME.season,)).fetchall())==0:
                                 drivers.pop(x-removed)
                                 removed+=1
                         driverPool=[]
@@ -3384,7 +3384,7 @@ class Game:
                             temperature+=change
                         if temperature<85:
                             temperature=85
-                        GAMe.engineTemperature[index]=temperature
+                        GAME.engineTemperature[index]=temperature
                         #Engine Failures
                         if GAME.replay==0 or (GAME.teams[index]==GAME.team and temperature>119):
                             durability=GAME.engineDurability[index]
@@ -3862,7 +3862,7 @@ class Game:
                                                 GAME.safety=3
                                         else:
                                             #Penalty
-                                            GAMe.penalties[index]+=5
+                                            GAME.penalties[index]+=5
                                             GAME.AddToLog(crasher+" has a 5 second penalty.")
                                             GAME.crashMessage.append(crasher+" has a 5 second penalty.")
                                         GAME.damage.insert(index, damage)
@@ -3879,7 +3879,7 @@ class Game:
                                         damage+=GAME.damage[index]
                                         GAME.damage[index]=damage
                                         engineDurability=round(GAME.engineDurability[index]/2)
-                                        GAMe.engineDurability[index]=engineDurability
+                                        GAME.engineDurability[index]=engineDurability
                                         if damage>=100:
                                             GAME.AddToLog("They are out of the race.")
                                             driversRemoved+=1
@@ -3959,7 +3959,7 @@ class Game:
                     else:
                         if GAME.distance[x-driversRemoved]>=GAME.distance[GAME.positions[x-1-driversRemoved]]:
                             distance=GAME.distance[GAME.positions[x-1-driversRemoved]]-(random.randint(100,200)/100)
-                            GAME.distance[x=driversRemoved]=distance
+                            GAME.distance[x-driversRemoved]=distance
             #Race Events
             if GAME.lap[GAME.positions[0]] in GAME.eventLaps:
                 GAME.eventLaps.remove(GAME.lap[GAME.positions[0]])
@@ -4049,7 +4049,7 @@ class Game:
                             if GAME.water>=0.65 and GAME.water<2.5 and (GAME.tyre[index]=="Soft" or GAME.tyre[index]=="Medium" or GAME.tyre[index]=="Hard") and GAME.teams[index]!="Ferrari":
                                 if GAME.water>=1:
                                     pitting=1
-                                    GAME.pitTyre[index]="Intermediate
+                                    GAME.pitTyre[index]="Intermediate"
                                 elif random.randint(round(GAME.water*100),100)>90:
                                     pitting=1
                                     GAME.pitTyre[index]="Intermediate"
@@ -4130,7 +4130,7 @@ class Game:
                             team=GAME.teams[driverIndex]
                             if GAME.replay==0:
                                 with sqlite3.connect(GAME.database) as c:
-                                    pitStopRating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Staff WHERE Role="Sporting Director" AND Team=?", (team,)).fetchone()[0]))
+                                    pitStopRating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Staff WHERE Role='Sporting Director' AND Team=?", (team,)).fetchone()[0]))
                                     role="Race Engineer 1" if GAME.cars[driverIndex] == 1 else "Race Engineer 2"
                                     result=c.execute("SELECT Rating FROM Staff WHERE Role=? AND Team=?", (role, team)).fetchone()
                                 engineerRating=int(GAME.Sanitise(result[0])) if result else 50
@@ -4776,7 +4776,7 @@ class Game:
                             GAME.pitTyre[x]=0
                         else:
                             pitLap=lap+tyreLength+random.randint(-2,2)
-                            GAME.pitLap.[x]=pitLap
+                            GAME.pitLap[x]=pitLap
                             if GAME.laps-pitLap<=10:
                                 if random.randint(1,3)==1 and GAME.season>2010:
                                     pitTyre="Medium"
@@ -5074,7 +5074,7 @@ class Game:
                     team=GAME.teams[index]
                     if GAME.replay==0:
                         with sqlite3.connect(GAME.database) as c:
-                            pitStopRating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Staff WHERE Role="Sporting Director" AND Team=?", (team,)).fetchone()[0]))
+                            pitStopRating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Staff WHERE Role='Sporting Director' AND Team=?", (team,)).fetchone()[0]))
                             role="Race Engineer 1" if GAME.cars[index]==1 else "Race Engineer 2"
                             result=c.execute("SELECT Rating FROM Staff WHERE Role=? AND Team=?", (role, team)).fetchone()
                         engineerRating=int(GAME.Sanitise(result[0])) if result else 50
@@ -5985,7 +5985,7 @@ class Game:
                                 c.execute("UPDATE Player SET Points=?, TeamPoints=?",(P,TP,))
                             teamIndex=teams.index(team)
                             points=teamPoints[teamIndex]+GAME.pointsScored[index]
-                            teamPoints[index]=points
+                            teamPoints[teamIndex]=points
                         position=int(GAME.Sanitise(c.execute("SELECT Position FROM Drivers WHERE Name=?",(GAME.drivers[index],)).fetchall()[0]))
                         if position==0:
                             position=len(c.execute("SELECT Name FROM Drivers WHERE Position!=0").fetchall())+1
@@ -7812,7 +7812,7 @@ class Game:
                         if x>0:
                             if laps==GAME.expectedTyreLife[x-1]:
                                 wear=70/(laps+2)
-                                GAME.tyreWear[indexwear
+                                GAME.tyreWear[index]=wear
                                 laps=round(70/wear)
                         if laps>=40:
                             valid=0
@@ -8409,7 +8409,7 @@ class Game:
                     c.execute("UPDATE Cars SET Research=? WHERE Team='Mercedes'",(research,))
                 #Aerodynamic Changes
                 if GAME.team!="Red Bull" and GAME.team!="Racing Bulls":
-                    if len(c.execute("SELECT Name FROM Teams WHERE Name="Red Bull" OR Name='Racing Bulls'").fetchall())==2:
+                    if len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull' OR Name='Racing Bulls'").fetchall())==2:
                         R=int(GAME.Sanitise(c.execute("SELECT Research FROM Cars WHERE Team='Red Bull'").fetchall()[0]))
                         r=int(GAME.Sanitise(c.execute("SELECT Research FROM Cars WHERE Team='Racing Bulls'").fetchall()[0]))
                         if R<r:
@@ -9634,7 +9634,7 @@ class Game:
                         #Tyre Aggression
                         aggression=GAME.tyreAggression[GAME.car2ID]-1
                         if aggression>=1:
-                            GAME.tyreAggression[GAME.car2]=IDaggression
+                            GAME.tyreAggression[GAME.car2ID]=aggression
                             GAME.RefreshScreen()
                     elif event.y>=650 and event.y<=710:
                         #Fuel Aggression
@@ -10232,7 +10232,7 @@ class Game:
                         GAME.money-=(GAME.maximumUpgradePoints-GAME.remainingUpgradePoints)*500000
                     GAME.actions=0
                     with sqlite3.connect(GAME.database) as c:
-                        rating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Staff WHERE Team=? AND Role="Technical Director"",(GAME.team,)).fetchall()[0]))
+                        rating=int(GAME.Sanitise(c.execute("SELECT Rating FROM Staff WHERE Team=? AND Role='Technical Director'",(GAME.team,)).fetchall()[0]))
                         if len(c.execute("SELECT Regulation FROM Regulations WHERE Regulation='Cost Cap' AND True=1").fetchall())>0:
                             GAME.costCap-=(GAME.maximumUpgradePoints-GAME.remainingUpgradePoints)*500000
                             c.execute("UPDATE Player SET CostCap=?",(GAME.costCap,))
@@ -13321,12 +13321,12 @@ class Game:
                         c.close()
                         fullName=GAME.TeamName(team)
                         c=sqlite3.connect(f"F1 Manager 26 Save Data {GAME.database}.db")
-                    if len(fullName)>26:
+                    if len(fullName)>25:
                         if " " in fullName:
                             name=""
                             word=""
                             for x in range(len(fullName)):
-                                if len(name)+len(word)<26:
+                                if len(name)+len(word)<25:
                                     word+=fullName[x]
                                     if fullName[x]==" ":
                                         name+=word
