@@ -617,42 +617,42 @@ class Game:
                     c.execute("UPDATE Sponsors SET Team=? WHERE Name=?",(team,sponsor,))
 
         #Tracks
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Albert Park', 'Australia', 5.278, 58, 50, 25, 30, 'High', 40, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Shanghai', 'China', 5.451, 56, 35, 1, 25, 'Medium', 50, 1, 0, 2, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Suzuka', 'Japan', 5.807, 53, 75, 15, 20, 'High', 55, 0, 0, 1, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Bahrain', 'Bahrain', 5.412, 57, 40, 0, 25, 'Medium', 50, 0, 0, 4, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Jeddah', 'Saudi Arabia', 6.174, 50, 60, 0, 35, 'Medium', 65, 0, 1, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Miami', 'United States of America', 5.412, 57, 50, 5, 25, 'Low', 50, 1, 1, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Imola', 'Italy', 4.909, 63, 70, 5, 20, 'Medium', 30, 0, 0, 2, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Monte Carlo', 'Monaco', 3.337, 78, 88, 25, 15, 'Low', 5, 0, 0, 1, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Catalunya', 'Spain', 4.657, 66, 20, 5, 25, 'Medium', 65, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Montreal', 'Canada', 4.361, 70, 40, 10, -15, 'Low', 48, 1, 1, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Red Bull Ring', 'Austria', 4.318, 71, 65, 5, 15, 'High', 75, 0, 0, 4, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Silverstone', 'United Kingdom', 5.891, 52, 50, 65, 18, 'High', 65, 1, 0, 4, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Spa', 'Belgium', 7.004, 44, 70, 30, 10, 'High', 75, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Hungaroring', 'Hungary', 4.381, 70, 50, 5, 11, 'Medium', 58, 0, 0, 2, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Zandvoort', 'Netherlands', 4.259, 72, 55, 10, 17, 'High', 35, 1, 0, 2, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Monza', 'Italy', 5.793, 53, 68, 5, 20, 'High', 100, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Baku', 'Azerbaijan', 6.003, 51, 85, 1, 15, 'Low', 80, 0, 1, 2, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Marina Bay', 'Singapore', 4.940, 62, 83, 5, 32, 'Medium', 35, 1, 1, 2, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Austin', 'United States of America', 5.513, 56, 60, 0, 30, 'Medium', 58, 0, 1, 4, 0, 0, 0)")        
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Mexico City', 'Mexico', 4.304, 71, 50, 5, 21, 'Medium', 50, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Interlagos', 'Brazil', 4.309, 71, 50, 75, 30, 'Low', 50, 0, 1, 5, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Las Vegas', 'United States of America', 6.201, 50, 65, 5, 10, 'Low', 70, 0, 1, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Qatar', 'Qatar', 5.419, 57, 60, 0, 22, 'High', 38, 0, 0, 2, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Abu Dhabi', 'Abu Dhabi', 5.281, 58, 50, 0, 20, 'Medium', 65, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Madring', 'Spain', 5.474, 57, 80, 5, 25, 'Medium', 45, 0, 1, 1, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Istanbul Park', 'Turkey', 5.338, 58, 55, 20, 25, 'Medium', 40, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Nürburgring', 'Germany', 5.148, 60, 95, 23, 20, 'High', 45, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Hockenheim', 'Germany', 4.574, 67, 68, 23, 20, 'Medium', 90, 0, 0, 4, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Portimão', 'Portugal', 4.653, 66, 60, 40, 18, 'High', 50, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Sepang', 'Malaysia', 5.543, 56, 60, 75, 28, 'High', 35, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Valencia', 'Spain', 5.419, 57, 55, 50, 25, 'Low', 27, 0, 1, 2, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('South Korea', 'South Korea', 5.615, 55, 50, 10, 15, 'High', 40, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('India', 'India', 5.125, 60, 50, 38, 35, 'High', 40, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Sochi', 'Russia', 5.848, 53, 50, 40, 22, 'Medium', 25, 0, 1, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Paul Ricard', 'France', 5.842, 53, 50, 20, 28, 'Medium', 60, 0, 0, 3, 0, 0, 0)")
-        c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Mugello', 'Italy', 5.245, 59, 60, 5, 20, 'High', 38, 0, 0, 2, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Albert Park', 'Australia', 5.278, 50, 25, 30, 'High', 40, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Shanghai', 'China', 5.451, 35, 1, 25, 'Medium', 50, 1, 0, 2, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Suzuka', 'Japan', 5.807, 75, 15, 20, 'High', 55, 0, 0, 1, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Bahrain', 'Bahrain', 5.412, 40, 0, 25, 'Medium', 50, 0, 0, 4, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Jeddah', 'Saudi Arabia', 6.174, 60, 0, 35, 'Medium', 65, 0, 1, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Miami', 'United States of America', 5.412, 50, 5, 25, 'Low', 50, 1, 1, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Imola', 'Italy', 4.909, 70, 5, 20, 'Medium', 30, 0, 0, 2, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Monte Carlo', 'Monaco', 3.337, 88, 25, 15, 'Low', 5, 0, 0, 1, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Catalunya', 'Spain', 4.657, 20, 5, 25, 'Medium', 65, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Montreal', 'Canada', 4.361, 40, 10, -15, 'Low', 48, 1, 1, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Red Bull Ring', 'Austria', 4.318, 65, 5, 15, 'High', 75, 0, 0, 4, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Silverstone', 'United Kingdom', 5.891, 50, 65, 18, 'High', 65, 1, 0, 4, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Spa', 'Belgium', 7.004, 70, 30, 10, 'High', 75, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Hungaroring', 'Hungary', 4.381, 50, 5, 11, 'Medium', 58, 0, 0, 2, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Zandvoort', 'Netherlands', 4.259, 55, 10, 17, 'High', 35, 1, 0, 2, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Monza', 'Italy', 5.793, 68, 5, 20, 'High', 100, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Baku', 'Azerbaijan', 6.003, 85, 1, 15, 'Low', 80, 0, 1, 2, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Marina Bay', 'Singapore', 4.940, 83, 5, 32, 'Medium', 35, 1, 1, 2, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Austin', 'United States of America', 5.513, 60, 0, 30, 'Medium', 58, 0, 1, 4, 0, 0, 0)")        
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Mexico City', 'Mexico', 4.304, 50, 5, 21, 'Medium', 50, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Interlagos', 'Brazil', 4.309, 50, 75, 30, 'Low', 50, 0, 1, 5, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Las Vegas', 'United States of America', 6.201, 65, 5, 10, 'Low', 70, 0, 1, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Qatar', 'Qatar', 5.419, 60, 0, 22, 'High', 38, 0, 0, 2, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Abu Dhabi', 'Abu Dhabi', 5.281, 50, 0, 20, 'Medium', 65, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Madring', 'Spain', 5.474, 80, 5, 25, 'Medium', 45, 0, 1, 1, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Istanbul Park', 'Turkey', 5.338, 55, 20, 25, 'Medium', 40, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Nürburgring', 'Germany', 5.148, 95, 23, 20, 'High', 45, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Hockenheim', 'Germany', 4.574, 68, 23, 20, 'Medium', 90, 0, 0, 4, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Portimão', 'Portugal', 4.653, 60, 40, 18, 'High', 50, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Sepang', 'Malaysia', 5.543, 60, 75, 28, 'High', 35, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Valencia', 'Spain', 5.419, 55, 50, 25, 'Low', 27, 0, 1, 2, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('South Korea', 'South Korea', 5.615, 50, 10, 15, 'High', 40, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('India', 'India', 5.125, 50, 38, 35, 'High', 40, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Sochi', 'Russia', 5.848, 50, 40, 22, 'Medium', 25, 0, 1, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Paul Ricard', 'France', 5.842, 50, 20, 28, 'Medium', 60, 0, 0, 3, 0, 0, 0)")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Mugello', 'Italy', 5.245, 60, 5, 20, 'High', 38, 0, 0, 2, 0, 0, 0)")
         if GAME.startYear==2009:
             c.execute("UPDATE Tracks SET Sprint=0")
             
@@ -5046,7 +5046,7 @@ class Game:
                                 else:
                                     tyre="Hard"
                                     pitLap=lap+GAME.expectedTyreLife[2]
-                                lapsToDo=GAME.laps=pitLap
+                                lapsToDo=GAME.laps-pitLap
                                 GAME.pitLap[index]=pitLap
                                 if lapsToDo<=GAME.expectedTyreLife[0]:
                                     GAME.pitTyre[index]="Soft"
@@ -7698,7 +7698,14 @@ class Game:
             GAME.teamOrders=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation=='Team Orders'").fetchall()[0]))
             GAME.temperature=int(GAME.Sanitise(c.execute("SELECT Temperature FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
             GAME.length=float(GAME.Sanitise(c.execute("SELECT Length FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
-            GAME.laps=int(GAME.Sanitise(c.execute("SELECT Laps FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
+            if GAME.track=="Monte Carlo":
+                GAME.laps=78
+            else:
+                if GAME.season==2027:
+                    fullLength=290
+                else:
+                    fullLength=305
+                GAME.laps=(fullLength//GAME.length)+1
             if GAME.sprint==1:
                 GAME.laps=(GAME.laps//3)+1
             GAME.overtakeability=int(GAME.Sanitise(c.execute("SELECT Overtakeability FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
@@ -9426,8 +9433,8 @@ class Game:
                     if GAME.custom==1:
                         GAME.tracks=[]
                         with sqlite3.connect(GAME.database) as c:
-                            c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Styria', 'Austria', 4.318, 71, 65, 5, 15, 'High', 75, 0, 0, 4, 0, 0, 0)")
-                            c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Sakhir', 'Bahrain', 3.543, 87, 40, 0, 25, 'Medium', 78, 0, 0, 4, 0, 0, 0)")
+                            c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Styria', 'Austria', 4.318, 65, 5, 15, 'High', 75, 0, 0, 4, 0, 0, 0)")
+                            c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Sakhir', 'Bahrain', 3.543, 40, 0, 25, 'Medium', 78, 0, 0, 4, 0, 0, 0)")
                             f=c.execute("SELECT Name FROM Tracks").fetchall()
                         for track in f:
                             GAME.tracks.append(GAME.Sanitise(track))
@@ -12822,7 +12829,7 @@ class Game:
         c.execute("CREATE TABLE Cars(Team str, Engine str, DragReduction int, LowSpeed int, MediumSpeed int, HighSpeed int, Cooling int, TyrePreservation int, car1Engine int, car1EngineDurability int, car2Engine int, car2EngineDurability int, Research int, Ranking int, Driveability int)")
         c.execute("CREATE TABLE Sponsors(Name str, Team str, Pay int)")
         c.execute("CREATE TABLE Calendar(ID int, Track str)")
-        c.execute("CREATE TABLE Tracks(Name str, Country str, Length float, Laps int, Risk int, RainChance int, Temperature int, Corners str, Straights int, Sprint int, Street int, Overtakeability int, First str, Second str, Third str)")
+        c.execute("CREATE TABLE Tracks(Name str, Country str, Length float, Risk int, RainChance int, Temperature int, Corners str, Straights int, Sprint int, Street int, Overtakeability int, First str, Second str, Third str)")
         c.execute("CREATE TABLE Player(Name str, Country str, Team str, newTeam int, Season int, Race int, RegulationChange int, Points int, Wins int, Championships int, NextYearEngine str, Actions int, Financial int, Management int, Warnings int, TyreWear int, MovingTo str, StartYear int, CostCap int, PitStop float, Stopper str, StopTrack str, JoinedTeam int, TeamPoints int, TeamWins int, TeamChampionships int, Custom int)")
         c.execute("CREATE TABLE History(Year int, Driver str, Team str, Constructor str)")
         c.execute("CREATE TABLE Buyers(Name str, Country str)")
@@ -13748,7 +13755,9 @@ class Game:
             F1=sqlite3.connect(GAME.database)
             c=F1.cursor()
             c.execute("UPDATE Teams SET Reputation=20 WHERE Reputation<20")
-            if GAME.season==2028:
+            if GAME.season==2027:
+                GAME.news.append("BREAKING NEWS! The races this season will be shorter.")
+            elif GAME.season==2028:
                 c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('General Motors', 'Cadillac', 0, 0, 0, 1)")
             elif GAME.season==2029:
                 GAME.news.append("BREAKING NEWS! Cadillac are now producing their own General Motors engines.")
@@ -14814,9 +14823,9 @@ class Game:
                     GAME.races=17
                     calendar=["Red Bull Ring","Styria","Hungaroring","Silverstone","Anniversary","Catalunya","Spa","Monza","Mugello","Sochi","Nürburgring","Portimão","Imola",
                               "Istanbul Park","Bahrain","Sakhir","Abu Dhabi"]
-                    c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Styria', 'Austria', 4.318, 71, 65, 5, 15, 'High', 75, 0, 0, 4, 0, 0, 0)")
-                    c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Anniversary', 'United Kingdom', 5.891, 52, 50, 65, 18, 'High', 65, 1, 0, 4, 0, 0, 0)")
-                    c.execute("INSERT into Tracks (Name, Country, Length, Laps, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Sakhir', 'Bahrain', 3.543, 87, 40, 0, 25, 'Medium', 78, 0, 0, 4, 0, 0, 0)")
+                    c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Styria', 'Austria', 4.318, 65, 5, 15, 'High', 75, 0, 0, 4, 0, 0, 0)")
+                    c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Anniversary', 'United Kingdom', 5.891, 50, 65, 18, 'High', 65, 1, 0, 4, 0, 0, 0)")
+                    c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Sakhir', 'Bahrain', 3.543, 40, 0, 25, 'Medium', 78, 0, 0, 4, 0, 0, 0)")
                 elif GAME.season==2021:
                     c.execute("DELETE FROM Tracks WHERE Name='Anniversary' OR Name='Sakhir'")
                     GAME.races=22
