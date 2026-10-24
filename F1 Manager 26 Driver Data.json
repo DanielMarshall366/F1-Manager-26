@@ -257,7 +257,7 @@
 	{
           "Name": "Esteban Ocon",
           "Team": "Haas", 
-          "Role": "1", 
+          "Role": "2", 
           "Country": "France",
           "Salary": 7000000,       
           "Rating": 81,
@@ -299,7 +299,7 @@
 	{
           "Name": "Oliver Bearman",
           "Team": "Haas", 
-          "Role": "2", 
+          "Role": "1", 
           "Country": "United Kingdom",
           "Salary": 2000000,       
           "Rating": 85,
