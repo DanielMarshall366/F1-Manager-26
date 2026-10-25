@@ -639,7 +639,7 @@ class Game:
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Mexico City', 'Mexico', 4.304, 50, 5, 21, 'Medium', 50, 0, 0, 3, 'Lando Norris', 'Charles Leclerc', 'Max Verstappen')")
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Interlagos', 'Brazil', 4.309, 50, 75, 30, 'Low', 50, 0, 1, 5, 'Lando Norris', 'Kimi Antonelli', 'Max Verstappen')")
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Las Vegas', 'United States of America', 6.201, 65, 5, 10, 'Low', 70, 0, 1, 3, 'Max Verstappen', 'George Russell', 'Kimi Antonelli')")
-        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Qatar', 'Qatar', 5.419, 60, 0, 22, 'High', 38, 0, 0, 2, 'Max Verstappen', 'Oscar Piastri', 'Lando Norris')")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Qatar', 'Qatar', 5.419, 60, 0, 22, 'High', 38, 0, 0, 2, 'Max Verstappen', 'Oscar Piastri', 'Carlos Sainz')")
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Abu Dhabi', 'Abu Dhabi', 5.281, 50, 0, 20, 'Medium', 65, 0, 0, 3, 'Max Verstappen', 'Oscar Piastri', 'Lando Norris')")
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Madring', 'Spain', 5.474, 80, 5, 25, 'Medium', 45, 0, 1, 1, 0, 0, 0)")
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Istanbul Park', 'Turkey', 5.338, 55, 20, 25, 'Medium', 40, 0, 0, 3, 0, 0, 0)")
@@ -658,7 +658,7 @@ class Game:
             
         #Player
         if GAME.startYear==2026:
-            regulationChange=2029
+            regulationChange=2030
         else:
             regulationChange=2014
         c.execute("INSERT into Player (Name, Country, Team, newTeam, Season, Race, RegulationChange, Points, Wins, Championships, NextYearEngine, Actions, Financial, Management, Warnings, TyreWear, MovingTo, StartYear, CostCap, PitStop, Stopper, StopTrack, JoinedTeam, TeamPoints, TeamWins, TeamChampionships, Custom) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",(GAME.name, GAME.country, GAME.team, GAME.newTeam, GAME.startYear, -1, regulationChange, 0, 0, 0, 0, 3, 5, 3, 0, 0, 0, GAME.startYear, 135000000, 100, -1, -1, GAME.startYear, 0, 0, 0, GAME.custom))
@@ -2722,13 +2722,13 @@ class Game:
                         rating2=int(GAME.Sanitise(c.execute("SELECT Rating FROM Drivers WHERE Team=? AND Role='2'",(team,)).fetchall()[0]))
                         if len(c.execute("SELECT Name FROM Drivers WHERE (Team=? AND Role='1' AND (ContractEnd=? OR (NewTeam!='0' AND NewTeam!=?)))",(team,GAME.season,team,)).fetchall())==0:
                             driver1=0
-                        elif len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole='1'").fetchall())>0:
+                        elif len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole='1'",(team,)).fetchall())>0:
                             driver1=0
                         else:
                             driver1=1
                         if len(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='2' AND (ContractEnd=? OR (NewTeam!='0' AND NewTeam!=?))",(team,GAME.season,team,)).fetchall())==0:
                             driver2=0
-                        elif len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole='2'").fetchall())>0:
+                        elif len(c.execute("SELECT Name FROM Drivers WHERE NewTeam=? AND NewRole='2'",(team,)).fetchall())>0:
                             driver2=0
                         else:
                             driver2=1
@@ -5275,12 +5275,17 @@ class Game:
         else:
             track=GAME.raceCountry
         canvas.create_image(497, 193, anchor=tk.NW, image=raceImages[(tracks.index(track)*2)+GAME.displayedImage])
-    def PreviewTrack(self):
+    def PreviewTrack(self,race):
         GAME.ChangeScreen("Track Preview")
-        GAME.DisplayLayout(GAME.track)
-        GAME.Button("Back",5,730)
-        GAME.Button("Next Race",1235,730)
+        if GAME.race==1:
+            GAME.Button("Next",1235,730)
+        else:
+            GAME.Button("Back",5,730)
+            if GAME.race==race:
+                GAME.Button("Next Race",1235,730)
+                GAME.screen="Next Race Preview"
         with sqlite3.connect(GAME.database) as c:
+            GAME.track=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(race,)).fetchall()[0])
             country=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0])
             if GAME.track=="Imola" or GAME.track=="Miami" or GAME.track=="Las Vegas" or GAME.track=="Madring" or GAME.track=="Hockenheim" or GAME.track=="Valencia" or GAME.track=="Mugello":
                 track=GAME.track
@@ -5310,7 +5315,6 @@ class Game:
             lastPodium.append(GAME.Sanitise(c.execute("SELECT First FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
             lastPodium.append(GAME.Sanitise(c.execute("SELECT Second FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
             lastPodium.append(GAME.Sanitise(c.execute("SELECT Third FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
-            lastPodium=["Lando Norris","Oscar Piastri","George Russell"]
             for x in range(3):
                 try:
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(lastPodium[x],)).fetchall()[0])
@@ -5321,6 +5325,7 @@ class Game:
                 if colour=="black":
                     colour="white"
                 podiumColours.append(colour)
+        GAME.DisplayLayout(GAME.track)
         canvas.create_text(20, 560, text=f"Length: {length}km", fill="white", font=("Arial", 30), anchor="nw")
         canvas.create_text(20, 610, text=f"Laps: {laps}", fill="white", font=("Arial", 30), anchor="nw")
         canvas.create_text(20, 660, text=f"Corners: {corners} Speed", fill="white", font=("Arial", 30), anchor="nw")
@@ -9148,7 +9153,7 @@ class Game:
                 GAME.done=0
             GAME.PreSeason()
         elif GAME.race==1:
-            GAME.Reserves()
+            GAME.PreviewTrack(1)
         elif GAME.race<=GAME.races:
             GAME.ActionRound()
         elif GAME.race==GAME.races+1:
@@ -11596,11 +11601,9 @@ class Game:
                 sector=[(event.x-250)//191,(event.y-185)//75]
                 if event.x<=615+((sector[0]-1)*190) and event.y<=310+((sector[1]-1)*75):
                     race=(sector[1]*5)+sector[0]+1
-                    if race==GAME.race:
-                        with sqlite3.connect(GAME.database) as c:
-                            GAME.track=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(race,)).fetchall()[0])
-                        GAME.PreviewTrack()
-                    elif race<GAME.race:
+                    if race>=GAME.race:
+                        GAME.PreviewTrack(race)
+                    else:
                         with sqlite3.connect(GAME.database) as c:
                             GAME.ChangeScreen("Race Review")
                             GAME.track=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(race,)).fetchall()[0])
@@ -12203,11 +12206,11 @@ class Game:
                         GAME.BackgroundColour()
                         GAME.race=0
                         root.after(200, lambda: GAME.RaceTime())
-        elif GAME.screen=="Track Preview":
+        elif "Preview" in GAME.screen:
             if event.y>=730 and event.y<=780:
-                if event.x>=5 and event.x<=205:
+                if event.x>=5 and event.x<=205 and GAME.race>1:
                     GAME.ViewCalendar()
-                elif event.x>=1235 and event.x<=1435:
+                elif event.x>=1235 and event.x<=1435 and GAME.screen=="Next Race Preview":
                     GAME.Reserves()
     def SaveScreen(self):
         if os.path.isfile(GAME.database):
