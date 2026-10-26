@@ -5277,13 +5277,11 @@ class Game:
         canvas.create_image(497, 193, anchor=tk.NW, image=raceImages[(tracks.index(track)*2)+GAME.displayedImage])
     def PreviewTrack(self,race):
         GAME.ChangeScreen("Track Preview")
-        if GAME.race==1:
-            GAME.Button("Next",1235,730)
-        else:
+        if GAME.race>1:
             GAME.Button("Back",5,730)
-            if GAME.race==race:
-                GAME.Button("Next Race",1235,730)
-                GAME.screen="Next Race Preview"
+        if GAME.race==race:
+            GAME.Button("Next",1235,730)
+            GAME.screen="Next Race Preview"
         with sqlite3.connect(GAME.database) as c:
             GAME.track=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(race,)).fetchall()[0])
             country=GAME.Sanitise(c.execute("SELECT Country FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0])
@@ -5310,6 +5308,7 @@ class Game:
             sprint=abs(int(GAME.Sanitise(c.execute("SELECT Sprint FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0])))
             temperature=int(GAME.Sanitise(c.execute("SELECT Temperature FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
             rainChance=int(GAME.Sanitise(c.execute("SELECT RainChance FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
+            overtakeability=int(GAME.Sanitise(c.execute("SELECT Overtakeability FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
             lastPodium=[]
             podiumColours=[]
             lastPodium.append(GAME.Sanitise(c.execute("SELECT First FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
@@ -5331,6 +5330,7 @@ class Game:
         canvas.create_text(20, 660, text=f"Corners: {corners} Speed", fill="white", font=("Arial", 30), anchor="nw")
         canvas.create_text(500, 560, text=f"Temperature: {temperature}°C", fill="white", font=("Arial", 30), anchor="nw")
         canvas.create_text(500, 610, text=f"Rain Chance: {rainChance}%", fill="white", font=("Arial", 30), anchor="nw")
+        canvas.create_text(500, 660, text=f"Overtakeability: {overtakeability}/5", fill="white", font=("Arial", 30), anchor="nw")
         canvas.create_text(1060, 350, text="Last Year:", fill="#F5C939", font=("Arial", 30), anchor="nw")
         for x in range(3):
             canvas.create_text(1060, 400+(x*50), text=f"{x+1}. {lastPodium[x]}", fill=podiumColours[x], font=("Arial", 30), anchor="nw")
@@ -9153,7 +9153,10 @@ class Game:
                 GAME.done=0
             GAME.PreSeason()
         elif GAME.race==1:
-            GAME.PreviewTrack(1)
+            if GAME.sprint<0:
+                GAME.Reserves()
+            else:
+                GAME.PreviewTrack(1)
         elif GAME.race<=GAME.races:
             GAME.ActionRound()
         elif GAME.race==GAME.races+1:
@@ -9995,7 +9998,10 @@ class Game:
                                 GAME.AerodynamicResearch()
             elif event.x>=620 and event.x<=820 and event.y>=412 and event.y<=462:
                 #Next Race
-                GAME.Reserves()
+                if GAME.sprint<0:
+                    GAME.Reserves()
+                else:
+                    GAME.PreviewTrack(GAME.race)
             elif event.x>=300 and event.x<=500 and event.y>=650 and event.y<=700:
                 if GAME.swappable==1:
                     #Swap Drivers
@@ -12209,7 +12215,7 @@ class Game:
         elif "Preview" in GAME.screen:
             if event.y>=730 and event.y<=780:
                 if event.x>=5 and event.x<=205 and GAME.race>1:
-                    GAME.ViewCalendar()
+                    GAME.Menu()
                 elif event.x>=1235 and event.x<=1435 and GAME.screen=="Next Race Preview":
                     GAME.Reserves()
     def SaveScreen(self):
@@ -13488,6 +13494,8 @@ class Game:
             GAME.ers=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='ERS'").fetchall()[0]))
             GAME.pirelli=int(GAME.Sanitise(c.execute("SELECT True FROM Regulations WHERE Regulation='Pirelli'").fetchall()[0]))
             GAME.custom=int(GAME.Sanitise(c.execute("SELECT Custom FROM Player").fetchall()[0]))
+            GAME.track=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.race,)).fetchall()[0])
+            GAME.sprint=int(GAME.Sanitise(c.execute("SELECT Sprint FROM Tracks WHERE Name=?",(GAME.track,)).fetchall()[0]))
             if GAME.races==0:
                 GAME.races=24
             if len(c.execute("SELECT Name FROM Teams WHERE Name='Red Bull'").fetchall())==1:
