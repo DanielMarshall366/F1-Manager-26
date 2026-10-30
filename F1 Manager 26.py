@@ -1380,6 +1380,12 @@ class Game:
             F1.close()
             GAME.ChangeScreen("Camara Signs")
             root.after(5000, lambda: GAME.Menu())
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==19 and GAME.custom==0 and GAME.team!="Cadillac" and GAME.legends==0:
+            #Perez Re-signs
+            F1.commit()
+            F1.close()
+            GAME.ChangeScreen("Perez Re-signs")
+            root.after(5000, lambda: GAME.Menu())
         else:
             GAME.ChangeScreen("Press Conference")
             if objective=="Upgrade":
