@@ -1380,12 +1380,21 @@ class Game:
             F1.close()
             GAME.ChangeScreen("Camara Signs")
             root.after(5000, lambda: GAME.Menu())
-        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==19 and GAME.custom==0 and GAME.team!="Cadillac" and GAME.legends==0:
-            #Perez Re-signs
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==19 and GAME.custom==0 and GAME.legends==0:
+            #Mexico
             F1.commit()
             F1.close()
-            GAME.ChangeScreen("Perez Re-signs")
-            root.after(5000, lambda: GAME.Menu())
+            if GAME.team!="Cadillac":
+                GAME.ChangeScreen("Perez Re-signs")
+                cadillacTime=5000
+            else:
+                cadillacTime=0
+            if GAME.team!="Haas":
+                root.after(cadillacTime, lambda: GAME.ChangeScreen("Ocon Replaced"))
+                haasTime=5000
+            else:
+                haasTime=0
+            root.after(haasTime+cadillacTime, lambda: GAME.Menu())
         else:
             GAME.ChangeScreen("Press Conference")
             if objective=="Upgrade":
@@ -7336,7 +7345,7 @@ class Game:
                     GAME.car2ID=len(GAME.drivers)
                 team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(name,)).fetchall()[0])
                 if name!="":
-                    if name=="Isack Hadjar" and GAME.season==2026 and GAME.race>11 and GAME.race<15:
+                    if (name=="Isack Hadjar" and GAME.season==2026 and GAME.race>11 and GAME.race<15) or (name=="Esteban Ocon" and GAME.season==2026 and GAME.race==19 and GAME.team!="Haas"):
                         condition="Injured"
                     else:
                         condition=GAME.Sanitise(c.execute("SELECT Condition FROM Drivers WHERE Name=?",(name,)).fetchall()[0])
@@ -12752,7 +12761,7 @@ class Game:
                 sponsor=0
         if team=="McLaren":
             if season>2016 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5 and GAME.replay!=6 and sponsor!="Marlboro" and sponsor!="West" and sponsor!="Vodafone":
-                if season>2025 and GAME.track=="Silverstone" and GAME.screen!="History":
+                if season>2025 and (GAME.track=="Silverstone" or GAME.track=="Mexico City") and GAME.screen!="History":
                     colour="#D7EDFF"
                 else:
                     colour="#FF8700"
@@ -13551,6 +13560,8 @@ class Game:
                     team=driver
                 elif GAME.track=="Marina Bay" and driver=="Charles Leclerc" and team=="Ferrari" and sponsor!="Marlboro" and GAME.season>2025:
                     team="Black Ferrari"
+                elif GAME.track=="Mexico City" and GAME.season>2025 and team=="McLaren":
+                    team="Silverstone McLaren"
                 elif GAME.season>2025 and f"{GAME.track} {team}" in steam and not (team=="McLaren" and (sponsor=="West" or sponsor=="Vodafone")) and not (team=="Ferrari" and sponsor=="Marlboro"):
                     team=f"{GAME.track} {team}"
                 elif team=="McLaren":
@@ -15225,7 +15236,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Alfa Romeo Display","2010 Mercedes Display","Colapinto Re-signs","Leclerc Re-signs","Norris Re-signs","Monza Ferrari Upgrade","2015 McLaren Upgrade","2018 McLaren Upgrade",
         "Monza McLaren Upgrade","Game Modes","Customise Car","Customise Engine","West McLaren Display","Marlboro McLaren Display","Madring Williams Upgrade","Hadjar Re-signs",
         "Aston Martin Contract Extensions","Sepang Mercedes Upgrade","Marina Bay Audi Upgrade","Camara Signs","Austin Haas Upgrade","Austin Cadillac Upgrade",
-        "Austin Ferrari Upgrade","Austin Aston Martin Upgrade","Austin Mercedes Upgrade","Track Preview","Perez Re-signs"]
+        "Austin Ferrari Upgrade","Austin Aston Martin Upgrade","Austin Mercedes Upgrade","Track Preview","Perez Re-signs","Ocon Replaced","Mexico City McLaren Upgrade"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
