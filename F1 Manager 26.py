@@ -702,7 +702,7 @@ class Game:
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Baku', 'Azerbaijan', 6.003, 85, 1, 15, 'Low', 80, 0, 1, 2, 'Max Verstappen', 'George Russell', 'Carlos Sainz')")
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Marina Bay', 'Singapore', 4.940, 83, 5, 32, 'Medium', 35, 1, 1, 2, 'George Russell', 'Max Verstappen', 'Lando Norris')")
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Austin', 'United States of America', 5.513, 60, 0, 30, 'Medium', 58, 0, 1, 4, 'Max Verstappen', 'Lando Norris', 'Charles Leclerc')")        
-        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Mexico City', 'Mexico', 4.304, 50, 5, 21, 'Medium', 50, 0, 0, 3, 'Lando Norris', 'Charles Leclerc', 'Max Verstappen')")
+        c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Mexico City', 'Mexico', 4.304, 50, 5, 30, 'Medium', 50, 0, 0, 3, 'Lando Norris', 'Charles Leclerc', 'Max Verstappen')")
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Interlagos', 'Brazil', 4.309, 50, 75, 30, 'Low', 50, 0, 1, 5, 'Lando Norris', 'Kimi Antonelli', 'Max Verstappen')")
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Las Vegas', 'United States of America', 6.201, 65, 5, 10, 'Low', 70, 0, 1, 3, 'Max Verstappen', 'George Russell', 'Kimi Antonelli')")
         c.execute("INSERT into Tracks (Name, Country, Length, Risk, RainChance, Temperature, Corners, Straights, Sprint, Street, Overtakeability, First, Second, Third) VALUES ('Qatar', 'Qatar', 5.419, 60, 0, 22, 'High', 38, 0, 0, 2, 'Max Verstappen', 'Oscar Piastri', 'Carlos Sainz')")
@@ -2863,12 +2863,12 @@ class Game:
     def PressConferences(self):
         GAME.action=0
         if GAME.actions==2:
-            if GAME.race==11 and GAME.sponsor!="0":
+            if GAME.race==14 and GAME.sponsor!="0":
                 GAME.SponsorReview()
             else:
                 with sqlite3.connect(GAME.database) as c:
                     position=int(GAME.Sanitise(c.execute("SELECT Position FROM Teams WHERE Name=?",(GAME.team,)).fetchall()[0]))
-                if position==1 and GAME.race==13:
+                if position==1 and GAME.race==14:
                     GAME.PressConference("Upgrade")
                 else:
                     GAME.PressConference(0)
@@ -3270,97 +3270,100 @@ class Game:
                                     GAME.fuelAggression[index]=3
                         #Tyre Management
                         tyreAge=GAME.lap[index]-GAME.lapPittedTo[index]
-                        if GAME.lap[index]==GAME.pitLap[index] or GAME.lap[GAME.positions[0]]==GAME.laps:
-                            GAME.tyreAggression[index]=5
-                        elif GAME.tyre[index]!="Intermediate" and GAME.tyre[index]!="Wet":
-                            if GAME.strategy[index]!=0:
-                                if tyreAge==0:
-                                    if GAME.tyreAggression[index]!=3:
-                                        GAME.tyreAggression[index]=3
+                        try:
+                            if GAME.lap[index]==GAME.pitLap[index] or GAME.lap[GAME.positions[0]]==GAME.laps:
+                                GAME.tyreAggression[index]=5
+                            elif GAME.tyre[index]!="Intermediate" and GAME.tyre[index]!="Wet":
+                                if GAME.strategy[index]!=0:
+                                    if tyreAge==0:
+                                        if GAME.tyreAggression[index]!=3:
+                                            GAME.tyreAggression[index]=3
+                                    else:
+                                        stops=GAME.stops[index]
+                                        if GAME.tyre[index]=="Soft":
+                                            wear=GAME.tyreWear[0]
+                                        elif GAME.tyre[index]=="Medium":
+                                            wear=GAME.tyreWear[1]
+                                        else:
+                                            wear=GAME.tyreWear[2]
+                                        pitWindowLength=GAME.pitLap[index]-GAME.lapPittedTo[index]
+                                        if pitWindowLength<=0:
+                                            pitWindowLength=GAME.laps-GAME.lapPittedTo[index]
+                                        if pitWindowLength<=0:
+                                            expectedWear=1000
+                                        else:
+                                            expectedWear=round(75-(wear*tyreAge/pitWindowLength))
+                                        if GAME.tyreRemaining[index]>expectedWear+25:
+                                            aggression=5
+                                        elif GAME.tyreRemaining[index]>expectedWear+10:
+                                            aggression=4
+                                        elif GAME.tyreRemaining[index]>expectedWear-10:
+                                            aggression=3
+                                        elif GAME.tyreRemaining[index]>expectedWear-25:
+                                            aggression=2
+                                        else:
+                                            aggression=1
+                                        if GAME.tyreAggression[index]!=aggression:
+                                            GAME.tyreAggression[index]=aggression
                                 else:
-                                    stops=GAME.stops[index]
                                     if GAME.tyre[index]=="Soft":
                                         wear=GAME.tyreWear[0]
                                     elif GAME.tyre[index]=="Medium":
                                         wear=GAME.tyreWear[1]
                                     else:
                                         wear=GAME.tyreWear[2]
-                                    pitWindowLength=GAME.pitLap[index]-GAME.lapPittedTo[index]
-                                    if pitWindowLength<=0:
-                                        pitWindowLength=GAME.laps-GAME.lapPittedTo[index]
-                                    if pitWindowLength<=0:
-                                        expectedWear=1000
+                                    if GAME.wet==0:
+                                        if GAME.pitLap[index]==0:
+                                            lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
+                                        else:
+                                            lapsLeft=GAME.pitLap[index]-GAME.lap[index]
+                                    elif GAME.rainStops<GAME.lap[GAME.positions[0]]:
+                                        if GAME.pitLap[index]==0:
+                                            lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
+                                        else:
+                                            lapsLeft=GAME.pitLap[index]-GAME.lap[index]
                                     else:
-                                        expectedWear=round(75-(wear*tyreAge/pitWindowLength))
-                                    if GAME.tyreRemaining[index]>expectedWear+25:
-                                        aggression=5
-                                    elif GAME.tyreRemaining[index]>expectedWear+10:
-                                        aggression=4
-                                    elif GAME.tyreRemaining[index]>expectedWear-10:
-                                        aggression=3
-                                    elif GAME.tyreRemaining[index]>expectedWear-25:
-                                        aggression=2
-                                    else:
-                                        aggression=1
-                                    if GAME.tyreAggression[index]!=aggression:
-                                        GAME.tyreAggression[index]=aggression
-                            else:
-                                if GAME.tyre[index]=="Soft":
-                                    wear=GAME.tyreWear[0]
-                                elif GAME.tyre[index]=="Medium":
-                                    wear=GAME.tyreWear[1]
-                                else:
-                                    wear=GAME.tyreWear[2]
-                                if GAME.wet==0:
-                                    if GAME.pitLap[index]==0:
-                                        lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
-                                    else:
-                                        lapsLeft=GAME.pitLap[index]-GAME.lap[index]
-                                elif GAME.rainStops<GAME.lap[GAME.positions[0]]:
-                                    if GAME.pitLap[index]==0:
-                                        lapsLeft=GAME.laps-GAME.lap[GAME.positions[0]]
-                                    else:
-                                        lapsLeft=GAME.pitLap[index]-GAME.lap[index]
-                                else:
-                                    lapsLeft=-1
-                                if lapsLeft==-1:
-                                    if GAME.tyreRemaining[index]<38:
-                                        if GAME.rainStarts-GAME.lap[GAME.positions[0]]<=5:
-                                            GAME.tyreAggression[index]=1
-                                        elif GAME.pitLap[index]==0:
-                                            lapsLeft=GAME.rainStarts-GAME.lap[GAME.positions[0]]
-                                            GAME.pitLap=GAME.lap[index]
-                                            if lapsLeft<GAME.expectedTyreLife[0]:
-                                                GAME.pitTyre[index]="Soft"
-                                            elif lapsLeft<GAME.expectedTyreLife[1]:
-                                                GAME.pitTyre[index]="Medium"
-                                            else:
-                                                GAME.pitTyre[index]="Hard"
-                                    elif GAME.tyreAggression[index]!=3:
-                                        GAME.tyreAggression[index]=3
-                                elif GAME.tyreRemaining[index]-30>wear*lapsLeft:
-                                    if GAME.tyreRemaining[index]-30>wear*lapsLeft*1.5:
-                                        if GAME.tyreAggression!=5:
-                                            GAME.tyreAggression[index]=5
-                                    elif GAME.tyreRemaining[index]-30>wear*lapsLeft*1.2:
-                                        if GAME.tyreAggression!=4:
-                                            GAME.tyreAggression[index]=4
-                                    elif GAME.tyreAggression!=3:
-                                        GAME.tyreAggression[index]=3
-                                else:
-                                    if GAME.tyreRemaining[index]-30>wear*lapsLeft/1.5:
-                                        if lapsLeft<=15 and GAME.tyreRemaining[index]<=45 and GAME.pitLap[index]==0:
-                                            if GAME.tyreAggression[index]!=5:
+                                        lapsLeft=-1
+                                    if lapsLeft==-1:
+                                        if GAME.tyreRemaining[index]<38:
+                                            if GAME.rainStarts-GAME.lap[GAME.positions[0]]<=5:
+                                                GAME.tyreAggression[index]=1
+                                            elif GAME.pitLap[index]==0:
+                                                lapsLeft=GAME.rainStarts-GAME.lap[GAME.positions[0]]
+                                                GAME.pitLap=GAME.lap[index]
+                                                if lapsLeft<GAME.expectedTyreLife[0]:
+                                                    GAME.pitTyre[index]="Soft"
+                                                elif lapsLeft<GAME.expectedTyreLife[1]:
+                                                    GAME.pitTyre[index]="Medium"
+                                                else:
+                                                    GAME.pitTyre[index]="Hard"
+                                        elif GAME.tyreAggression[index]!=3:
+                                            GAME.tyreAggression[index]=3
+                                    elif GAME.tyreRemaining[index]-30>wear*lapsLeft:
+                                        if GAME.tyreRemaining[index]-30>wear*lapsLeft*1.5:
+                                            if GAME.tyreAggression!=5:
                                                 GAME.tyreAggression[index]=5
-                                            GAME.pitLap[index]=GAME.lap[index]
-                                            GAME.pitTyre[index]="Soft"
-                                        elif GAME.tyreAggression[index]!=1:
-                                            GAME.tyreAggression[index]=1
-                                    elif GAME.tyreRemaining[index]-30>wear*lapsLeft/1.2:
-                                        if GAME.tyreAggression[index]!=2:
-                                            GAME.tyreAggression[index]=2
-                                    elif GAME.tyreAggression[index]!=3:
-                                        GAME.tyreAggression[index]=3
+                                        elif GAME.tyreRemaining[index]-30>wear*lapsLeft*1.2:
+                                            if GAME.tyreAggression!=4:
+                                                GAME.tyreAggression[index]=4
+                                        elif GAME.tyreAggression!=3:
+                                            GAME.tyreAggression[index]=3
+                                    else:
+                                        if GAME.tyreRemaining[index]-30>wear*lapsLeft/1.5:
+                                            if lapsLeft<=15 and GAME.tyreRemaining[index]<=45 and GAME.pitLap[index]==0:
+                                                if GAME.tyreAggression[index]!=5:
+                                                    GAME.tyreAggression[index]=5
+                                                GAME.pitLap[index]=GAME.lap[index]
+                                                GAME.pitTyre[index]="Soft"
+                                            elif GAME.tyreAggression[index]!=1:
+                                                GAME.tyreAggression[index]=1
+                                        elif GAME.tyreRemaining[index]-30>wear*lapsLeft/1.2:
+                                            if GAME.tyreAggression[index]!=2:
+                                                GAME.tyreAggression[index]=2
+                                        elif GAME.tyreAggression[index]!=3:
+                                            GAME.tyreAggression[index]=3
+                        except:
+                            pass
                     GAME.distance[index]=distance
                 if GAME.lap_[index]!=GAME.lap[index]:
                     if x==0:
@@ -9077,9 +9080,8 @@ class Game:
                     c.execute("UPDATE Player SET Race=?",(GAME.race,))
                 GAME.RaceTime()
             else:
-                GAME.screen="Change Team"
-                canvas.delete('all')
-                root.configure(background='#F2F2F2')
+                root.configure(background='#7A7A7A')
+                GAME.ChangeScreen("Change Team")
                 with sqlite3.connect(GAME.database) as c:
                     f=c.execute("SELECT Name FROM Teams").fetchall()
                 canvas.create_text(10, 5, text="Constructors' Standings", fill="black", font=("Arial", 30), anchor="nw")
@@ -9324,7 +9326,7 @@ class Game:
         if screen=="Title Screen":
             GAME.team=0
             GAME.BackgroundColour()
-        elif screen=="Tyre Data" or screen=="Replacing" or screen=="Replacement" or screen=="Sponsor Negotiation" or screen=="New Custom Team" or screen=="Select Custom Replacement" or screen=="Choose Race":
+        elif screen=="Tyre Data" or screen=="Replacing" or screen=="Replacement" or screen=="Sponsor Negotiation" or screen=="New Custom Team" or screen=="Select Custom Replacement" or screen=="Choose Race" or screen=="Change Team" or screen=="Customise Teams" or screen=="Customise Engines" or screen=="Choose Custom Team":
             screen="Grey Screen"
         elif screen=="Data" or screen=="Scouting":
             screen="Board Room"
@@ -12328,7 +12330,7 @@ class Game:
         colour=GAME.TeamColour(GAME.engine,GAME.season)
         if colour=="black":
             colour="white"
-        canvas.create_text(870, 150, text=f"Engine: {GAME.engine}", fill=colour, font=("Arial", 40), anchor="nw")
+        canvas.create_text(850, 150, text=f"Engine: {GAME.engine}", fill=colour, font=("Arial", 40), anchor="nw")
         with sqlite3.connect(GAME.database) as c:
             EN1=int(GAME.Sanitise(c.execute("SELECT car1Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
             EN2=int(GAME.Sanitise(c.execute("SELECT car2Engine FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
@@ -12350,22 +12352,22 @@ class Game:
                 suffix2="th"
             ED1=int(GAME.Sanitise(c.execute("SELECT car1EngineDurability FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
             ED2=int(GAME.Sanitise(c.execute("SELECT car2EngineDurability FROM Cars WHERE Team=?",(GAME.team,)).fetchall()[0]))
-        canvas.create_text(870, 200, text=f"Car 1: {EN1}{suffix1} Engine {ED1}%", fill=colour, font=("Arial", 40), anchor="nw")
-        canvas.create_text(870, 250, text=f"Car 2: {EN2}{suffix2} Engine {ED2}%", fill=colour, font=("Arial", 40), anchor="nw")
+        canvas.create_text(850, 200, text=f"Car 1: {EN1}{suffix1} Engine {ED1}%", fill=colour, font=("Arial", 40), anchor="nw")
+        canvas.create_text(850, 250, text=f"Car 2: {EN2}{suffix2} Engine {ED2}%", fill=colour, font=("Arial", 40), anchor="nw")
         colour=GAME.TeamColour(GAME.team,GAME.season)
         if colour=="black":
             colour="white"
-        canvas.create_text(870, 375, text="Engine Ranking", fill=colour, font=("Arial", 40), anchor="nw")
+        canvas.create_text(850, 375, text="Engine Ranking", fill=colour, font=("Arial", 40), anchor="nw")
         engines=GAME.EngineRanking()
         for x in range(len(engines)):
             colour=GAME.TeamColour(engines[x],GAME.season)
             if colour=="black":
                 colour="white"
-            canvas.create_text(870, 445+(x*45), text=f"{x+1}. {engines[x]}", fill=colour, font=("Arial", 30), anchor="nw")
-        GAME.Button("Switch Engine 1",960,320)
-        GAME.Button("Switch Engine 2",1180,320)
+            canvas.create_text(850, 445+(x*45), text=f"{x+1}. {engines[x]}", fill=colour, font=("Arial", 30), anchor="nw")
+        GAME.Button("Switch Engine 1",940,320)
+        GAME.Button("Switch Engine 2",1160,320)
         GAME.Button("Back",5,730)
-        GAME.Button("Engine Data",870,730)
+        GAME.Button("Engine Data",850,730)
         GAME.DisplayMoney()
     def EngineRanking(self):
         with sqlite3.connect(GAME.database) as c:
@@ -12678,6 +12680,12 @@ class Game:
             elif GAME.team=="Racing Bulls":
                 if len(c.execute("SELECT Name FROM Drivers WHERE (Role='Reserve' OR Role='Junior') AND Team='Red Bull'").fetchall())>0:
                     GAME.Button("Reserve & Junior Drivers",600,730)
+            elif GAME.team=="Ferrari":
+                if len(c.execute("SELECT Name FROM Teams WHERE Name='Haas'").fetchall())>0:
+                    GAME.Button("Reserve & Junior Drivers",600,730)
+            elif GAME.team=="Red Bull":
+                if len(c.execute("SELECT Name FROM Teams WHERE Name='Racing Bulls'").fetchall())>0:
+                    GAME.Button("Reserve & Junior Drivers",600,730)
         GAME.Button("Renew",1220,730)
     def MinimumRating(self):
         GAME.ChangeScreen("Minimum Rating")
@@ -12825,7 +12833,7 @@ class Game:
                 sponsor=0
         if team=="McLaren":
             if season>2016 and GAME.replay!=3 and GAME.replay!=4 and GAME.replay!=5 and GAME.replay!=6 and sponsor!="Marlboro" and sponsor!="West" and sponsor!="Vodafone":
-                if season>2025 and (GAME.track=="Silverstone" or GAME.track=="Mexico City") and GAME.screen!="History":
+                if season>2025 and GAME.track=="Silverstone" and GAME.screen!="History":
                     colour="#D7EDFF"
                 else:
                     colour="#FF8700"
@@ -13005,9 +13013,8 @@ class Game:
             if valid==1:
                 GAME.ChangeScreen("Get Country 1")
     def CustomiseTeams(self):
-        GAME.screen="Customise Teams"
-        canvas.delete('all')
-        root.configure(background='#F2F2F2')
+        root.configure(background='#7A7A7A')
+        GAME.ChangeScreen("Customise Teams")
         GAME.team=0
         GAME.engines=GAME.EngineRanking()
         with sqlite3.connect(GAME.database) as c:
@@ -13019,8 +13026,6 @@ class Game:
             for x in range(len(teams)):
                 name=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(x+1,)).fetchall()[0])
                 colour=GAME.TeamColour(name,2026)
-                if colour=="white" or colour=="#E6E6E6":
-                    colour="#CACACA"
                 name=GAME.TeamName(name)
                 if x<9:
                     canvas.create_text(50, 100+(x*25), text=f"{x+1}. {name}", fill=colour, font=("Arial", 15), anchor="nw")
@@ -13122,9 +13127,8 @@ class Game:
         GAME.Button("Confirm",1150,250)
         GAME.Button("Back",5,730)
     def CustomiseEngines(self):
-        GAME.screen="Customise Engines"
-        canvas.delete('all')
-        root.configure(background='#F2F2F2')
+        root.configure(background='#7A7A7A')
+        GAME.ChangeScreen("Customise Engines")
         GAME.team=0
         GAME.engines=GAME.EngineRanking()
         if len(GAME.engines)<6:
@@ -13135,8 +13139,6 @@ class Game:
             if x<len(GAME.engines):
                 name=GAME.engines[x]
                 colour=GAME.TeamColour(name,2026)
-                if colour=="white" or colour=="#E6E6E6":
-                    colour="#CACACA"
                 canvas.create_text(50, 100+(x*25), text=f"{x+1}. {name}", fill=colour, font=("Arial", 15), anchor="nw")
                 canvas.create_text(10, 5, text="Choose Engine to Customise", fill="black", font=("Arial", 30), anchor="nw")
                 button="Customise"
@@ -13200,9 +13202,8 @@ class Game:
         GAME.Button("Back",5,730)
         GAME.Button("Start Season",1230,730)
     def ChooseCustomTeam(self):
-        GAME.screen="Choose Custom Team"
-        canvas.delete('all')
-        root.configure(background='#F2F2F2')
+        root.configure(background='#7A7A7A')
+        GAME.ChangeScreen("Choose Custom Team")
         GAME.team=0
         GAME.drivers=[]
         with sqlite3.connect(GAME.database) as c:
@@ -13210,8 +13211,6 @@ class Game:
             for x in range(len(teams)):
                 name=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=?",(x+1,)).fetchall()[0])
                 colour=GAME.TeamColour(name,2026)
-                if colour=="white" or colour=="#E6E6E6":
-                    colour="#CACACA"
                 name=GAME.TeamName(name)
                 if x<9:
                     canvas.create_text(50, 100+(x*25), text=f"{x+1}. {name}", fill=colour, font=("Arial", 15), anchor="nw")
@@ -15205,7 +15204,7 @@ class Game:
                                 frames=f.getnframes()
                                 rate=f.getframerate()
                                 duration=frames / float(rate)
-                                delay=round(duration * 1000)
+                                delay=round(duration*1000)
                     else:
                         subject=-1
                 if subject!=-1 or line=="Champion":
@@ -15230,16 +15229,16 @@ class Game:
                             rate=f.getframerate()
                             duration=frames/float(rate)
                             delay=d+round(duration*1000)
-                        root.after(delay-50, lambda: GAME.StopMusic())
                     else:
                         delay=d
-                root.after(delay, lambda: GAME.VoiceDone())
+                root.after(delay+500, lambda: GAME.VoiceDone())
                 if line=="Champion":
                     root.after(delay, lambda: GAME.DriverCelebration(subject))
         except:
             pass
     def VoiceDone(self):
         GAME.playing=0
+        GAME.StopMusic()
 GAME=Game()
 
 if os.path.isfile("F1 Manager 26 Save Data 1.db"):
