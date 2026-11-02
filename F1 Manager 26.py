@@ -1,6 +1,70 @@
 import random, os, sqlite3, json, winsound, contextlib, wave, gc
 import tkinter as tk
 from tkinter import simpledialog
+from fractions import Fraction
+from types import SimpleNamespace
+
+
+class ResponsiveCanvas(tk.Canvas):
+    width=1440
+    height=810
+
+    def __init__(self, master, scale, **kwargs):
+        self.ui_scale=scale
+        self._scaled_images={}
+        super().__init__(master, width=round(self.width * scale),
+                         height=round(self.height * scale), **kwargs)
+
+    def _scaled_image(self, image):
+        if image is None:
+            return image
+        key=(str(image), self.ui_scale)
+        if key not in self._scaled_images:
+            ratio=Fraction(self.ui_scale).limit_denominator(8)
+            if ratio.numerator==ratio.denominator:
+                scaled=image
+            else:
+                scaled=image.zoom(ratio.numerator, ratio.numerator).subsample(
+                    ratio.denominator, ratio.denominator)
+            self._scaled_images[key]=scaled
+        return self._scaled_images[key]
+
+    def create_image(self, *args, **kwargs):
+        args=tuple(round(v * self.ui_scale) if isinstance(v, (int, float)) else v
+                     for v in args)
+        if "image" in kwargs:
+            kwargs["image"]=self._scaled_image(kwargs["image"])
+        return super().create_image(*args, **kwargs)
+
+    def create_text(self, *args, **kwargs):
+        args=tuple(round(v * self.ui_scale) if isinstance(v, (int, float)) else v
+                     for v in args)
+        font=kwargs.get("font")
+        if isinstance(font, (tuple, list)) and len(font)>=2:
+            font=list(font)
+            if isinstance(font[1], (int, float)):
+                size=font[1]
+                font[1]=(max(1, round(size * self.ui_scale)) if size>0
+                           else min(-1, round(size * self.ui_scale)))
+            kwargs["font"]=tuple(font)
+        elif isinstance(font, str):
+            pass
+        if "width" in kwargs and isinstance(kwargs["width"], (int, float)):
+            kwargs["width"]=round(kwargs["width"] * self.ui_scale)
+        return super().create_text(*args, **kwargs)
+
+    def bind(self, sequence=None, func=None, add=None):
+        if sequence=="<Button-1>" and func is not None:
+            def scaled_click(event):
+                mapped=SimpleNamespace(
+                    x=round(event.x / self.ui_scale),
+                    y=round(event.y / self.ui_scale),
+                    num=getattr(event, "num", 1),
+                    widget=self)
+                return func(mapped)
+            return super().bind(sequence, scaled_click, add)
+        return super().bind(sequence, func, add)
+
 
 class Game:
     def __init__(self):
@@ -531,9 +595,9 @@ class Game:
         #Engines
         if GAME.startYear==2026:
             c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('Mercedes', 'Mercedes', 9, 7, 7, 1)")
-            c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('Ferrari', 'Ferrari', 7, 8, 6, 1)")
+            c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('Ferrari', 'Ferrari', 6, 8, 6, 1)")
             c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('Ford RBPT', 'Red Bull', 10, 7, 5, 1)")
-            c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('Audi', 'Audi', 6, 6, 5, 1)")
+            c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('Audi', 'Audi', 5, 6, 5, 1)")
             c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('Honda', 'Aston Martin', 4, 1, 3, 1)")
         else:
             c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('Mercedes', 'Mercedes', 9, 10, 5, 1)")
@@ -1518,7 +1582,7 @@ class Game:
                     if topic=="Retirement":
                         message.append("They have come to announce that "+oldestName+" has decided to retire at the end of the "+str(GAME.season)+" season.")
                         c.execute("UPDATE Drivers SET NewTeam='Retired' WHERE Name=?",(oldestName,))
-                        GAME.DisplayDriver(oldestName,520,500)
+                        GAME.DisplayDriver(oldestName,520,520)
                         root.after(7500, lambda: GAME.Menu())
                     elif topic=="Swap":
                         message.append("They have decided to promote "+racingBullsDriver+" to the Red Bull team to replace "+redBullDriver+".") 
@@ -1530,8 +1594,8 @@ class Game:
                         c.execute("UPDATE Drivers SET NewTeam='Racing Bulls' WHERE Name=? AND NewTeam='Red Bull'",(redBullDriver,))
                         F1.commit()
                         F1.close()
-                        GAME.DisplayDriver(redBullDriver,120,500)
-                        GAME.DisplayDriver(racingBullsDriver,850,500)
+                        GAME.DisplayDriver(redBullDriver,120,520)
+                        GAME.DisplayDriver(racingBullsDriver,850,520)
                         F1=sqlite3.connect(GAME.database)
                         c=F1.cursor()
                         if GAME.team=="Racing Bulls":
@@ -4618,7 +4682,7 @@ class Game:
             instructions=["Team Orders","Drive in Clean Air","Maintain Position","Stop Team Orders","Use Racing Line","Overtake"]
             for x in range(len(drivers)):
                 if drivers[x]!=0:
-                    GAME.DisplayDriver(drivers[x],200+(x*640),500)
+                    GAME.DisplayDriver(drivers[x],200+(x*640),520)
                     if drivers[x]==GAME.driver1:
                         instructionsGiven=GAME.car1Instructions.copy()
                     else:
@@ -4849,7 +4913,7 @@ class Game:
                 GAME.RefreshScreen()
                 GAME.Start()
         if GAME.displayed<3:
-            GAME.DisplayDriver(driver,520,500)
+            GAME.DisplayDriver(driver,520,520)
             GAME.Leaderboard()
             for x in range(len(GAME.log)):
                 canvas.create_text(500, x*23, text=GAME.log[x], fill="black", font=("Arial", 15), anchor="nw")
@@ -4930,7 +4994,7 @@ class Game:
                 GAME.displayed=3
                 GAME.EndSafetyCar()
         if GAME.displayed<3:
-            GAME.DisplayDriver(driver,520,500)
+            GAME.DisplayDriver(driver,520,520)
             GAME.Leaderboard()
             for x in range(len(GAME.log)):
                 canvas.create_text(500, x*23, text=GAME.log[x], fill="black", font=("Arial", 15), anchor="nw")
@@ -5919,7 +5983,7 @@ class Game:
                 if GAME.sprint!=1:
                     with sqlite3.connect(GAME.database) as c:
                         c.execute("UPDATE Tracks SET Third=? WHERE Name=?",(driver,track,))
-            GAME.DisplayDriver(driver,x,500)
+            GAME.DisplayDriver(driver,x,520)
     def RaceResults(self):
         GAME.ChangeScreen("Race Results")
         GAME.pointsScored=[]
@@ -5994,7 +6058,7 @@ class Game:
                         colour="white"
                     canvas.create_text(35, y, text=f"DNF {GAME.drivers[x]}", fill=colour, font=("Arial", 20), anchor="nw")
                     canvas.create_text(700, y, text="0 Points", fill=colour, font=("Arial", 20), anchor="nw")
-        GAME.DisplayDriver(GAME.drivers[GAME.positions[0]],950,500)
+        GAME.DisplayDriver(GAME.drivers[GAME.positions[0]],950,520)
         GAME.Button("Next",1230,5)
     def SaveRace(self):
         if os.path.isfile(GAME.database):
@@ -7704,7 +7768,7 @@ class Game:
         for x in range(len(eliminated)):
             driver=eliminated[len(eliminated)-x-1]
             Z=75-((len(eliminated)-5)*75)
-            GAME.DisplayDriver(driver,(x*200)+Z,500)
+            GAME.DisplayDriver(driver,(x*200)+Z,520)
             if x%2==0:
                 canvas.create_text((x*200)+100+Z, 340, text=str(topPosition+x)+". "+driver, fill="red", font=("Arial", 20), anchor="nw")
             else:
@@ -8165,7 +8229,7 @@ class Game:
         else:
             for x in range(len(GAME.weatherMessage)):
                 canvas.create_text(20, 5+(x*40), text=GAME.weatherMessage[x], fill="black", font=("Arial", 30), anchor="nw")
-        canvas.create_text(1250, 10, text=(str(GAME.laps)+" Laps"), fill="black", font=("Arial", 40), anchor="nw")
+        canvas.create_text(1200, 10, text=(str(GAME.laps)+" Laps"), fill="black", font=("Arial", 40), anchor="nw")
         canvas.create_text(230, 200, text=("Estimated: "+str(GAME.expectedTyreLife[0])+" Laps"), fill="black", font=("Arial", 20), anchor="nw")
         if GAME.replay==5:
             canvas.create_text(230, 420, text=("Pirelli \U0001F512"), fill="black", font=("Arial", 20), anchor="nw")
@@ -8182,7 +8246,7 @@ class Game:
             driver=GAME.driver1
         else:
             driver=GAME.driver2
-        GAME.DisplayDriver(driver,520,500)
+        GAME.DisplayDriver(driver,520,520)
     def ChooseStartingAggression(self):
         GAME.ChangeScreen("Choose Aggression")
         for x in range(3):
@@ -8211,7 +8275,7 @@ class Game:
             driver=GAME.driver1
         else:
             driver=GAME.driver2
-        GAME.DisplayDriver(driver,900,500)
+        GAME.DisplayDriver(driver,900,520)
         if driver==GAME.driver1 and GAME.car2ID in GAME.positions:
             GAME.Button("Next",510,730)
         else:
@@ -9198,7 +9262,7 @@ class Game:
             driver=GAME.Sanitise(c.execute("SELECT Name FROM Drivers WHERE Position=1").fetchall()[0])
             team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Position=1").fetchall()[0])
             constructor=GAME.Sanitise(c.execute("SELECT Name FROM Teams WHERE Position=1").fetchall()[0])
-        GAME.DisplayDriver(driver,120,500)
+        GAME.DisplayDriver(driver,120,520)
         canvas.create_text(570, 10, text=GAME.season, fill="black", font=("Algerian", 100), anchor="nw")
         canvas.create_text(30, 150, text="Drivers' Champion:", fill="black", font=("Arial", 40), anchor="nw")
         canvas.create_text(30, 200, text=driver, fill="black", font=("Arial", 40), anchor="nw")
@@ -9317,7 +9381,7 @@ class Game:
         if GAME.music==1:
             GAME.StopMusic()
         GAME.suitTest=team
-        GAME.DisplayDriver(driver,500,500)
+        GAME.DisplayDriver(driver,500,520)
     def OnClick(self, event):
         if GAME.screen=="Title Screen":
             GAME.replay=0
@@ -9909,7 +9973,7 @@ class Game:
                                     best=[position,index,gained]
                         driver=GAME.drivers[best[1]]
                         team=GAME.teams[best[1]]
-                    GAME.DisplayDriver(driver,520,500)
+                    GAME.DisplayDriver(driver,520,520)
                     colour=GAME.TeamColour(team,GAME.season)
                     if colour=="black":
                         colour="white"
@@ -11656,7 +11720,7 @@ class Game:
                                     x=120
                                 else:
                                     x=920
-                                GAME.DisplayDriver(driver,x,500)
+                                GAME.DisplayDriver(driver,x,520)
                         GAME.Button("Back",5,730)
         elif GAME.screen=="Sprint Calendar":
             if event.x>=5 and event.x<=205 and event.y>=725 and event.y<=775:
@@ -12724,8 +12788,8 @@ class Game:
         GAME.ChangeScreen("Replacing")
         GAME.Button("Back",5,730)
         GAME.Button("Choose",1100,170)
-        GAME.DisplayDriver(GAME.car1,200,500)
-        GAME.DisplayDriver(GAME.car2,920,500)
+        GAME.DisplayDriver(GAME.car1,200,520)
+        GAME.DisplayDriver(GAME.car2,920,520)
         canvas.create_text(350, 10, text="Select Driver to Replace", fill="black", font=("Arial", 50), anchor="nw")
         GAME.Button("Name Selector",250,100)
         try:
@@ -12739,10 +12803,10 @@ class Game:
         GAME.Button("Choose",1100,170)
         if len(GAME.options)==1:
             GAME.displayed=0
-            GAME.DisplayDriver(GAME.options[0],500,500)
+            GAME.DisplayDriver(GAME.options[0],500,520)
         else:
             for x in range(len(GAME.options)):
-                GAME.DisplayDriver(GAME.options[x],200+((720/(len(GAME.options)-1))*x),500)
+                GAME.DisplayDriver(GAME.options[x],200+((720/(len(GAME.options)-1))*x),520)
         canvas.create_text(350, 10, text="Select Replacement", fill="black", font=("Arial", 50), anchor="nw")
         GAME.Button("Name Selector",250,100)
         canvas.create_text(350, 170, text=GAME.options[GAME.displayed], fill="black", font=("Arial", 40), anchor="nw")
@@ -13034,7 +13098,7 @@ class Game:
         GAME.ChangeScreen("Select Custom Replacement")
         GAME.Button("Back",5,730)
         GAME.Button("Choose",1100,170)
-        GAME.DisplayDriver(GAME.options[GAME.displayed],550,500)
+        GAME.DisplayDriver(GAME.options[GAME.displayed],550,520)
         canvas.create_text(350, 10, text="Select Replacement", fill="black", font=("Arial", 50), anchor="nw")
         GAME.Button("Name Selector",250,100)
         try:
@@ -13531,7 +13595,7 @@ class Game:
         for x in range(2):
             with sqlite3.connect(GAME.database) as c:
                 driver=GAME.Sanitise(c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role=?",(team,str(x+1),)).fetchall()[0])
-            GAME.DisplayDriver(driver,200+(x*640),500)
+            GAME.DisplayDriver(driver,200+(x*640),520)
             if "Display" in GAME.screen:
                 canvas.create_text(950-(650-(650*x)), 340, text=driver, fill="black", font=("Arial", 20), anchor="nw")
     def DisplayDriver(self,driver,x,y):
@@ -13649,9 +13713,9 @@ class Game:
                 canvas.create_image(x+X, y-Y, anchor=tk.NW, image=head)
     def DisplayRaceTeam(self):
         if GAME.driver1!=0:
-            GAME.DisplayDriver(GAME.driver1,200,500)
+            GAME.DisplayDriver(GAME.driver1,200,520)
         if GAME.driver2!=0:
-            GAME.DisplayDriver(GAME.driver2,840,500)
+            GAME.DisplayDriver(GAME.driver2,840,520)
     def WelcomeToTeam(self):
         GAME.ChangeScreen("Welcome To Team")
         with sqlite3.connect(GAME.database) as c:
@@ -15141,7 +15205,7 @@ class Game:
                                 frames=f.getnframes()
                                 rate=f.getframerate()
                                 duration=frames / float(rate)
-                                delay=round((duration - 0.1) * 1000)
+                                delay=round(duration * 1000)
                     else:
                         subject=-1
                 if subject!=-1 or line=="Champion":
@@ -15157,7 +15221,7 @@ class Game:
                         frames=f.getnframes()
                         rate=f.getframerate()
                         duration=frames / float(rate)
-                        d=delay + round((duration-0.1)*1000)
+                        d=delay + round(duration*1000)
                     root.after(delay, lambda: winsound.PlaySound(vo_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
                     if line=="Overtake" and os.path.isfile(name_path):
                         root.after(d, lambda: winsound.PlaySound(name_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
@@ -15200,10 +15264,19 @@ if os.path.isfile("F1 Manager 26 Save Data 1.db"):
 else:
     GAME.newGame=1
 
-print("GAME LOADING...")
 root=tk.Tk()
 root.title("F1 Manager 26")
 root.configure(background='black')
+# Start maximised and calculate a proportional scale from the usable client
+# area. The original game layout remains 1440x810 internally.
+try:
+    root.state("zoomed")
+except tk.TclError:
+    pass
+root.update_idletasks()
+usable_width=max(1, root.winfo_width())
+usable_height=max(1, root.winfo_height())
+ui_scale=min(usable_width/1440, usable_height/810)
 
 #Music
 if GAME.music==1:
@@ -15373,8 +15446,10 @@ for x in range(len(Icons)):
         icons.append(tk.PhotoImage(file=path))
     else:
         missingFiles=1
-canvas=tk.Canvas(root, width=1440, height=810)
-canvas.pack()
+canvas_width=round(1440*ui_scale)
+canvas_height=round(810*ui_scale)
+canvas=ResponsiveCanvas(root, ui_scale, highlightthickness=0, bd=0, bg="black")
+canvas.place(relx=0.5, rely=0.5, anchor="center", width=canvas_width, height=canvas_height)
 try:
     imageOnCanvas=canvas.create_image(0, 0, anchor=tk.NW, image=images[0])
 except:
