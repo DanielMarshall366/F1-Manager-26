@@ -1459,6 +1459,12 @@ class Game:
             else:
                 haasTime=0
             root.after(haasTime+cadillacTime, lambda: GAME.Menu())
+        elif GAME.season==2026 and GAME.startYear==2026 and GAME.race==20 and GAME.custom==0 and GAME.legends==0 and GAME.team!="Haas":
+            #Camara Replaces Ocon
+            F1.commit()
+            F1.close()
+            GAME.ChangeScreen("Camara Replaces Ocon")
+            root.after(5000, lambda: GAME.Menu())
         else:
             GAME.ChangeScreen("Press Conference")
             if objective=="Upgrade":
@@ -2129,6 +2135,7 @@ class Game:
                 f=c.execute("SELECT Name FROM Drivers WHERE Team=? AND Role='Junior' AND NewTeam='0'",(team,)).fetchall()
                 if len(f)>0:
                     driver=GAME.Sanitise(random.choice(f))
+                    contractEnd=int(GAME.Sanitise(c.execute("SELECT ContractEnd FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
                     if random.randint(1,2)==2 and contractEnd==GAME.season and len(c.execute("SELECT Name FROM Drivers WHERE NewTeam='0' AND Name=?",(driver,)).fetchall())>0:
                         #Rehired
                         currentSalary=int(GAME.Sanitise(c.execute("SELECT Salary FROM Drivers WHERE Name=?",(driver,)).fetchall()[0]))
@@ -4101,7 +4108,11 @@ class Game:
                     GAME.raceFinished=1
                 elif GAME.safety==0 and GAME.teams[index]!=GAME.team:
                     pitting=0
-                    if GAME.lap[index]>GAME.pitLap[index] and GAME.pitLap[index]!=0:
+                    try:
+                        toPit=(GAME.lap[index]>GAME.pitLap[index] and GAME.pitLap[index]!=0)
+                    except:
+                        toPit=False
+                    if toPit:
                         pitting=1
                     elif not (GAME.drivers[index]=="Timo Glock" and GAME.lap[0]>40 and GAME.replay==4):
                         #Pit now
@@ -5314,7 +5325,7 @@ class Game:
                     canvas.create_text(380, (x*24)+Y, text=f"+{int(time//60)}:0{round(time%60,2)}", fill=colour, font=("Arial", 15), anchor="nw")
                 else:
                     canvas.create_text(380, (x*24)+Y, text=f"+{int(time//60)}:{round(time%60,2)}", fill=colour, font=("Arial", 15), anchor="nw")
-                tyre=GAME.tyre[GAME.positions[x]]
+                tyre=str(GAME.tyre[GAME.positions[x]])
                 canvas.create_text(475, (x*24)+Y, text=tyre[0], fill=colours[Tyres.index(tyre)], font=("Arial", 15), anchor="nw")
     def StartRace(self):
         GAME.log=[]
@@ -7411,12 +7422,19 @@ class Game:
                 elif name==GAME.car2:
                     GAME.car2ID=len(GAME.drivers)
                 team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Name=?",(name,)).fetchall()[0])
+                car=int(GAME.Sanitise(c.execute("SELECT Role FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))
                 if name!="":
-                    if (name=="Isack Hadjar" and GAME.season==2026 and GAME.race>11 and GAME.race<15) or (name=="Esteban Ocon" and GAME.season==2026 and GAME.race==19 and GAME.team!="Haas"):
+                    if name=="Esteban Ocon" and GAME.season==2026 and GAME.team!="Haas" and GAME.race>18:
+                        if GAME.race==20:
+                            name="Rafael Camara"
+                        else:
+                            name="Ryo Hirakawa"
+                        if len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Condition='Well'",(name,)).fetchall())==0:
+                            name="Esteban Ocon"
+                    if name=="Isack Hadjar" and GAME.season==2026 and GAME.race>11 and GAME.race<15:
                         condition="Injured"
                     else:
                         condition=GAME.Sanitise(c.execute("SELECT Condition FROM Drivers WHERE Name=?",(name,)).fetchall()[0])
-                    car=int(GAME.Sanitise(c.execute("SELECT Role FROM Drivers WHERE Name=?",(name,)).fetchall()[0]))
                     if team=="Racing Bulls" and name in GAME.drivers:
                         redBull.append(name)
                     if condition=="Well" and name not in redBull:
@@ -8250,6 +8268,17 @@ class Game:
         else:
             driver=GAME.driver2
         GAME.DisplayDriver(driver,520,520)
+        startingPosition=GAME.positions.index(GAME.drivers.index(driver))+1
+        lastDigit=startingPosition%10
+        if lastDigit==1:
+            suffix="st"
+        elif lastDigit==2:
+            suffix="nd"
+        elif lastDigit==3:
+            suffix="rd"
+        else:
+            suffix="th"
+        canvas.create_text(1220, 70, text=(f"Starting {startingPosition}{suffix}"), fill="black", font=("Arial", 20), anchor="nw")
     def ChooseStartingAggression(self):
         GAME.ChangeScreen("Choose Aggression")
         for x in range(3):
@@ -8381,6 +8410,8 @@ class Game:
                     name=GAME.Sanitise(c.execute("SELECT Name FROM Drivers WHERE Position=?",(x+1,)).fetchall()[0])
                     team=GAME.Sanitise(c.execute("SELECT Team FROM Drivers WHERE Position=?",(x+1,)).fetchall()[0])
                     points=int(GAME.Sanitise(c.execute("SELECT Points FROM Drivers WHERE Position=?",(x+1,)).fetchall()[0]))
+                    if team=="Free Agent" or team=="Dead" or team=="Retired":
+                        team=""
                     fullName=f"{name} {team}"
                     if team=="Red Bull" and len(c.execute("SELECT Name FROM Teams WHERE Name='Racing Bulls'").fetchall())>0 and len(c.execute("SELECT Name FROM Drivers WHERE Name=? AND Role='Reserve'",(name,)).fetchall())>0:
                         team="Racing Bulls"
@@ -8398,8 +8429,6 @@ class Game:
                         colour=GAME.TeamColour(team,GAME.season)
                         if colour=="black":
                             colour="white"
-                    if team=="Free Agent" or team=="Dead" or team=="Retired":
-                        team=""
                     if x<9:
                         canvas.create_text(770, 130+(x*25), text=f"{x+1}. {fullName}", fill=colour, font=("Arial", 15), anchor="nw")
                     else:
@@ -9343,7 +9372,9 @@ class Game:
                 if f"{GAME.team} Upgrade" in Images:
                     with sqlite3.connect(GAME.database) as c:
                         race=GAME.Sanitise(c.execute("SELECT Track FROM Calendar WHERE ID=?",(GAME.race,)).fetchall()[0])
-                    if f"{race} {GAME.team} Upgrade" in Images:
+                    if GAME.team=="Alpine" and (race=="Mexico City" or race=="Interlagos"):
+                        screen="Miami Alpine Upgrade"
+                    elif f"{race} {GAME.team} Upgrade" in Images:
                         screen=f"{race} {GAME.team} Upgrade"
                     else:
                         screen=f"{GAME.team} Upgrade"
@@ -11690,7 +11721,8 @@ class Game:
                 if event.x<=615+((sector[0]-1)*190) and event.y<=310+((sector[1]-1)*75):
                     race=(sector[1]*5)+sector[0]+1
                     if race>=GAME.race:
-                        GAME.PreviewTrack(race)
+                        if race<=GAME.races:
+                            GAME.PreviewTrack(race)
                     else:
                         with sqlite3.connect(GAME.database) as c:
                             GAME.ChangeScreen("Race Review")
@@ -12846,10 +12878,7 @@ class Game:
             else:
                 colour="#2C2C2C"
         elif team=="Mercedes":
-            if season>2025 and GAME.track=="Miami" and GAME.screen!="History":
-                colour="#9141D2"
-            else:
-                colour="#1AE2CE"
+            colour="#1AE2CE"
         elif team=="Red Bull" and (season>2012 and season<2016) or sponsor=="Infiniti":
             colour="#6305B6"
         elif team=="Red Bull" or "Ford" in team:
@@ -13919,9 +13948,9 @@ class Game:
             c.execute("UPDATE Teams SET Reputation=20 WHERE Reputation<20")
             if GAME.season==2027:
                 GAME.news.append("BREAKING NEWS! The races this season will be shorter.")
-            elif GAME.season==2028:
-                c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('General Motors', 'Cadillac', 0, 0, 0, 1)")
             elif GAME.season==2029:
+                c.execute("INSERT into Engines (Name, Manufacturer, Power, Reliability, Battery, Research) VALUES ('General Motors', 'Cadillac', 0, 0, 0, 1)")
+            elif GAME.season==2030:
                 GAME.news.append("BREAKING NEWS! Cadillac are now producing their own General Motors engines.")
                 c.execute("UPDATE Cars SET Engine='General Motors' WHERE Team='Cadillac'")
             c.execute("INSERT into TeamPrincipals (Name, Team) VALUES (?, 'None')",(GAME.GenerateName(),))
@@ -14768,7 +14797,7 @@ class Game:
                         for x in range(len(engines)):
                             engine=GAME.Sanitise(engines[x])
                             manufacturer=GAME.Sanitise(c.execute("SELECT Manufacturer FROM Engines WHERE Name=?",(engine,)).fetchall()[0])
-                            if len(c.execute("SELECT Team FROM Cars WHERE Team=? AND Engine=?",(manufacturer,engine,)).fetchall())==0:
+                            if len(c.execute("SELECT Team FROM Cars WHERE Engine=?",(engine,)).fetchall())==0:
                                 GAME.news.append(f"BREAKING NEWS! {manufacturer} are now producing their own engines.")
                                 c.execute("UPDATE Cars SET Engine=? WHERE Team=?",(engine,manufacturer,))
                                 newEngines.append(manufacturer)
@@ -15197,7 +15226,7 @@ class Game:
                 delay=0
                 if subject!=0:
                     name_path=os.path.join(os.path.dirname(__file__), "Names", subject+".wav")
-                    if  os.path.isfile(name_path):
+                    if os.path.isfile(name_path):
                         if line!="Overtake":
                             winsound.PlaySound(name_path, winsound.SND_FILENAME | winsound.SND_ASYNC)
                             with contextlib.closing(wave.open(name_path, 'r')) as f:
@@ -15220,7 +15249,7 @@ class Game:
                         frames=f.getnframes()
                         rate=f.getframerate()
                         duration=frames / float(rate)
-                        d=delay + round(duration*1000)
+                        d=delay + round(duration*1000)+200
                     root.after(delay, lambda: winsound.PlaySound(vo_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
                     if line=="Overtake" and os.path.isfile(name_path):
                         root.after(d, lambda: winsound.PlaySound(name_path, winsound.SND_FILENAME | winsound.SND_ASYNC))
@@ -15233,7 +15262,7 @@ class Game:
                         delay=d
                 root.after(delay+500, lambda: GAME.VoiceDone())
                 if line=="Champion":
-                    root.after(delay, lambda: GAME.DriverCelebration(subject))
+                    root.after(delay+700, lambda: GAME.DriverCelebration(subject))
         except:
             pass
     def VoiceDone(self):
@@ -15308,7 +15337,8 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Alfa Romeo Display","2010 Mercedes Display","Colapinto Re-signs","Leclerc Re-signs","Norris Re-signs","Monza Ferrari Upgrade","2015 McLaren Upgrade","2018 McLaren Upgrade",
         "Monza McLaren Upgrade","Game Modes","Customise Car","Customise Engine","West McLaren Display","Marlboro McLaren Display","Madring Williams Upgrade","Hadjar Re-signs",
         "Aston Martin Contract Extensions","Sepang Mercedes Upgrade","Marina Bay Audi Upgrade","Camara Signs","Austin Haas Upgrade","Austin Cadillac Upgrade",
-        "Austin Ferrari Upgrade","Austin Aston Martin Upgrade","Austin Mercedes Upgrade","Track Preview","Perez Re-signs","Ocon Replaced","Mexico City McLaren Upgrade"]
+        "Austin Ferrari Upgrade","Austin Aston Martin Upgrade","Austin Mercedes Upgrade","Track Preview","Perez Re-signs","Ocon Replaced","Mexico City McLaren Upgrade",
+        "Camara Replaces Ocon","Interlagos Audi Upgrade"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
@@ -15340,11 +15370,11 @@ for x in range(len(driverHeads)):
         missingFiles=1
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","McLaren Honda",
-       "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Monza McLaren","Black Ferrari","Austin Ferrari","Amazon","Ford","Benneton","Honda","Porsche",
-       "Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams","2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia","Tyrrell","Minardi","Jordan",
-       "APX GP"]
-xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95,95,109,105]
-yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80,97,114,75]
+       "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Monza McLaren","Black Ferrari","Austin Ferrari","Austin Red Bull","Interlagos Alpine",
+       "Interlagos Mercedes","Interlagos Audi","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams",
+       "2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia","Tyrrell","Minardi","Jordan","APX GP"]
+xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95,95,109,105,96,98,103,100]
+yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80,97,114,75,75,93,78,80]
 path=os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 if os.path.isfile(path):
     GAME.suits=[tk.PhotoImage(file=path)]
@@ -15358,6 +15388,8 @@ if os.path.isfile(path):
         team=steam[x+1]
         if team=="Vodafone McLaren" or team=="West McLaren":
             team="Classic McLaren"
+        elif "Ferrari" in team:
+            team="Ferrari"
         path=os.path.join(os.path.dirname(__file__), "Logos", (team+" Logo.png"))
         if os.path.isfile(path):
             logos.append(tk.PhotoImage(file=path))
