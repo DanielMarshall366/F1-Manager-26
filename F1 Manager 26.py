@@ -2765,6 +2765,8 @@ class Game:
                             c.execute("UPDATE Cars SET HighSpeed=? WHERE Team='Aston Martin'",(int(GAME.Sanitise(c.execute("SELECT HighSpeed FROM Cars WHERE Team='Aston Martin'").fetchall()[0]))+15,))
                     elif (GAME.race==12 or GAME.race==14) and GAME.team!="Aston Martin":
                         GAME.ADUO("Honda")
+                    elif GAME.race==20 and GAME.team!="Mercedes":
+                        GAME.ADUO("Mercedes")
 
             if GAME.team!="Red Bull" and GAME.season==2016 and GAME.race==4:
                 #Verstappen Promotion
@@ -9468,6 +9470,10 @@ class Game:
                 root.after(400, lambda: GAME.ReplayScreen())
             elif event.x>=1295 and event.x<=1345 and event.y>=710 and event.y<=760:
                 GAME.Settings()
+            else:
+                GAME.SuitTest("George Russell","Las Vegas George Russell Mercedes")
+                GAME.suitTest="Mercedes"
+                GAME.DisplayDriver("Kimi Antonelli",700,520)
         elif GAME.screen=="Welcome screen":
             if event.x>=54 and event.x<=250 and event.y>=718 and event.y<=765:
                 GAME.ChangeScreen("Get Name")
@@ -13772,6 +13778,7 @@ class Game:
                 canvas.create_text(950-(650-(650*x)), 340, text=driver, fill="black", font=("Arial", 20), anchor="nw")
     def DisplayDriver(self,driver,x,y):
             with sqlite3.connect(GAME.database) as c:
+                specialSuit=0
                 if GAME.suitTest!=0:
                     team=GAME.suitTest
                 elif GAME.screen=="Contract" or GAME.screen=="Select Custom Replacement":
@@ -13797,10 +13804,13 @@ class Game:
                         sponsor=0
                 if driver=="Sonny Hayes" or driver=="Joshua Pearce":
                     team=driver
-                elif GAME.track=="Marina Bay" and driver=="Charles Leclerc" and team=="Ferrari" and sponsor!="Marlboro" and GAME.season>2025:
+                elif team=="Ferrari" and GAME.season>2025 and sponsor!="Marlboro" and ((GAME.track=="Marina Bay" and driver=="Charles Leclerc") or GAME.track=="Las Vegas"):
                     team="Black Ferrari"
                 elif GAME.track=="Mexico City" and GAME.season>2025 and team=="McLaren":
                     team="Silverstone McLaren"
+                elif GAME.track=="Las Vegas" and GAME.season>2025 and (driver=="George Russell" or driver=="Kimi Antonelli"):
+                    team=f"Las Vegas {driver} Mercedes"
+                    specialSuit=1
                 elif GAME.season>2025 and f"{GAME.track} {team}" in steam and not (team=="McLaren" and (sponsor=="West" or sponsor=="Vodafone")) and not (team=="Ferrari" and sponsor=="Marlboro"):
                     team=f"{GAME.track} {team}"
                 elif team=="McLaren":
@@ -13843,8 +13853,12 @@ class Game:
                     except:
                         suit=GAME.suits[0]
             canvas.image=suit
+            if driver=="Sonny Hayes" or driver=="Joshua Pearce":
+                specialSuit=1
+            if specialSuit==1:
+                y-=100
             canvas.create_image(x, y, anchor=tk.NW, image=suit)
-            if driver!="Sonny Hayes" and driver!="Joshua Pearce":
+            if specialSuit==0:
                 if f"Young {driver}" in driverHeads and (GAME.replay==3 or GAME.replay==4 or GAME.season<2015):
                     driver=f"Young {driver}"
                 try:
@@ -15445,8 +15459,7 @@ else:
 root=tk.Tk()
 root.title("F1 Manager 26")
 root.configure(background='black')
-# Start maximised and calculate a proportional scale from the usable client
-# area. The original game layout remains 1440x810 internally.
+
 try:
     root.state("zoomed")
 except tk.TclError:
@@ -15488,7 +15501,7 @@ Images=["Title Screen","Welcome screen","Get Name","Get Country 1","Get Country 
         "Monza McLaren Upgrade","Game Modes","Customise Car","Customise Engine","West McLaren Display","Marlboro McLaren Display","Madring Williams Upgrade","Hadjar Re-signs",
         "Aston Martin Contract Extensions","Sepang Mercedes Upgrade","Marina Bay Audi Upgrade","Camara Signs","Austin Haas Upgrade","Austin Cadillac Upgrade",
         "Austin Ferrari Upgrade","Austin Aston Martin Upgrade","Austin Mercedes Upgrade","Track Preview","Perez Re-signs","Ocon Replaced","Mexico City McLaren Upgrade",
-        "Camara Replaces Ocon","Interlagos Audi Upgrade","Racing Bulls Contracts","Las Vegas Aston Martin Upgrade"]
+        "Camara Replaces Ocon","Interlagos Audi Upgrade","Racing Bulls Contracts","Las Vegas Aston Martin Upgrade","Las Vegas Williams Upgrade","Las Vegas Cadillac Upgrade"]
 images=[]
 for x in range(len(Images)):
     path=os.path.join(os.path.dirname(__file__), "Screens", (Images[x]+".png"))
@@ -15521,10 +15534,11 @@ for x in range(len(driverHeads)):
 steam=["Player","McLaren","Ferrari","Red Bull","Mercedes","Aston Martin","Alpine","Haas","Racing Bulls","Williams","Audi","Renault","Lotus","Force India","Vodafone McLaren",
        "Marlboro Ferrari","West McLaren","Gazoo Racing","Cadillac","Brawn GP","Kick Sauber","BMW","Toyota","Toro Rosso","AlphaTauri","Racing Point","Sauber","McLaren Honda",
        "Alfa Romeo","Caterham","Silverstone McLaren","Monza Ferrari","Miami Mercedes","Monza McLaren","Black Ferrari","Austin Ferrari","Austin Red Bull","Interlagos Alpine",
-       "Interlagos Mercedes","Interlagos Audi","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","HRT","Manor","2009 Williams",
-       "2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia","Tyrrell","Minardi","Jordan","APX GP"]
-xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95,95,109,105,96,98,103,100]
-yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80,97,114,75,75,93,78,80]
+       "Interlagos Mercedes","Interlagos Audi","Las Vegas Williams","Amazon","Ford","Benneton","Honda","Porsche","Kia","Mazda","Lamborghini","Volkswagen","Volvo","JLR","HRT",
+       "Manor","2009 Williams","2014 Williams","2010 Mercedes","2017 Toro Rosso","Marussia","Tyrrell","Minardi","Jordan","APX GP","Las Vegas Kimi Antonelli Mercedes",
+       "Las Vegas George Russell Mercedes"]
+xDif=[90,82,88,95,110,95,92,100,95,90,105,110,92,85,95,97,95,98,95,88,85,95,102,97,85,100,99,63,105,88,109,98,95,95,109,105,96,98,103,100,88]
+yDif=[115,90,95,108,105,88,90,70,122,80,108,90,112,105,80,100,85,50,88,60,108,85,57,72,75,44,75,105,76,70,75,71,80,97,114,75,75,93,78,80,75]
 path=os.path.join(os.path.dirname(__file__), "Suits", ("Created Team Suit.png"))
 if os.path.isfile(path):
     GAME.suits=[tk.PhotoImage(file=path)]
